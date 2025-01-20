@@ -17,7 +17,6 @@ export default Sidebar;
 const SidebarContainer = styled.div`
   background-color: #333;
   color: white;
-  height: 100vh;
   padding: 20px;
   display: flex;
   flex-direction: column;

@@ -44,6 +44,8 @@ const Content = styled.div`
   background-color:rgb(253, 251, 251);
   padding: 20px;
   overflow-y: auto;
+  height: 100%
+  width: 100%
   display: flex; /* Añadí un display flex para mejorar la organización */
   justify-content: flex-start; /* Cambié de center a flex-start para alinear el contenido a la izquierda */
   align-items: flex-start; /* Asegura que el contenido no esté centrado verticalmente */
