@@ -31,9 +31,9 @@ const AppContainer = styled.div`
   grid-template-columns: ${({ className }) =>
     className === 'active' ? '300px auto' : '60px auto'};
   transition: grid-template-columns 0.3s ease-in-out;
-  height: 633px;
+  height: 100%;
   overflow-y: auto; /* Permite el desplazamiento vertical si el contenido es mayor que el contenedor */
-  width: 1366px;
+  width: 100%;
   grid-template-rows: auto 1fr; /* Agrega esta línea para que el contenido ocupe más espacio */
 `;
 

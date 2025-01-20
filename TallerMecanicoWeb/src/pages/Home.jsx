@@ -19,7 +19,7 @@ const HomeContainer = styled.div`
   align-items: center; 
   overflow-y: auto;
   justify-content: center;
-  height: 100vh;
+  height: 100%;
   background-color: #f8f9fa;
 
 `;
