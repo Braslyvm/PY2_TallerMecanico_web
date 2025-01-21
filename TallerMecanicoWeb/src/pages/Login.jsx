@@ -11,16 +11,13 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 import { app } from '../DB/Autentificacion'; 
-import firebase from 'firebase/compat/app'
-
-
+import firebase from 'firebase/compat/app';
 
 export default function Login() {
   const [email, setEmailLocal] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const [error, setError] = useState('');
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -30,10 +27,10 @@ export default function Login() {
           navigate('/');
         })
         .catch((error) => {
-          setError(error);
+          setError(error.message); // Cambié para mostrar el mensaje de error
         });
     } else {
-      setError(error);
+      setError('Por favor, completa todos los campos.'); // Mensaje de error si los campos están vacíos
     }
   };
 
@@ -44,11 +41,9 @@ export default function Login() {
       alignItems: 'center',
       justifyContent: 'center',
       height: '100vh',
+      width: '100vw', // Asegúrate de que cubra todo el ancho
       backgroundColor: '#ffffff', 
       padding: '0 20px',
-      overflow: 'hidden',
-      marginTop: '-100px',
-      marginLeft: '-250px',
     }}>
       <CssBaseline />
       <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
@@ -56,7 +51,7 @@ export default function Login() {
       </Avatar>
       <Typography component="h1" variant="h5">
         {"Iniciar Sesión"}
-        </Typography>
+      </Typography>
       {error && <Typography color="error" variant="body2" sx={{ mt: 2 }}>{error}</Typography>} 
       <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%', maxWidth: '400px' }}>
         <TextField

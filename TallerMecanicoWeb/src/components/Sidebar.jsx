@@ -3,22 +3,23 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
 function Sidebar({ sidebarOpen, setSidebarOpen }) {
-  const navigate = useNavigate(); // Usa el hook useNavigate
+  const navigate = useNavigate();
 
   return (
-    <SidebarContainer>
+    <SidebarContainer sidebarOpen={sidebarOpen}>
       <ToggleButton onClick={() => setSidebarOpen(!sidebarOpen)}>
         {sidebarOpen ? '<' : '>'}
       </ToggleButton>
       {sidebarOpen && (
         <nav>
-          Menú
-          <button onClick={() => {
-            setSidebarOpen(false); // Cierra el sidebar
-            navigate('/login'); // Navega a la página de Login
+          <MenuTitle>Menú</MenuTitle>
+          <Button onClick={() => {
+            setSidebarOpen(false); 
+            navigate('/login'); 
           }}>
             Ir a Login
-          </button>
+          </Button>
+          {/* Puedes agregar más botones aquí */}
         </nav>
       )}
     </SidebarContainer>
@@ -35,10 +36,21 @@ const SidebarContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  transition: width 0.3s ease; // Animación para el ancho del sidebar
+  width: ${props => (props.sidebarOpen ? '200px' : '50px')}; // Cambia el ancho según el estado
 
   nav {
     margin-top: 20px;
+    display: flex;
+    flex-direction: column; // Asegura que los botones estén en columna
+    align-items: center; // Centra los botones
   }
+`;
+
+// Título del menú
+const MenuTitle = styled.h3`
+  margin: 0;
+  color: white;
 `;
 
 // Botón de apertura/cierre
@@ -51,5 +63,20 @@ const ToggleButton = styled.button`
 
   &:hover {
     opacity: 0.8;
+  }
+`;
+
+// Estilo para los botones del menú
+const Button = styled.button`
+  background-color: #444; // Color de fondo del botón
+  color: white; // Color del texto
+  border: none;
+  padding: 10px 15px;
+  margin: 5px 0; // Espaciado entre botones
+  cursor: pointer;
+  transition: background-color 0.3s ease; // Transición para el color de fondo
+
+  &:hover {
+    background-color: #555; // Color de fondo al pasar el mouse
   }
 `;
