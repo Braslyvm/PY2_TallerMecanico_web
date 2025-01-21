@@ -15,7 +15,7 @@ import firebase from 'firebase/compat/app'
 
 
 
-export default function Logeo() {
+export default function Login() {
   const [email, setEmailLocal] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
