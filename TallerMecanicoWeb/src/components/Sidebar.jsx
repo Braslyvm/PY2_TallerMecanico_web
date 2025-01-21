@@ -3,12 +3,24 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
 function Sidebar({ sidebarOpen, setSidebarOpen }) {
+  const navigate = useNavigate(); // Usa el hook useNavigate
+
   return (
     <SidebarContainer>
       <ToggleButton onClick={() => setSidebarOpen(!sidebarOpen)}>
         {sidebarOpen ? '<' : '>'}
       </ToggleButton>
-      {sidebarOpen && <nav>Menú</nav>}
+      {sidebarOpen && (
+        <nav>
+          Menú
+          <button onClick={() => {
+            setSidebarOpen(false); // Cierra el sidebar
+            navigate('/login'); // Navega a la página de Login
+          }}>
+            Ir a Login
+          </button>
+        </nav>
+      )}
     </SidebarContainer>
   );
 }
