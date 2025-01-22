@@ -1,6 +1,6 @@
-import React from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 function Sidebar({ sidebarOpen, setSidebarOpen }) {
   const navigate = useNavigate();
@@ -8,18 +8,30 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
   return (
     <SidebarContainer sidebarOpen={sidebarOpen}>
       <ToggleButton onClick={() => setSidebarOpen(!sidebarOpen)}>
-        {sidebarOpen ? '<' : '>'}
+        {sidebarOpen ? "<" : ">"}
       </ToggleButton>
       {sidebarOpen && (
         <nav>
           <MenuTitle>Menú</MenuTitle>
-          <Button onClick={() => {
-            setSidebarOpen(false); 
-            navigate('/login'); 
-          }}>
+          <Button
+            onClick={() => {
+              setSidebarOpen(false);
+              navigate("/login");
+            }}
+          >
             Ir a Login
           </Button>
           {/* Puedes agregar más botones aquí */}
+          {
+            <Button
+              onClick={() => {
+                setSidebarOpen(false);
+                navigate("/Registro_repuesto");
+              }}
+            >
+              Registrar repuesto
+            </Button>
+          }
         </nav>
       )}
     </SidebarContainer>
@@ -37,7 +49,8 @@ const SidebarContainer = styled.div`
   flex-direction: column;
   align-items: center;
   transition: width 0.3s ease; // Animación para el ancho del sidebar
-  width: ${props => (props.sidebarOpen ? '200px' : '50px')}; // Cambia el ancho según el estado
+  width: ${(props) =>
+    props.sidebarOpen ? "200px" : "50px"}; // Cambia el ancho según el estado
 
   nav {
     margin-top: 20px;
