@@ -21,6 +21,12 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
           >
             Ir a Login
           </Button>
+          <Button onClick={() => {
+            setSidebarOpen(false); 
+            navigate('/Mecanicos'); 
+          }}>
+            Mecanicos
+          </Button>
           {/* Puedes agregar más botones aquí */}
           {
             <Button
@@ -32,6 +38,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
               Registrar repuesto
             </Button>
           }
+          
         </nav>
       )}
     </SidebarContainer>

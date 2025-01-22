@@ -4,6 +4,7 @@ import Home from '../pages/Home';
 import Login from '../pages/Login';
 import Registro from '../pages/Register';
 import RegistroRP from '../pages/Registro_repuesto';
+import Mecanicos from '../pages/Mecanicos';
 
 export function MyRoutes() {
   return (
@@ -12,6 +13,7 @@ export function MyRoutes() {
     <Route path="/Login" element={<Login />} />
     <Route path="/Registro" element={<Registro />} />
     <Route path="/Registro_repuesto" element={<RegistroRP />} />
+    <Route path="/Mecanicos" element={<Mecanicos />} />
     </Routes>
   );
 }
