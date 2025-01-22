@@ -74,10 +74,6 @@ app.get('/api/repuestos_reparacion', (req, res) => {
     });
 });
 
-// Iniciar el servidor en el puerto 3000
-app.listen(3000, () => {
-    console.log('Backend corriendo en http://localhost:3000');
-});
 
 // Obtener un vehículo por ID
 app.get('/api/vehiculos/:id', (req, res) => {
@@ -202,6 +198,22 @@ app.post('/api/reparaciones', (req, res) => {
     });
 });
 
-app.listen(3000, () => {
-    console.log('Backend corriendo en http://localhost:3000');
+app.post('/api/mecanico/delete', (req, res) => {
+    const { cedula } = req.body;
+    db.run('DELETE FROM mecanicos WHERE cedula = ?', [cedula], function (err) {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.status(200).json({ message: 'Mecánico eliminado exitosamente.' });
+    });
 });
+
+
+
+app.listen(3001, () => {
+    console.log('Backend corriendo en http://localhost:3001');
+});
+
+
+

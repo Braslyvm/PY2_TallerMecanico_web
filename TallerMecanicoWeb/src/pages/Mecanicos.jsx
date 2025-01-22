@@ -1,57 +1,123 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { FaTrashAlt, FaEye, FaPlus } from 'react-icons/fa'; // Importar el icono de agregar
-import { useDropzone } from 'react-dropzone';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import { FaTrashAlt, FaEye, FaPlus } from "react-icons/fa";
+import { useDropzone } from "react-dropzone";
+import Swal from 'sweetalert2';
+import axios from "axios";
 
 function Mecanicos() {
-  const [personas] = useState([
-    { nombre: 'Juan Pérez', cedula: '123456789', edad: 30 },
-    { nombre: 'María López', cedula: '987654321', edad: 25 },
-    { nombre: 'Carlos Gómez', cedula: '111223344', edad: 40 },
-  ]);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [verOpen, setverOpen] = useState(false);
-  const [nombre, setNombre] = useState('');
-  const [cedula, setCedula] = useState('');
+  const [verOpen, setVerOpen] = useState(false);
+  const [nombre, setNombre] = useState("");
+  const [cedula, setCedula] = useState("");
   const [foto, setFoto] = useState(null);
-  const [edad, setEdad] = useState('');
+  const [edad, setEdad] = useState("");
+  const [data, setData] = useState([]);
+
+  //Alertas
+  const AlertRegiter = () => {
+    Swal.fire({
+      title: '¡Alerta!',
+      text: 'Usuario agregado Exitosamente!.',
+      icon: 'success',
+      confirmButtonText: 'Aceptar'
+    });
+  };
+
+  const AlertDelete = () => {
+    Swal.fire({
+      text: 'Mecanico eliminado correctamente!.',  
+      imageUrl: 'https://cdn1.iconfinder.com/data/icons/ionicons-outline-vol-2/512/trash-bin-outline-512.png', // URL válida de un icono de basurero// URL de la imagen de un basurero
+      imageWidth: 100,
+      imageHeight: 100,
+      imageAlt: 'Basurero',
+      confirmButtonText: 'Aceptar'
+    });
+  };
+  // Obtener datos de mecánicos desde la API
+  const getMecanicos = () => {
+    axios
+      .get("http://localhost:3001/api/mecanicos") 
+      .then((response) => {
+        setData(response.data); 
+        console.log(response.data); 
+      })
+      .catch((error) => {
+        console.error("Error al obtener los datos:", error);
+      });
+  };
+
+  useEffect(() => {
+    getMecanicos();
+  }, []);
 
   const handleAddClick = () => {
     setIsModalOpen(true);
   };
 
   const handleViewClick = () => {
-    setverOpen(true);
+    setVerOpen(true);
   };
-
-  const handleViewModal = () => {
-    setverOpen(false);
-  };
-
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setNombre('');
-    setCedula('');
+    setNombre("");
+    setCedula("");
     setFoto(null);
-    setEdad('');
+    setEdad("");
+  };
+
+  const handleViewModal = () => {
+    setVerOpen(false);
   };
 
   const { getRootProps, getInputProps } = useDropzone({
-    accept: 'image/*',
+    accept: "image/*",
     onDrop: (acceptedFiles) => {
       setFoto(URL.createObjectURL(acceptedFiles[0]));
     },
   });
 
+  // Agregar un nuevo mecánico
+  const setMecanico = () => {
+    if (!nombre || !cedula || !edad) {
+      alert("Por favor, completa todos los campos.");
+      return;
+    }
+    const nuevoMecanico = { nombre, cedula, edad, foto };
+    axios
+      .post("http://localhost:3001/api/mecanicos", nuevoMecanico) 
+      .then((response) => {
+        AlertRegiter();
+        getMecanicos(); 
+        handleCloseModal();
+      })
+      .catch((error) => {
+        console.error("Error al agregar mecánico:", error);
+      });
+  };
+
+
+  //Borrar un mecánico
+  const deleteMecanico = (cedula) => {
+    console.log(cedula);
+    axios
+      .post("http://localhost:3001/api/mecanico/delete", { cedula }) 
+      .then((response) => {
+        AlertDelete();
+        getMecanicos(); 
+      })
+      .catch((error) => {
+        console.error("Error al eliminar mecánico:", error);
+      });
+  }
+
   return (
     <HomeContainer>
-      {/* Ver plantilla de Mecanico */}
       <Header>
-        <h2>Planilla de mecánicos</h2>
+        <h2>Planilla de Mecánicos</h2>
         <AddButton onClick={handleAddClick}>
-          <FaPlus /> Agregar mecánico
+          <FaPlus /> Agregar Mecánico
         </AddButton>
       </Header>
       <Table>
@@ -64,7 +130,7 @@ function Mecanicos() {
           </tr>
         </thead>
         <tbody>
-          {personas.map((persona, index) => (
+          {data.map((persona, index) => (
             <tr key={index}>
               <td>{persona.cedula}</td>
               <td>{persona.nombre}</td>
@@ -74,7 +140,7 @@ function Mecanicos() {
                   <ViewButton onClick={handleViewClick}>
                     <FaEye />
                   </ViewButton>
-                  <DeleteButton >
+                  <DeleteButton onClick={() => deleteMecanico(persona.cedula)}>
                     <FaTrashAlt />
                   </DeleteButton>
                 </ActionsCell>
@@ -83,7 +149,6 @@ function Mecanicos() {
           ))}
         </tbody>
       </Table>
-      {/* Ventana de agregar Mecanico */}
       {isModalOpen && (
         <ModalOverlay>
           <ModalContent>
@@ -109,7 +174,7 @@ function Mecanicos() {
                 <label>
                   Cédula:
                   <input
-                    type="text"
+                    type="number"
                     value={cedula}
                     onChange={(e) => setCedula(e.target.value)}
                   />
@@ -125,8 +190,8 @@ function Mecanicos() {
               </FormFields>
             </FormContainer>
             <ActionButtons>
-              <SaveButton onClick={() => alert("Guardado")}>Guardar</SaveButton>
-              <CloseButton style={{ backgroundColor: '#e84949', color: 'white' }}  onClick={handleCloseModal}>Cerrar</CloseButton>
+              <SaveButton  onClick={setMecanico}>Guardar</SaveButton>
+              <CloseButton style={{ backgroundColor: 'rgb(200, 16, 16)' }} onClick={handleCloseModal}>Cerrar</CloseButton>
             </ActionButtons>
           </ModalContent>
         </ModalOverlay>
@@ -172,8 +237,8 @@ function Mecanicos() {
               </FormFields>
             </FormContainer>
             <ActionButtons>
-              <SaveButton onClick={() => alert("Guardado")}>Guardar</SaveButton>
-              <CloseButton style={{ backgroundColor: '#e84949', color: 'white' }}  onClick={handleViewModal}>Cerrar</CloseButton>
+              <SaveButton  onClick={setMecanico}>Guardar</SaveButton>
+              <CloseButton style={{ backgroundColor: 'rgb(200, 16, 16)' }} onClick={handleViewModal}>Cerrar</CloseButton>
             </ActionButtons>
           </ModalContent>
         </ModalOverlay>
@@ -183,6 +248,7 @@ function Mecanicos() {
 }
 
 export default Mecanicos;
+
 
 const HomeContainer = styled.div`
   display: flex;
@@ -229,7 +295,7 @@ const AddButton = styled.button`
 `;
 
 const Table = styled.table`
-  width: 600px;
+  width: 600px;-
   border-collapse: collapse;
   margin-top: 10px;
   border-radius: 12px;
@@ -240,7 +306,7 @@ const Table = styled.table`
     border-bottom: 1px solid #dee2e6;
   }
   th {
-    background-color: rgb(16, 200, 49);
+    background-color: rgb(5, 209, 255);
     color: white;
   }
   tr:hover {

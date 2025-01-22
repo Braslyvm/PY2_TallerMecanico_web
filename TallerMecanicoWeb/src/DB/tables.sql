@@ -64,4 +64,7 @@ CREATE TABLE repuestos_reparacion (
 
 
 
+create 
+
+
 
