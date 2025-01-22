@@ -4,39 +4,24 @@ import { FaTrashAlt, FaEdit, FaEye } from "react-icons/fa";
 import { useDropzone } from "react-dropzone";
 
 function RegistroRepuesto() {
-  // Estado para gestionar las piezas registradas
-  const [piezas, setPiezas] = useState([
-    { nombre: "Pieza 1", precio: 100, cantidad: 5, foto: null },
-    { nombre: "Pieza 2", precio: 150, cantidad: 3, foto: null },
-    { nombre: "Pieza 3", precio: 200, cantidad: 10, foto: null },
-    { nombre: "Pieza 4", precio: 250, cantidad: 2, foto: null },
-    { nombre: "Pieza 5", precio: 50, cantidad: 8, foto: null },
-    { nombre: "Pieza 6", precio: 300, cantidad: 1, foto: null },
-    { nombre: "Pieza 7", precio: 120, cantidad: 7, foto: null },
-    { nombre: "Pieza 8", precio: 180, cantidad: 4, foto: null },
-    { nombre: "Pieza 9", precio: 75, cantidad: 6, foto: null },
-    { nombre: "Pieza 10", precio: 95, cantidad: 9, foto: null },
-  ]);
-
-  // Estado para controlar la apertura del modal
+  const [piezas, setPiezas] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpen2, setIsModalOpen2] = useState(false);
-  // Estados para capturar los valores del formulario
+  const [isModalOpen3, setIsModalOpen3] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(null);
   const [nombre, setNombre] = useState("");
   const [precio, setPrecio] = useState("");
   const [cantidad, setCantidad] = useState("");
   const [foto, setFoto] = useState(null);
-  const [descripcion, setDescripcion] = useState("");
   const [vehiculosCompatibles, setVehiculosCompatibles] = useState("");
+  const [descripcion, setDescripcion] = useState("");
 
-  // Función para manejar el archivo cargado (imagen de la pieza)
   const onDrop = useCallback((acceptedFiles) => {
     setFoto(acceptedFiles[0]);
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
-
-  // Función para manejar el envío del formulario
+  //guardar datos nuevos
   const handleSubmit = (e) => {
     e.preventDefault();
     const nuevaPieza = {
@@ -44,34 +29,71 @@ function RegistroRepuesto() {
       precio: parseFloat(precio),
       cantidad: parseInt(cantidad, 10),
       foto,
-      descripcion,
       vehiculosCompatibles,
+      descripcion,
     };
     setPiezas([...piezas, nuevaPieza]);
-    setNombre("");
-    setPrecio("");
-    setCantidad("");
-    setFoto(null);
-    setDescripcion("");
-    setVehiculosCompatibles("");
-    setIsModalOpen(false); // Cerrar la ventana modal después de registrar
+    setIsModalOpen(false); // Cerrar el modal después de enviar el formulario
+  };
+  //guardar datos actr
+  const updatesumit = (e) => {
+    e.preventDefault();
+    const updatedPiezas = piezas.map((pieza, index) =>
+      index === selectedIndex
+        ? {
+            ...pieza,
+            nombre,
+            precio: parseFloat(precio),
+            cantidad: parseInt(cantidad, 10),
+            foto,
+            vehiculosCompatibles,
+            descripcion,
+          }
+        : pieza
+    );
+    setPiezas(updatedPiezas);
+    setIsModalOpen3(false); // Cerrar el modal después de enviar el formulario
   };
 
-  // Función para eliminar una pieza de la tabla
+  const handleEdit = (index) => {
+    // Cargar los datos del repuesto seleccionado
+    const pieza = piezas[index];
+    setNombre(pieza.nombre);
+    setPrecio(pieza.precio);
+    setCantidad(pieza.cantidad);
+    setFoto(pieza.foto);
+    setVehiculosCompatibles(pieza.vehiculosCompatibles);
+    setDescripcion(pieza.descripcion);
+    setSelectedIndex(index);
+    setIsModalOpen3(true);
+  };
+  const handleView = (index) => {
+    // Cargar los datos del repuesto seleccionado
+    const pieza = piezas[index];
+    setNombre(pieza.nombre);
+    setPrecio(pieza.precio);
+    setCantidad(pieza.cantidad);
+    setFoto(pieza.foto);
+    setVehiculosCompatibles(pieza.vehiculosCompatibles);
+    setDescripcion(pieza.descripcion);
+    setSelectedIndex(index);
+    setIsModalOpen2(true);
+  };
+
   const handleDelete = (index) => {
+    // lógica para eliminar la pieza
     const nuevasPiezas = piezas.filter((_, i) => i !== index);
     setPiezas(nuevasPiezas);
+    console.log("Eliminar pieza en el índice:", index);
   };
 
   return (
-    <Container>
+    <FormContainer>
       <Header>
         <h2>Gestión de Repuestos</h2>
-        {/* Botón para abrir la ventana modal */}
         <Button onClick={() => setIsModalOpen(true)}>Registrar Repuesto</Button>
       </Header>
 
-      {/* Ventana modal para registrar repuestos */}
       {isModalOpen && (
         <ModalOverlay>
           <ModalContent>
@@ -105,6 +127,16 @@ function RegistroRepuesto() {
                 />
               </InputField>
               <InputField>
+                <label>Vehículos Compatibles</label>
+                <input
+                  type="text"
+                  value={vehiculosCompatibles}
+                  onChange={(e) => setVehiculosCompatibles(e.target.value)}
+                  placeholder="Marca, modelo, año"
+                  required
+                />
+              </InputField>
+              <InputField>
                 <label>Descripción</label>
                 <textarea
                   value={descripcion}
@@ -113,23 +145,29 @@ function RegistroRepuesto() {
                 />
               </InputField>
               <InputField>
-                <label>Vehículos Compatibles</label>
-                <input
-                  type="text"
-                  value={vehiculosCompatibles}
-                  onChange={(e) => setVehiculosCompatibles(e.target.value)}
-                />
+                <label>Foto</label>
+                <div
+                  {...getRootProps()}
+                  style={{
+                    border: "2px dashed #cccccc",
+                    padding: "20px",
+                    textAlign: "center",
+                  }}
+                >
+                  <input {...getInputProps()} />
+                  <p>
+                    Arrastra y suelta una imagen aquí, o haz clic para
+                    seleccionar una
+                  </p>
+                  {foto && (
+                    <img
+                      src={URL.createObjectURL(foto)}
+                      alt="Vista previa"
+                      style={{ width: "50px", height: "50px" }}
+                    />
+                  )}
+                </div>
               </InputField>
-              <Dropzone {...getRootProps()}>
-                <input {...getInputProps()} />
-                <p>Arrastra la imagen aquí o haz clic para seleccionarla</p>
-              </Dropzone>
-              {foto && (
-                <PreviewImage
-                  src={URL.createObjectURL(foto)}
-                  alt="Vista previa"
-                />
-              )}
               <ActionButtons>
                 <SubmitButton type="submit">Registrar</SubmitButton>
                 <CloseButton onClick={() => setIsModalOpen(false)}>
@@ -141,73 +179,92 @@ function RegistroRepuesto() {
         </ModalOverlay>
       )}
 
-      {/* Ventana modal para editar repuestos */}
-
-      <Header>
-        <h2>Edicion de Repuestos</h2>
-      </Header>
-
       {isModalOpen2 && (
         <ModalOverlay>
           <ModalContent>
-            <h3>Registrar Nuevo Repuesto</h3>
-            <Form onSubmit={handleSubmit}>
+            <h3>Visualizar Repuesto</h3>
+            <Form>
+              <InputField>
+                <label>Nombre</label>
+                <input type="text" value={nombre} readOnly />
+              </InputField>
+              <InputField>
+                <label>Precio</label>
+                <input type="number" value={precio} readOnly />
+              </InputField>
+              <InputField>
+                <label>Cantidad</label>
+                <input type="number" value={cantidad} readOnly />
+              </InputField>
+              <InputField>
+                <label>Vehículos Compatibles</label>
+                <input type="text" value={vehiculosCompatibles} readOnly />
+              </InputField>
+              <InputField>
+                <label>Descripción</label>
+                <textarea value={descripcion} readOnly />
+              </InputField>
+              <InputField>
+                <label>Foto</label>
+                {foto && (
+                  <img
+                    src={URL.createObjectURL(foto)}
+                    alt="Vista previa"
+                    style={{ width: "50px", height: "50px" }}
+                  />
+                )}
+              </InputField>
+              <ActionButtons>
+                <CloseButton onClick={() => setIsModalOpen2(false)}>
+                  Cerrar
+                </CloseButton>
+              </ActionButtons>
+            </Form>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+      {isModalOpen3 && (
+        <ModalOverlay>
+          <ModalContent>
+            <h3>Modificar Repuesto</h3>
+            <Form onSubmit={updatesumit}>
               <InputField>
                 <label>Nombre</label>
                 <input
                   type="text"
                   value={nombre}
                   onChange={(e) => setNombre(e.target.value)}
-                  required
                 />
               </InputField>
               <InputField>
                 <label>Precio</label>
-                <input
-                  type="number"
-                  value={precio}
-                  onChange={(e) => setPrecio(e.target.value)}
-                  required
-                />
+                <input type="number" value={precio} readOnly />
               </InputField>
               <InputField>
                 <label>Cantidad</label>
-                <input
-                  type="number"
-                  value={cantidad}
-                  onChange={(e) => setCantidad(e.target.value)}
-                  required
-                />
-              </InputField>
-              <InputField>
-                <label>Descripción</label>
-                <textarea
-                  value={descripcion}
-                  onChange={(e) => setDescripcion(e.target.value)}
-                  required
-                />
+                <input type="number" value={cantidad} readOnly />
               </InputField>
               <InputField>
                 <label>Vehículos Compatibles</label>
-                <input
-                  type="text"
-                  value={vehiculosCompatibles}
-                  onChange={(e) => setVehiculosCompatibles(e.target.value)}
-                />
+                <input type="text" value={vehiculosCompatibles} readOnly />
               </InputField>
-              <Dropzone {...getRootProps()}>
-                <input {...getInputProps()} />
-                <p>Arrastra la imagen aquí o haz clic para seleccionarla</p>
-              </Dropzone>
-              {foto && (
-                <PreviewImage
-                  src={URL.createObjectURL(foto)}
-                  alt="Vista previa"
-                />
-              )}
+              <InputField>
+                <label>Descripción</label>
+                <textarea value={descripcion} readOnly />
+              </InputField>
+              <InputField>
+                <label>Foto</label>
+                {foto && (
+                  <img
+                    src={URL.createObjectURL(foto)}
+                    alt="Vista previa"
+                    style={{ width: "50px", height: "50px" }}
+                  />
+                )}
+              </InputField>
               <ActionButtons>
                 <SubmitButton type="submit">Registrar</SubmitButton>
-                <CloseButton onClick={() => setIsModalOpen(false)}>
+                <CloseButton onClick={() => setIsModalOpen3(false)}>
                   Cerrar
                 </CloseButton>
               </ActionButtons>
@@ -216,7 +273,6 @@ function RegistroRepuesto() {
         </ModalOverlay>
       )}
 
-      {/* Tabla para mostrar los repuestos */}
       <TableContainer>
         <Table>
           <thead>
@@ -234,43 +290,35 @@ function RegistroRepuesto() {
                 <td>₡{pieza.precio.toFixed(2)}</td>
                 <td>{pieza.cantidad}</td>
                 <td>
-                  <Actions>
-                    {/* Botones de acciones: editar, visualizar y eliminar */}
-                    <ActionButton onClick={() => setIsModalOpen2(true)}>
+                  <ActionsCell>
+                    <EditButton onClick={() => handleEdit(index)}>
                       <FaEdit />
-                    </ActionButton>
-                    <ActionButton onClick={() => setIsModalOpen2(true)}>
+                    </EditButton>
+                    <ViewButton onClick={() => handleView(index)}>
                       <FaEye />
-                    </ActionButton>
-                    <ActionButton onClick={() => handleDelete(index)}>
+                    </ViewButton>
+                    <DeleteButton onClick={() => handleDelete(index)}>
                       <FaTrashAlt />
-                    </ActionButton>
-                  </Actions>
+                    </DeleteButton>
+                  </ActionsCell>
                 </td>
               </tr>
             ))}
           </tbody>
         </Table>
       </TableContainer>
-    </Container>
+    </FormContainer>
   );
 }
 
-export default RegistroRepuesto;
-
-// Estilos
-const Container = styled.div`
-  height: 100vh; /* Ocupa toda la pantalla */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
+const FormContainer = styled.div`
+  height: 100vh;
+  width: 100vw;
   padding: 20px;
-  background-color: #f8f9fa;
+  box-sizing: border-box;
 `;
 
 const Header = styled.div`
-  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -283,7 +331,6 @@ const Button = styled.button`
   color: white;
   border: none;
   border-radius: 4px;
-  font-size: 16px;
   cursor: pointer;
 
   &:hover {
@@ -291,111 +338,8 @@ const Button = styled.button`
   }
 `;
 
-const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-`;
-
-const ModalContent = styled.div`
-  background-color: white;
-  padding: 20px;
-  width: 400px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 1001;
-  h3 {
-    margin-bottom: 15px;
-  }
-`;
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-`;
-
 const InputField = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-
-  label {
-    font-weight: bold;
-  }
-
-  input,
-  textarea {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-  }
-
-  textarea {
-    resize: vertical;
-  }
-`;
-
-const Dropzone = styled.div`
-  border: 2px dashed #ccc;
-  border-radius: 8px;
-  padding: 20px;
-  text-align: center;
-  color: #555;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #f1f1f1;
-  }
-`;
-
-const PreviewImage = styled.img`
-  margin-top: 10px;
-  max-width: 100px;
-  max-height: 100px;
-  object-fit: cover;
-  border-radius: 8px;
-`;
-
-const ActionButtons = styled.div`
-  display: flex;
-  gap: 10px;
-`;
-
-const SubmitButton = styled.button`
-  padding: 10px 15px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #218838;
-  }
-`;
-
-const CloseButton = styled.button`
-  padding: 10px 15px;
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #c82333;
-  }
+  margin-bottom: 15px;
 `;
 
 const TableContainer = styled.div`
@@ -430,12 +374,12 @@ const Table = styled.table`
   }
 `;
 
-const Actions = styled.div`
+const ActionsCell = styled.div`
   display: flex;
   gap: 10px;
 `;
 
-const ActionButton = styled.button`
+const EditButton = styled.button`
   background-color: transparent;
   border: none;
   cursor: pointer;
@@ -445,3 +389,89 @@ const ActionButton = styled.button`
     color: #007bff;
   }
 `;
+
+const ViewButton = styled.button`
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #555;
+
+  &:hover {
+    color: #007bff;
+  }
+`;
+
+const DeleteButton = styled.button`
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #555;
+
+  &:hover {
+    color: #ff0000;
+  }
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+const ModalContent = styled.div`
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 500px;
+  max-width: 90%;
+  z-index: 1001;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+`;
+
+const ActionButtons = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+`;
+
+const SubmitButton = styled.button`
+  padding: 10px 15px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #218838;
+  }
+`;
+
+const CloseButton = styled.button`
+  padding: 10px 15px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #c82333;
+  }
+`;
+
+export default RegistroRepuesto;
