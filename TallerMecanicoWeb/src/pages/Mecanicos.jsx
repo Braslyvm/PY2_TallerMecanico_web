@@ -39,7 +39,7 @@ function Mecanicos() {
   const AlertAviso = (text1) => {
     Swal.fire({
       text: text1,  
-      imageUrl: 'https://cdn2.iconfinder.com/data/icons/ecommerce-line-pack/40/Marketing-512.png', 
+      imageUrl: 'https://cdn0.iconfinder.com/data/icons/user-interface-2063/24/UI_Essential_icon_expanded-76-512.pngg', 
       imageWidth: 100,
       imageHeight: 100,
       imageAlt: 'aviso',

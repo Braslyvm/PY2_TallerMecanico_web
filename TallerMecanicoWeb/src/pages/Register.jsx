@@ -9,8 +9,8 @@ import Box from '@mui/material/Box';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
+import axios from "axios";
+import Swal from 'sweetalert2';
 
 export default function Registro() {
   const [email, setEmail] = useState('');
@@ -18,19 +18,33 @@ export default function Registro() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (email && password) {
-      firebase.auth().createUserWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-          navigate('/logeo'); 
-        })
-        .catch((error) => {
-          setError(error);
+
+  const AlertAviso = (text1) => {
+        Swal.fire({
+          text: text1,  
+          imageUrl: 'https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-alert-512.png', 
+          imageWidth: 100,
+          imageHeight: 100,
+          imageAlt: 'aviso',
+          confirmButtonText: 'Aceptar'
         });
-    } else {
-      setError(error);
+      };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!email || !password) {
+      AlertAviso("Por favor, completa todos los campos.");
+      return;
     }
+    const nuevoUsuario = { email, password };
+    axios
+      .post("http://localhost:3001/api/login", nuevoUsuario) 
+      .then((response) => {
+        navigate('/Login');
+      })
+      .catch((error) => {
+        AlertAviso("Error, Usuario ya registrado.");
+      });
   };
 
   return (

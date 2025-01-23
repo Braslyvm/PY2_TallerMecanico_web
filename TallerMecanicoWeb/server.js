@@ -198,6 +198,7 @@ app.post('/api/reparaciones', (req, res) => {
     });
 });
 
+// Agregar un repuesto a una reparación
 app.post('/api/mecanico/delete', (req, res) => {
     const { cedula } = req.body;
     db.run('DELETE FROM mecanicos WHERE cedula = ?', [cedula], function (err) {
@@ -208,6 +209,36 @@ app.post('/api/mecanico/delete', (req, res) => {
         res.status(200).json({ message: 'Mecánico eliminado exitosamente.' });
     });
 });
+
+// Agregar una reparación
+app.post('/api/login', (req, res) => {
+    const { email, password } = req.body;
+    db.run('INSERT INTO Login (usuario, contraseña) VALUES (?, ?)', 
+    [email, password], function (err) {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.status(201).json({ id_reparacion: this.lastID });
+    });
+});
+
+
+app.get('/api/login/:usuario', (req, res) => {
+    const { usuario } = req.params;
+    db.get('SELECT contraseña FROM Login WHERE usuario = ?', [usuario], (err, row) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        if (!row) {
+            res.status(404).json({ message: 'Usuario no encontrado' });
+            return;
+        }
+        res.json({ contraseña: row.contraseña });
+    });
+});
+
 
 
 

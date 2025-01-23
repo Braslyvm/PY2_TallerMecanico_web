@@ -64,7 +64,10 @@ CREATE TABLE repuestos_reparacion (
 
 
 
-create 
+Create table Login(
+    usuario TEXT PRIMARY KEY NOT NULL,
+    contraseña TEXT NOT NULL
+);
 
 
 
