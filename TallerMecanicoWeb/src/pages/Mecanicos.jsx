@@ -35,6 +35,7 @@ function Mecanicos() {
     });
   };
 
+  //Alertas de eliminacion de mecanicos
   const AlertAviso = (text1) => {
     Swal.fire({
       text: text1,  
