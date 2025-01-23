@@ -14,7 +14,7 @@ function Mecanicos() {
   const [edad, setEdad] = useState("");
   const [data, setData] = useState([]);
 
-  //Alertas
+  //Alertas de registro de mecanicos 
   const AlertRegiter = () => {
     Swal.fire({
       title: '¡Alerta!',
@@ -23,14 +23,26 @@ function Mecanicos() {
       confirmButtonText: 'Aceptar'
     });
   };
-
+  //Alertas de eliminacion de mecanicos
   const AlertDelete = () => {
     Swal.fire({
       text: 'Mecanico eliminado correctamente!.',  
-      imageUrl: 'https://cdn1.iconfinder.com/data/icons/ionicons-outline-vol-2/512/trash-bin-outline-512.png', // URL válida de un icono de basurero// URL de la imagen de un basurero
+      imageUrl: 'https://cdn1.iconfinder.com/data/icons/ionicons-outline-vol-2/512/trash-bin-outline-512.png', 
       imageWidth: 100,
       imageHeight: 100,
       imageAlt: 'Basurero',
+      confirmButtonText: 'Aceptar'
+    });
+  };
+
+  //Alertas de eliminacion de mecanicos
+  const AlertAviso = (text1) => {
+    Swal.fire({
+      text: text1,  
+      imageUrl: 'https://cdn0.iconfinder.com/data/icons/user-interface-2063/24/UI_Essential_icon_expanded-76-512.pngg', 
+      imageWidth: 100,
+      imageHeight: 100,
+      imageAlt: 'aviso',
       confirmButtonText: 'Aceptar'
     });
   };
@@ -40,25 +52,27 @@ function Mecanicos() {
       .get("http://localhost:3001/api/mecanicos") 
       .then((response) => {
         setData(response.data); 
-        console.log(response.data); 
+        if (response.data.length === 0) {
+          AlertAviso('No hay mecanicos registrados');
+        }
       })
       .catch((error) => {
-        console.error("Error al obtener los datos:", error);
+        AlertAviso(error)
       });
   };
 
   useEffect(() => {
     getMecanicos();
   }, []);
-
+  //desplegar modal para agregar un nuevo mecanico
   const handleAddClick = () => {
     setIsModalOpen(true);
   };
-
+  //desplegar modal para ver un mecanico
   const handleViewClick = () => {
     setVerOpen(true);
   };
-
+  //cerrar modal de agregar mecanico
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setNombre("");
@@ -66,18 +80,17 @@ function Mecanicos() {
     setFoto(null);
     setEdad("");
   };
-
+  //cerrar modal de ver mecanico
   const handleViewModal = () => {
     setVerOpen(false);
   };
-
+  // Configuración de Dropzone
   const { getRootProps, getInputProps } = useDropzone({
     accept: "image/*",
     onDrop: (acceptedFiles) => {
       setFoto(URL.createObjectURL(acceptedFiles[0]));
     },
   });
-
   // Agregar un nuevo mecánico
   const setMecanico = () => {
     if (!nombre || !cedula || !edad) {
@@ -96,8 +109,6 @@ function Mecanicos() {
         console.error("Error al agregar mecánico:", error);
       });
   };
-
-
   //Borrar un mecánico
   const deleteMecanico = (cedula) => {
     console.log(cedula);

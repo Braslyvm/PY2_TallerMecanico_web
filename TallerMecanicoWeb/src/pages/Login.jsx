@@ -10,8 +10,8 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
-import { app } from '../DB/Autentificacion'; 
-import firebase from 'firebase/compat/app';
+import axios from "axios";
+import Swal from 'sweetalert2';
 
 export default function Login() {
   const [email, setEmailLocal] = useState('');
@@ -19,20 +19,49 @@ export default function Login() {
   const navigate = useNavigate();
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const AlertAviso = (text1) => {
+      Swal.fire({
+        text: text1,  
+        imageUrl: 'https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-alert-512.png', 
+        imageWidth: 100,
+        imageHeight: 100,
+        imageAlt: 'aviso',
+        confirmButtonText: 'Aceptar'
+      });
+    };
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (email && password) {
-      firebase.auth().signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-          navigate('/');
-        })
-        .catch((error) => {
-          setError(error.message); // Cambié para mostrar el mensaje de error
-        });
-    } else {
-      setError('Por favor, completa todos los campos.'); // Mensaje de error si los campos están vacíos
+    if (!email || !password) {
+      AlertAviso("Por favor, completa todos los campos.");
+      return;
     }
+    const usuario = email;
+    const passwordString = String(password);
+    axios
+      .get(`http://localhost:3001/api/login/${usuario}`)
+      .then((response) => {
+        const data = response.data; 
+        if (!data || data.length === 0) {
+          AlertAviso("Usuario no encontrado.");
+          return;
+        }
+        const storedPassword = data.contraseña; 
+        if (storedPassword !== passwordString) {
+          AlertAviso("Contraseña incorrecta.");
+          return;
+        }
+        navigate('/'); 
+      })
+      .catch((error) => {
+        console.error("Error al iniciar sesión:", error);
+        AlertAviso("Error al iniciar sesión. Verifica tus credenciales.");
+      });
   };
+  
+  
+
+  
 
   return (
     <Box sx={{
@@ -41,7 +70,7 @@ export default function Login() {
       alignItems: 'center',
       justifyContent: 'center',
       height: '100vh',
-      width: '100vw', // Asegúrate de que cubra todo el ancho
+      width: '100vw', 
       backgroundColor: '#ffffff', 
       padding: '0 20px',
     }}>
@@ -53,7 +82,7 @@ export default function Login() {
         {"Iniciar Sesión"}
       </Typography>
       {error && <Typography color="error" variant="body2" sx={{ mt: 2 }}>{error}</Typography>} 
-      <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%', maxWidth: '400px' }}>
+      <Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1, width: '100%', maxWidth: '400px' }}>
         <TextField
           variant="outlined"
           margin="normal"
