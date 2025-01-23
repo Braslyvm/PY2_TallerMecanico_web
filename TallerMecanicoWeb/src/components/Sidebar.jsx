@@ -38,6 +38,12 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
               Registrar repuesto
             </Button>
           }
+          <Button onClick={() => {
+            setSidebarOpen(false); 
+            navigate('/Reparaciones'); 
+          }}>
+            Reparaciones
+          </Button>
           
         </nav>
       )}

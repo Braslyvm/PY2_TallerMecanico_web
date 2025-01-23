@@ -185,11 +185,16 @@ app.post('/api/mecanicos', (req, res) => {
     });
 });
 
-// Agregar una reparación
 app.post('/api/reparaciones', (req, res) => {
-    const { id_vehiculo, id_mecanico, fecha_reparacion, descripcion } = req.body;
-    db.run('INSERT INTO reparaciones (id_vehiculo, id_mecanico, fecha_reparacion, descripcion) VALUES (?, ?, ?, ?)', 
-    [id_vehiculo, id_mecanico, fecha_reparacion, descripcion], function (err) {
+    const { id_vehiculo, id_mecanico, fecha_reparacion, descripcion, estado } = req.body;
+    console.log(req.body);
+    // Validar que los campos requeridos no sean nulos
+    if (!id_vehiculo.le || !id_mecanico) {
+        return res.status(400).json({ error: "Vehículo y mecánico son campos obligatorios." });
+    }
+
+    db.run('INSERT INTO reparaciones (id_vehiculo, id_mecanico, fecha_reparacion, descripcion, estado) VALUES (?, ?, ?, ?, ?)', 
+    [id_vehiculo, id_mecanico, fecha_reparacion, descripcion, estado], function (err) {
         if (err) {
             res.status(500).json({ error: err.message });
             return;
@@ -197,6 +202,8 @@ app.post('/api/reparaciones', (req, res) => {
         res.status(201).json({ id_reparacion: this.lastID });
     });
 });
+
+
 
 app.post('/api/mecanico/delete', (req, res) => {
     const { cedula } = req.body;
@@ -209,6 +216,20 @@ app.post('/api/mecanico/delete', (req, res) => {
     });
 });
 
+app.post('/api/reparaciones/delete', (req, res) => {
+    const { id } = req.body;
+    db.run('DELETE FROM reparaciones WHERE id = ?', [id], function (err) {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        if (this.changes === 0) {
+            res.status(404).json({ message: 'Reparación no encontrada.' });
+            return;
+        }
+        res.status(200).json({ message: 'Reparación eliminada exitosamente.' });
+    });
+});
 
 
 app.listen(3001, () => {
