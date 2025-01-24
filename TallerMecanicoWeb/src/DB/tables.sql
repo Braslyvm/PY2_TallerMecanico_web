@@ -40,8 +40,7 @@ CREATE TABLE repuestos (
     id_repuesto INTEGER PRIMARY KEY AUTOINCREMENT,
     id_marca INTEGER NOT NULL,
     precio REAL NOT NULL,
-    cantidad INTEGER NOT NULL,
-    vehiculos_compatibles TEXT NOT NULL, -- Puedes almacenar los IDs de vehículos compatibles separados por coma
+    cantidad INTEGER NOT NULL,-- Puedes almacenar los IDs de vehículos compatibles separados por coma
     foto BLOB,
     descripcion TEXT,
     FOREIGN KEY (id_marca) REFERENCES marcas(id_marca)
