@@ -40,18 +40,25 @@ CREATE TABLE repuestos (
     id_repuesto INTEGER PRIMARY KEY AUTOINCREMENT,
     id_marca INTEGER NOT NULL,
     precio REAL NOT NULL,
-    cantidad INTEGER NOT NULL,-- Puedes almacenar los IDs de vehículos compatibles separados por coma
+    cantidad INTEGER NOT NULL,
     foto BLOB,
     descripcion TEXT,
     FOREIGN KEY (id_marca) REFERENCES marcas(id_marca)
 );
 
-INSERT INTO repuestos (id_marca, precio, cantidad, vehiculos_compatibles, foto, descripcion) 
+
+INSERT INTO repuestos (id_marca, precio, cantidad, foto, descripcion) 
 VALUES 
-(1, 150.75, 10, '1,2', NULL, 'Filtro de aire para vehículos Toyota y Honda'),
-(2, 200.50, 5, '2,3', NULL, 'Bujías para vehículos Honda y Ford'),
-(3, 300.00, 2, '3,4', NULL, 'Amortiguadores para vehículos Ford y Chevrolet'),
-(4, 120.00, 8, '1,4', NULL, 'Aceite para vehículos Toyota y Chevrolet');
+(1, 150.75, 10, NULL, 'Filtro de aire'),
+(2, 200.50, 5, NULL, 'Bujías'),
+(3, 300.00, 2, NULL, 'Amortiguadores'),
+(4, 120.00, 8, NULL, 'Aceite de motor'),
+(1, 50.25, 15, NULL, 'Filtro de aceite'),
+(2, 80.00, 7, NULL, 'Pastillas de freno'),
+(3, 400.00, 3, NULL, 'Llantas'),
+(4, 150.00, 6, NULL, 'Batería'),
+(1, 100.00, 12, NULL, 'Lámparas'),
+(2, 75.00, 9, NULL, 'Limpiaparabrisas');
 
 
 -- Tabla de Mecanicos

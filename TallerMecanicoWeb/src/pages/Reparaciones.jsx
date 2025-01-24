@@ -16,7 +16,9 @@ function Reparaciones() {
   const [estado, setEstado] = useState("Pendiente");
   const [repuestos, setRepuestos] = useState([]);
   const [selectedRepuestos, setSelectedRepuestos] = useState([]);
-  const [selectedReparacion, setSelectedReparacion] = useState(null);
+  const [selectedReparacion, setSelectedReparacion] = useState(null); //ID de la reparacion
+  const [selectedRepuesto, setSelectedRepuesto] = useState(null); //ID del repuesto
+  const [cantidad, setCantidad] = useState(1);
   const [data, setData] = useState([]);
 
   // Obtener datos iniciales
@@ -73,7 +75,25 @@ function Reparaciones() {
 
   const handleManageRepuestos = (reparacion) => {
     setSelectedReparacion(reparacion);
+    getRepuestosReparacion(reparacion);
     setIsRepuestosModalOpen(true);
+  };
+
+  const getRepuestosReparacion = (id) => {
+    axios
+      .get(`http://localhost:3001/api/repuestos_reparacion/${id}`)
+      .then((response) => {
+        searchRepuestos(response.data.map((r) => r.id_repuesto));
+      })
+      .catch((error) => console.error("Error al obtener repuestos de la reparación:", error));
+  };
+
+  const searchRepuestos = (repuestosRep) => {
+    for(let i = 0; i < repuestos.length; i++) {
+      if(repuestosRep.includes(repuestos[i].id_repuesto)) {
+        setSelectedRepuestos([...selectedRepuestos, repuestos[i]]);
+      }
+    }
   };
 
   const setReparacion = () => {
@@ -107,28 +127,63 @@ function Reparaciones() {
 
 
 
-
   const deleteReparacion = (id) => {
     axios
-      .delete(`http://localhost:3001/api/reparaciones/${id}`)
+      .post(`http://localhost:3001/api/reparaciones/delete`, { id })
       .then(() => {
-        Swal.fire("Eliminado", "Reparación eliminada correctamente.", "success");
+        Swal.fire({text: "Reparación eliminada correctamente.", imageUrl: 'https://cdn1.iconfinder.com/data/icons/ionicons-outline-vol-2/512/trash-bin-outline-512.png', 
+          imageWidth: 100,
+          imageHeight: 100,
+          imageAlt: 'Basurero',
+          confirmButtonText: 'Aceptar'});
         getReparaciones();
       })
       .catch((error) => console.error("Error al eliminar reparación:", error));
   };
 
-  const saveRepuestos = () => {
+  const saveRepuesto = () => {
+    if (!selectedRepuesto) {
+      Swal.fire("Error", "Debe seleccionar un repuesto.", "error");
+      return;
+    }
+
+    console.log({
+      id_repuesto: selectedRepuesto, 
+      id_reparacion: selectedReparacion, 
+      cantidad: cantidad
+    });
+
     axios
-      .post(`http://localhost:3001/api/reparaciones/${selectedReparacion.id}/repuestos`, {
-        repuestos: selectedRepuestos,
+      .post("http://localhost:3001/api/repuestos_reparacion", {
+        id_reparacion: selectedReparacion,
+        id_repuesto: selectedRepuesto,
+        cantidad_utilizada:cantidad,
       })
       .then(() => {
-        Swal.fire("¡Éxito!", "Repuestos añadidos a la reparación.", "success");
+        Swal.fire("¡Éxito!", "Repuesto añadido a la reparación.", "success");
         handleCloseRepuestosModal();
       })
-      .catch((error) => console.error("Error al guardar repuestos:", error));
+      .catch((error) => {
+        console.error("Error al guardar repuesto:", error);
+      });
   };
+
+  
+  const buscarPlacaVehiculo = (id) => {
+    for (let i = 0; i < vehiculos.length; i++) {
+      if (vehiculos[i].id_vehiculo === id) {
+        return vehiculos[i].placa;
+      }
+    }
+  }
+
+  const buscarNombreMecanico = (cedula) => {
+    for (let i = 0; i < mecanicos.length; i++) {
+      if (mecanicos[i].cedula === cedula) {
+        return mecanicos[i].nombre;
+      }
+    }
+  }
 
   return (
     <Container>
@@ -141,9 +196,9 @@ function Reparaciones() {
       <Table>
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Vehículo</th>
-            <th>Mecánico</th>
+            <th>ID de reparación</th>
+            <th>Placa de vehículo</th>
+            <th>Nombre de mecánico</th>
             <th>Fecha</th>
             <th>Descripción</th>
             <th>Estado</th>
@@ -151,20 +206,20 @@ function Reparaciones() {
           </tr>
         </thead>
         <tbody>
-          {data.map((reparacion) => (
+          {data.map((reparacion, index) => (
             <tr key={reparacion.id_reparacion}>
               <td>{reparacion.id_reparacion}</td>
-              <td>{reparacion.id_vehiculo}</td>
-              <td>{reparacion.id_mecanico}</td>
+              <td>{buscarPlacaVehiculo(reparacion.id_vehiculo)}</td>
+              <td>{buscarNombreMecanico(reparacion.id_mecanico)}</td>
               <td>{reparacion.fecha_reparacion}</td>
               <td>{reparacion.descripcion}</td>
               <td>{reparacion.estado}</td>
               <td>
                 <ActionsCell>
-                  <DeleteButton onClick={() => deleteReparacion(reparacion.id)}>
+                  <DeleteButton onClick={() => deleteReparacion(reparacion.id_reparacion)}>
                     <FaTrashAlt />
                   </DeleteButton>
-                  <ManageButton onClick={() => handleManageRepuestos(reparacion)}>
+                  <ManageButton onClick={() => handleManageRepuestos(reparacion.id_reparacion)}>
                     <FaWrench />
                   </ManageButton>
                 </ActionsCell>
@@ -233,34 +288,63 @@ function Reparaciones() {
         </ModalOverlay>
       )}
       {isRepuestosModalOpen && (
-        <ModalOverlay>
-          <ModalContent>
-            <h3>Gestionar Repuestos</h3>
-            <Form>
-              <label>
-                Repuestos:
-                <select
-                  multiple
-                  value={selectedRepuestos}
-                  onChange={(e) =>
-                    setSelectedRepuestos([...e.target.selectedOptions].map((o) => o.value))
-                  }
-                >
-                  {repuestos.map((repuesto) => (
-                    <option key={repuesto.id} value={repuesto.id}>
-                      {repuesto.nombre}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <ActionButtons>
-                <SaveButton onClick={saveRepuestos}>Guardar</SaveButton>
-                <CloseButton onClick={handleCloseRepuestosModal}>Cerrar</CloseButton>
-              </ActionButtons>
-            </Form>
-          </ModalContent>
-        </ModalOverlay>
-      )}
+      <ModalOverlay>
+        <ModalContent>
+          <h3>Gestionar Repuestos</h3>
+          <Form>
+            <label>
+              Repuestos:
+              <select
+                value={selectedRepuesto || ""}
+                onChange={(e) => setSelectedRepuesto(e.target.value)}
+              >
+                <option value="">Seleccione un repuesto</option>
+                {repuestos.map((repuesto) => (
+                  <option key={repuesto.id} value={repuesto.id_repuesto}>
+                    {repuesto.descripcion} - ¢{repuesto.precio}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Cantidad:
+              <input
+                type="number"
+                min="1"
+                value={cantidad}
+                onChange={(e) => setCantidad(e.target.value)}
+              />
+            </label>
+            <ActionButtons>
+              <SaveButton onClick={saveRepuesto}>Guardar</SaveButton>
+              <CloseButton onClick={handleCloseRepuestosModal}>Cerrar</CloseButton>
+            </ActionButtons>
+          </Form>
+
+          <h4>Repuestos seleccionados:</h4>
+          <Table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Cantidad</th>
+              </tr>
+            </thead>
+            <tbody>
+              {selectedRepuestos.map((repuesto, index) => (
+                <tr key={index}>
+                  <td>{repuesto.id_repuesto}</td>
+                  <td>{repuesto.descripcion}</td>
+                  <td>{repuesto.precio}</td>
+                  <td>{repuesto.cantidad}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </ModalContent>
+      </ModalOverlay>
+    )}
     </Container>
   );
 }
@@ -363,8 +447,8 @@ const ModalOverlay = styled.div`
 `;
 
 const ModalContent = styled.div`
-  background-color: #ffffff; /* Fondo del modal */
-  color: #27374d; /* Texto del modal */
+  background-color: #ffffff;
+  color: #27374d;
   padding: 20px;
   border-radius: 10px;
   width: 400px;
@@ -384,7 +468,7 @@ const Form = styled.div`
     font-size: 14px;
     color: #526d82;
 
-    input, textarea, select {
+    input, select {
       width: 100%;
       padding: 8px;
       border: 1px solid #9db2bf;
@@ -400,7 +484,7 @@ const ActionButtons = styled.div`
 `;
 
 const SaveButton = styled.button`
-  background-color: #526d82; /* Botón guardar */
+  background-color: #526d82;
   color: #dde6ed;
   border: none;
   padding: 10px 15px;
@@ -408,12 +492,12 @@ const SaveButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: #27374d; /* Hover del botón guardar */
+    background-color: #27374d;
   }
 `;
 
 const CloseButton = styled.button`
-  background-color: #d9534f; /* Botón cerrar */
+  background-color: #d9534f;
   color: #ffffff;
   border: none;
   padding: 10px 15px;
@@ -421,7 +505,7 @@ const CloseButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: #c9302c; /* Hover del botón cerrar */
+    background-color: #c9302c;
   }
 `;
 

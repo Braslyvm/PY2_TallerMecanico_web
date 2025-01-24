@@ -74,6 +74,19 @@ app.get('/api/repuestos_reparacion', (req, res) => {
     });
 });
 
+// Rutas para obtener los repuestos asociados a una reparación
+app.get('/api/repuestos_reparacion/:id', (req, res) => {
+    const { id } = req.params;
+
+    db.all('SELECT * FROM repuestos_reparacion WHERE id_reparacion=?', [id], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(rows);
+    });
+});
+
 
 // Obtener un vehículo por ID
 app.get('/api/vehiculos/:id', (req, res) => {
@@ -202,6 +215,35 @@ app.post('/api/reparaciones', (req, res) => {
         res.status(201).json({ id_reparacion: this.lastID });
     });
 });
+
+// Agregar un repuesto a una reparación
+
+app.post('/api/repuestos_reparacion', (req, res) => {
+    const { id_reparacion, id_repuesto, cantidad_utilizada } = req.body;
+
+    // Validar que los campos requeridos estén presentes
+    if (!id_reparacion || !id_repuesto || !cantidad_utilizada) {
+        return res.status(400).json({ error: "Todos los campos son obligatorios: id_reparacion, id_repuesto, cantidad_utilizada" });
+    }
+
+    const sql = `
+        INSERT INTO repuestos_reparacion (id_reparacion, id_repuesto, cantidad_utilizada)
+        VALUES (?, ?, ?)
+    `;
+
+    const params = [id_reparacion, id_repuesto, cantidad_utilizada];
+
+    db.run(sql, params, function (err) {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.status(201).json({
+            message: "Repuesto asignado a la reparación con éxito",
+            id: this.lastID // Retorna el ID generado en caso de ser necesario
+        });
+    });
+});
+
 
 
 
