@@ -134,10 +134,10 @@ function Mecanicos() {
       <TableContainer>
       <Table>
       <colgroup>
-        <col style={{ width: '20%' }} /> {/* Cédula */}
-        <col style={{ width: '40%' }} /> {/* Nombre Completo */}
-        <col style={{ width: '20%' }} /> {/* Edad */}
-        <col style={{ width: '20%' }} /> {/* Acciones */}
+        <col style={{ width: '20%' }} />
+        <col style={{ width: '40%' }} /> 
+        <col style={{ width: '20%' }} /> 
+        <col style={{ width: '20%' }} /> 
       </colgroup>
       <thead>
         <tr>
