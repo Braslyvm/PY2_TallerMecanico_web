@@ -13,6 +13,7 @@ function Mecanicos() {
   const [foto, setFoto] = useState(null);
   const [edad, setEdad] = useState("");
   const [data, setData] = useState([]);
+  const [selectedMecanico, setSelectedMecanico] = useState(null);
 
   //Alertas de registro de mecanicos 
   const AlertRegiter = () => {
@@ -70,9 +71,11 @@ function Mecanicos() {
     setIsModalOpen(true);
   };
   //desplegar modal para ver un mecanico
-  const handleViewClick = () => {
+  const handleViewClick = (cedula, nombre, edad, foto) => {
+    setSelectedMecanico({ cedula, nombre, edad, foto });
     setVerOpen(true);
   };
+
   //cerrar modal de agregar mecanico
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -84,13 +87,28 @@ function Mecanicos() {
   //cerrar modal de ver mecanico
   const handleViewModal = () => {
     setVerOpen(false);
+    setSelectedMecanico(null);
   };
   // Configuración de Dropzone
+  const onDrop = (acceptedFiles) => {
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const file = acceptedFiles[0];
+
+    if (file && validTypes.includes(file.type)) {
+      setFoto(URL.createObjectURL(file));
+    } else {
+      alert('Por favor, selecciona un archivo de imagen válido.');
+    }
+  };
+
   const { getRootProps, getInputProps } = useDropzone({
-    accept: "image/*",
-    onDrop: (acceptedFiles) => {
-      setFoto(URL.createObjectURL(acceptedFiles[0]));
+    accept: {
+      'image/jpeg': ['.jpeg', '.jpg'],
+      'image/png': ['.png'],
+      'image/gif': ['.gif'],
+      'image/webp': ['.webp'],
     },
+    onDrop,
   });
   // Agregar un nuevo mecánico
   const setMecanico = () => {
@@ -158,7 +176,7 @@ function Mecanicos() {
                 <td style={{ width: '25%' }}>{persona.edad}</td>
                 <td style={{ width: '15%' }}>
                   <ActionsCell>
-                    <ViewButton onClick={handleViewClick}>
+                    <ViewButton onClick={() => handleViewClick(persona.cedula, persona.nombre, persona.edad, persona.foto)}>
                       <FaEye />
                     </ViewButton>
                     <DeleteButton onClick={() => deleteMecanico(persona.cedula)}>
@@ -172,7 +190,7 @@ function Mecanicos() {
         </Table>
       </TableBodyContainer>
     </TableContainer>
-     {isModalOpen && (
+    {isModalOpen && (
         <ModalOverlay>
           <ModalContent>
             <h3>Agregar Mecánico</h3>
@@ -213,56 +231,29 @@ function Mecanicos() {
               </FormFields>
             </FormContainer>
             <ActionButtons>
-              <SaveButton  onClick={setMecanico}>Guardar</SaveButton>
+              <SaveButton onClick={setMecanico}>Guardar</SaveButton>
               <CloseButton style={{ backgroundColor: 'rgb(200, 16, 16)' }} onClick={handleCloseModal}>Cerrar</CloseButton>
             </ActionButtons>
           </ModalContent>
         </ModalOverlay>
       )}
-      {verOpen && (
+      {verOpen && selectedMecanico && (
         <ModalOverlay>
-          <ModalContent>
-            <h3>Agregar Mecánico</h3>
+          <ModalContent style={{ width: '400pX'}}>
+            <h3>Detalles del Mecánico</h3>
             <FormContainer>
-              <PhotoInputContainer {...getRootProps()}>
-                <input {...getInputProps()} />
-                {foto ? (
-                  <PreviewImage src={foto} alt="Vista previa" />
-                ) : (
-                  <div className="upload-box">Arrastra o selecciona una foto</div>
-                )}
-              </PhotoInputContainer>
+              <PhotoviewContainer> 
+              <img src={selectedMecanico.foto} alt="Foto del mecánico" style={{ maxWidth: '100px', borderRadius: '8px' }} />
+              </PhotoviewContainer>
               <FormFields>
-                <label>
-                  Nombre:
-                  <input
-                    type="text"
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
-                  />
-                </label>
-                <label>
-                  Cédula:
-                  <input
-                    type="text"
-                    value={cedula}
-                    onChange={(e) => setCedula(e.target.value)}
-                  />
-                </label>
-                <label>
-                  Edad:
-                  <input
-                    type="number"
-                    value={edad}
-                    onChange={(e) => setEdad(e.target.value)}
-                  />
-                </label>
+                <p><strong>Nombre:</strong> {selectedMecanico.nombre}</p>
+                <p><strong>Cédula:</strong> {selectedMecanico.cedula}</p>
+                <p><strong>Edad:</strong> {selectedMecanico.edad}</p>
               </FormFields>
             </FormContainer>
-            <ActionButtons>
-              <SaveButton  onClick={setMecanico}>Guardar</SaveButton>
-              <CloseButton style={{ backgroundColor: 'rgb(200, 16, 16)' }} onClick={handleViewModal}>Cerrar</CloseButton>
-            </ActionButtons>
+            <ActionButtons style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <CloseButton onClick={handleViewModal}>Cerrar</CloseButton>
+              </ActionButtons>
           </ModalContent>
         </ModalOverlay>
       )}
@@ -450,6 +441,17 @@ const PhotoInputContainer = styled.div`
     font-size: 16px;
     font-weight: bold;
   }
+`;
+
+const PhotoviewContainer = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  cursor: pointer;
+  text-align: center;
 `;
 
 const PreviewImage = styled.img`
