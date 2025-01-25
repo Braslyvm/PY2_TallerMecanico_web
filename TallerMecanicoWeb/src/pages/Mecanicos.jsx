@@ -37,9 +37,10 @@ function Mecanicos() {
 
   //Alertas de eliminacion de mecanicos
   const AlertAviso = (text1) => {
+    console.log(text1);
     Swal.fire({
       text: text1,  
-      imageUrl: 'https://cdn0.iconfinder.com/data/icons/user-interface-2063/24/UI_Essential_icon_expanded-76-512.pngg', 
+      imageUrl: 'https://cdn0.iconfinder.com/data/icons/user-interface-2063/24/UI_Essential_icon_expanded-76-512.png', 
       imageWidth: 100,
       imageHeight: 100,
       imageAlt: 'aviso',
@@ -94,7 +95,7 @@ function Mecanicos() {
   // Agregar un nuevo mecánico
   const setMecanico = () => {
     if (!nombre || !cedula || !edad) {
-      alert("Por favor, completa todos los campos.");
+      AlertAviso("Por favor, completa todos los campos.");
       return;
     }
     const nuevoMecanico = { nombre, cedula, edad, foto };
@@ -106,12 +107,11 @@ function Mecanicos() {
         handleCloseModal();
       })
       .catch((error) => {
-        console.error("Error al agregar mecánico:", error);
+        AlertAviso("Error al agregar mecánico:", error);
       });
   };
   //Borrar un mecánico
   const deleteMecanico = (cedula) => {
-    console.log(cedula);
     axios
       .post("http://localhost:3001/api/mecanico/delete", { cedula }) 
       .then((response) => {
@@ -119,7 +119,7 @@ function Mecanicos() {
         getMecanicos(); 
       })
       .catch((error) => {
-        console.error("Error al eliminar mecánico:", error);
+        AlertAviso("Error al eliminar mecánico:", error);
       });
   }
 
@@ -131,36 +131,48 @@ function Mecanicos() {
           <FaPlus /> Agregar Mecánico
         </AddButton>
       </Header>
+      <TableContainer>
       <Table>
-        <thead>
-          <tr>
-            <th>Cédula</th>
-            <th>Nombre Completo</th>
-            <th>Edad</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((persona, index) => (
-            <tr key={index}>
-              <td>{persona.cedula}</td>
-              <td>{persona.nombre}</td>
-              <td>{persona.edad}</td>
-              <td>
-                <ActionsCell>
-                  <ViewButton onClick={handleViewClick}>
-                    <FaEye />
-                  </ViewButton>
-                  <DeleteButton onClick={() => deleteMecanico(persona.cedula)}>
-                    <FaTrashAlt />
-                  </DeleteButton>
-                </ActionsCell>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+      <colgroup>
+        <col style={{ width: '20%' }} /> {/* Cédula */}
+        <col style={{ width: '40%' }} /> {/* Nombre Completo */}
+        <col style={{ width: '20%' }} /> {/* Edad */}
+        <col style={{ width: '20%' }} /> {/* Acciones */}
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Cédula</th>
+          <th>Nombre Completo</th>
+          <th>Edad</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
       </Table>
-      {isModalOpen && (
+      <TableBodyContainer>
+        <Table>
+          <tbody>
+            {data.map((persona, index) => (
+              <tr key={index}>
+                <td style={{ width: '20%' }}>{persona.cedula}</td>
+                <td style={{ width: '40%' }}>{persona.nombre}</td>
+                <td style={{ width: '25%' }}>{persona.edad}</td>
+                <td style={{ width: '15%' }}>
+                  <ActionsCell>
+                    <ViewButton onClick={handleViewClick}>
+                      <FaEye />
+                    </ViewButton>
+                    <DeleteButton onClick={() => deleteMecanico(persona.cedula)}>
+                      <FaTrashAlt />
+                    </DeleteButton>
+                  </ActionsCell>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </TableBodyContainer>
+    </TableContainer>
+     {isModalOpen && (
         <ModalOverlay>
           <ModalContent>
             <h3>Agregar Mecánico</h3>
@@ -267,9 +279,8 @@ const HomeContainer = styled.div`
   align-items: center; 
   overflow-y: auto;
   justify-content: center;
-  height: 91vh;
+  height: 90vh;
   background-color: #f8f9fa;
-
 `;
 
 const Header = styled.div`
@@ -290,7 +301,7 @@ const AddButton = styled.button`
   display: flex;
   align-items: center;
   padding: 10px 15px;
-  background-color: #28a745;
+  background-color: #526D82;
   color: white;
   border: none;
   border-radius: 4px;
@@ -301,25 +312,32 @@ const AddButton = styled.button`
     margin-right: 5px;
   }
   &:hover {
-    background-color: #218838;
+    background-color:rgb(86, 113, 134);
   }
 `;
 
 const Table = styled.table`
-  width: 600px;-
+  width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
   border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  table-layout: fixed; /* Forzar el ancho de las columnas */
+  
   th, td {
     padding: 12px;
-    text-align: left;
+    text-align: center; /* Centrar el texto */
     border-bottom: 1px solid #dee2e6;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* Evitar que el texto se divida */
   }
+  
   th {
-    background-color: rgb(5, 209, 255);
+    background-color: #526D82;
     color: white;
   }
+  
   tr:hover {
     background-color: #f1f1f1;
   }
@@ -398,14 +416,14 @@ const ModalContent = styled.div`
   button {
     margin-top: 10px;
     padding: 8px 12px;
-    background-color: #007bff;
+    background-color: #526D82;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
 
     &:hover {
-      background-color: #0056b3;
+      background-color: #526D82;
     }
   }
 `;
@@ -422,13 +440,13 @@ const PhotoInputContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 2px dashed #007bff;
+  border: 2px dashed #526D82;
   padding: 20px;
   cursor: pointer;
   text-align: center;
 
   .upload-box {
-    color: #007bff;
+    color: #526D82;
     font-size: 16px;
     font-weight: bold;
   }
@@ -462,7 +480,6 @@ const SaveButton = styled.button`
   color: white;
   border: none;
   border-radius: 4px;
-  cursor: pointer;
   
   &:hover {
     background-color: rgb(40, 130, 7);
@@ -489,4 +506,14 @@ const CloseButton = styled.button`
   
   -webkit-appearance: none; 
   -moz-appearance: none;
+`;
+const TableContainer = styled.div`
+  width: 700px;
+
+`;
+
+const TableBodyContainer = styled.div`
+  max-height: 300px;
+  overflow-y: auto; 
+  overflow-x: hidden;
 `;
