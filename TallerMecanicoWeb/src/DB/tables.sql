@@ -11,7 +11,7 @@ CREATE TABLE vehiculos (
     FOREIGN KEY (id_marca) REFERENCES marcas(id_marca)
 );
 
-INSERT INTO vehiculos (marca, modelo, anio, correo_cliente, placa) 
+INSERT INTO vehiculos (id_marca, modelo, anio, correo_cliente, placa) 
 VALUES 
 (1, 'Corolla', 2020, 'cliente1@example.com', 'ABC123'),
 (2, 'Civic', 2022, 'cliente2@example.com', 'DEF456'),

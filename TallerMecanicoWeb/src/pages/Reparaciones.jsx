@@ -71,6 +71,7 @@ function Reparaciones() {
   const handleCloseRepuestosModal = () => {
     setIsRepuestosModalOpen(false);
     setSelectedRepuestos([]);
+    setRepuestosFiltrados([]);
     setSelectedReparacion(null);
   };
 
@@ -85,17 +86,14 @@ function Reparaciones() {
     //Primero buscamos el vehículo de la reparación
     for (let i = 0; i < vehiculos.length; i++) {
       if (vehiculos[i].id_vehiculo === reparacion.id_vehiculo) {
-        //Obtenemos la marca del vehículo
-        const marca = vehiculos[i].marca;
-        //Filtramos los repuestos por la marca del vehículo
-        const repuestosFiltrados = repuestos.filter(
-          (repuesto) => repuesto.marca === marca
-        );
-        setRepuestosFiltrados(repuestosFiltrados);
-        break;
+        for (let j = 0; j < repuestos.length; j++) {
+          if (Number(vehiculos[i].id_marca) === Number(repuestos[j].id_marca)) {
+            repuestosFiltrados.push(repuestos[j]);
+          }
+        }
       }
     }
-  }
+  };
 
   const getRepuestosReparacion = (id) => {
     axios
@@ -249,12 +247,9 @@ function Reparaciones() {
                   {reparacion.id_reparacion}
                 </td>
                 <td>
-               
-                    {buscarPlacaVehiculo(reparacion.id_vehiculo)}
-           
+                  {buscarPlacaVehiculo(reparacion.id_vehiculo)}
                 </td>
                 <td>
-                  
                     {buscarNombreMecanico(reparacion.id_mecanico)}
                
                 </td>
@@ -419,6 +414,7 @@ const TableContainer = styled.div`
   overflow-y: auto;
   max-height: 750px;
   margin-top: 20px;
+  z-index: 1;
 `;
 const CellContent = styled.div`
   padding: 5px;
@@ -531,6 +527,7 @@ const ModalOverlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000;
 `;
 
 const ModalContent = styled.div`
