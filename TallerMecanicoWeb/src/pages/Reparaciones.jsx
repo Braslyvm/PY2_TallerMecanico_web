@@ -228,26 +228,26 @@ function Reparaciones() {
             {data.map((reparacion, index) => (
               <tr key={reparacion.id_reparacion}>
                 <td>
-                  <CellContent>{reparacion.id_reparacion}</CellContent>
+                  {reparacion.id_reparacion}
                 </td>
                 <td>
-                  <CellContent>
+               
                     {buscarPlacaVehiculo(reparacion.id_vehiculo)}
-                  </CellContent>
+           
                 </td>
                 <td>
-                  <CellContent>
+                  
                     {buscarNombreMecanico(reparacion.id_mecanico)}
-                  </CellContent>
+               
                 </td>
                 <td>
-                  <CellContent>{reparacion.fecha_reparacion}</CellContent>
+                {reparacion.fecha_reparacion}
                 </td>
                 <td>
-                  <Descripcion>{reparacion.descripcion}</Descripcion>
+                 {reparacion.descripcion}
                 </td>
                 <td>
-                  <CellContent>{reparacion.estado}</CellContent>
+               {reparacion.estado}
                 </td>
                 <td>
                   <ActionsCell>
@@ -397,9 +397,8 @@ function Reparaciones() {
 }
 const TableContainer = styled.div`
   width: 100%;
-  max-width: auto;
+  max-width: 2000px;
   overflow-y: auto;
-
   max-height: 750px;
   margin-top: 20px;
 `;
@@ -408,11 +407,12 @@ const CellContent = styled.div`
 `;
 
 const Descripcion = styled.div`
+  max-height: 100px; /* Ajusta este valor según sea necesario */
+
   padding: 8px;
 
   word-wrap: break-word; /* Asegura que las palabras largas se ajusten dentro del contenedor */
 `;
-
 const ManageButton = styled.button`
   background-color: #5cb85c;
   color: #ffffff;
