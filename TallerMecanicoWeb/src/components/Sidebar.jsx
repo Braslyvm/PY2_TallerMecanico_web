@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 
 function Sidebar({ sidebarOpen, setSidebarOpen }) {
   const navigate = useNavigate();
@@ -8,7 +9,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
   return (
     <SidebarContainer sidebarOpen={sidebarOpen}>
       <ToggleButton onClick={() => setSidebarOpen(!sidebarOpen)}>
-        {sidebarOpen ? "<" : ">"}
+        {sidebarOpen ? <FiArrowLeft /> : <FiArrowRight />}
       </ToggleButton>
       {sidebarOpen && (
         <nav>
@@ -53,56 +54,79 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
 export default Sidebar;
 
-// Estilos para el sidebar
 const SidebarContainer = styled.div`
-  background-color: #333;
-  color: white;
-  padding: 20px;
+  background: #27374d; // Fondo principal del sidebar
+  color: #dde6ed; // Texto claro
+  padding: ${(props) => (props.sidebarOpen ? "20px 10px" : "20px 0px")};
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: width 0.3s ease; // Animación para el ancho del sidebar
-  width: ${(props) =>
-    props.sidebarOpen ? "200px" : "50px"}; // Cambia el ancho según el estado
+  box-shadow: ${(props) =>
+    props.sidebarOpen
+      ? "3px 0 15px rgba(0, 0, 0, 0.3)"
+      : "1px 0 10px rgba(7, 7, 7, 0.2)"}; // Sombra dinámica
+  transition: width 0.3s ease, box-shadow 0.3s ease;
+  width: ${(props) => (props.sidebarOpen ? "250px" : "60px")};
+  border-radius: 10px;
 
   nav {
     margin-top: 20px;
     display: flex;
-    flex-direction: column; // Asegura que los botones estén en columna
-    align-items: center; // Centra los botones
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
   }
 `;
 
-// Título del menú
 const MenuTitle = styled.h3`
   margin: 0;
-  color: white;
+  color: #9db2bf; // Color de los títulos
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: ${(props) => (props.sidebarOpen ? "left" : "center")};
+  width: 100%;
+  padding-left: ${(props) => (props.sidebarOpen ? "10px" : "0")};
+  display: ${(props) => (props.sidebarOpen ? "block" : "none")};
 `;
 
-// Botón de apertura/cierre
 const ToggleButton = styled.button`
   background: none;
   border: none;
-  color: white;
-  font-size: 20px;
+  color: #dde6ed;
+  font-size: 24px; /* Tamaño del ícono */
   cursor: pointer;
+  transition: transform 0.2s ease; /* Efecto suave */
 
   &:hover {
     opacity: 0.8;
+    transform: scale(1.1); /* Aumenta ligeramente el tamaño al pasar el mouse */
   }
 `;
 
-// Estilo para los botones del menú
 const Button = styled.button`
-  background-color: #444; // Color de fondo del botón
-  color: white; // Color del texto
+  background: #526d82; // Fondo del botón
+  color: #dde6ed; // Texto claro
   border: none;
+  border-radius: 6px; // Bordes redondeados
   padding: 10px 15px;
-  margin: 5px 0; // Espaciado entre botones
+  margin: 8px 0;
   cursor: pointer;
-  transition: background-color 0.3s ease; // Transición para el color de fondo
+  font-size: 14px;
+  font-weight: bold;
+  text-align: left;
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // Sombra ligera
+  transition: all 0.3s ease;
 
   &:hover {
-    background-color: #555; // Color de fondo al pasar el mouse
+    background: #9db2bf; // Resaltado al pasar el mouse
+    color: #27374d; // Contraste en el texto
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); // Sombra más pronunciada
+    transform: translateY(-2px); // Efecto de flotación
+  }
+
+  &:active {
+    transform: translateY(0); // Elimina el flotado al hacer clic
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 `;

@@ -83,21 +83,45 @@ function Reparaciones() {
     axios
       .get(`http://localhost:3001/api/repuestos_reparacion/${id}`)
       .then((response) => {
-        searchRepuestos(response.data.map((r) => r.id_repuesto));
+        searchRepuestos(response.data);
       })
-      .catch((error) => console.error("Error al obtener repuestos de la reparación:", error));
+      .catch((error) =>
+        console.error("Error al obtener repuestos de la reparación:", error)
+      );
+  };
+  
+  const searchRepuestos = (ids) => {
+    const updatedRepuestos = [...selectedRepuestos]; // Copia del estado actual
+  
+    ids.forEach((idObj) => {
+      // Buscar si el repuesto ya existe en selectedRepuestos
+      const existing = updatedRepuestos.find(
+        (repuesto) => repuesto.id_repuesto === idObj.id_repuesto
+      );
+  
+      if (existing) {
+        // Si existe, actualizar la cantidad
+        existing.cantidad += idObj.cantidad_utilizada;
+      } else {
+        // Si no existe, buscar el repuesto original y agregarlo
+        const newRepuesto = repuestos.find(
+          (repuesto) => repuesto.id_repuesto === idObj.id_repuesto
+        );
+        if (newRepuesto) {
+          updatedRepuestos.push({
+            ...newRepuesto,
+            cantidad: idObj.cantidad_utilizada,
+          });
+        }
+      }
+    });
+  
+    // Actualizar el estado una sola vez
+    setSelectedRepuestos(updatedRepuestos);
   };
 
-  const searchRepuestos = (repuestosRep) => {
-    for(let i = 0; i < repuestos.length; i++) {
-      if(repuestosRep.includes(repuestos[i].id_repuesto)) {
-        setSelectedRepuestos([...selectedRepuestos, repuestos[i]]);
-      }
-    }
-  };
 
   const setReparacion = () => {
-    console.log({ vehiculo, mecanico, fechaReparacion, descripcion, estado });
 
     // Validación previa
     if (!vehiculo || !mecanico || !descripcion || !estado || !fechaReparacion) {
@@ -113,6 +137,8 @@ function Reparaciones() {
         descripcion, 
         estado 
     };
+
+    console.log(nuevaReparacion);
 
     axios
         .post("http://localhost:3001/api/reparaciones", nuevaReparacion)
@@ -146,12 +172,6 @@ function Reparaciones() {
       Swal.fire("Error", "Debe seleccionar un repuesto.", "error");
       return;
     }
-
-    console.log({
-      id_repuesto: selectedRepuesto, 
-      id_reparacion: selectedReparacion, 
-      cantidad: cantidad
-    });
 
     axios
       .post("http://localhost:3001/api/repuestos_reparacion", {
@@ -367,7 +387,7 @@ const Container = styled.div`
   color: #27374d; /* Texto principal */
   padding: 20px;
   font-family: Arial, sans-serif;
-  min-height: 100vh;
+  height: 91vh;
 `;
 
 const Header = styled.div`
@@ -397,6 +417,7 @@ const AddButton = styled.button`
 
 const Table = styled.table`
   width: 100%;
+  overflow-y: auto;
   border-collapse: collapse;
   background-color: #ffffff; /* Fondo de la tabla */
 

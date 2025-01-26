@@ -94,7 +94,7 @@ CREATE TABLE reparaciones (
     fecha_reparacion TEXT NOT NULL,
     estado TEXT NOT NULL,
     descripcion TEXT,
-    FOREIGN KEY (id_vehiculo) REFERENCES vehiculos(placa),
+    FOREIGN KEY (id_vehiculo) REFERENCES vehiculos(id_vehiculo),
     FOREIGN KEY (id_mecanico) REFERENCES mecanicos(cedula)
 );
 
@@ -105,7 +105,6 @@ CREATE TABLE repuestos_reparacion (
     id_reparacion INTEGER NOT NULL,
     id_repuesto INTEGER NOT NULL,
     cantidad_utilizada INTEGER NOT NULL,
-    PRIMARY KEY (id_reparacion, id_repuesto),
     FOREIGN KEY (id_reparacion) REFERENCES reparaciones(id_reparacion),
     FOREIGN KEY (id_repuesto) REFERENCES repuestos(id_repuesto)
 );

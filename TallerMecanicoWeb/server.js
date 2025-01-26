@@ -200,9 +200,8 @@ app.post('/api/mecanicos', (req, res) => {
 
 app.post('/api/reparaciones', (req, res) => {
     const { id_vehiculo, id_mecanico, fecha_reparacion, descripcion, estado } = req.body;
-    console.log(req.body);
     // Validar que los campos requeridos no sean nulos
-    if (!id_vehiculo.le || !id_mecanico) {
+    if (!id_vehiculo || !id_mecanico) {
         return res.status(400).json({ error: "Vehículo y mecánico son campos obligatorios." });
     }
 
@@ -308,7 +307,7 @@ app.get('/api/login/:usuario', (req, res) => {
 
 app.post('/api/reparaciones/delete', (req, res) => {
     const { id } = req.body;
-    db.run('DELETE FROM reparaciones WHERE id = ?', [id], function (err) {
+    db.run('DELETE FROM reparaciones WHERE id_reparacion = ?', [id], function (err) {
         if (err) {
             res.status(500).json({ error: err.message });
             return;
