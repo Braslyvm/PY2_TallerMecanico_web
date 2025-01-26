@@ -7,7 +7,8 @@ CREATE TABLE vehiculos (
     modelo TEXT NOT NULL,
     anio INTEGER NOT NULL,
     correo_cliente TEXT NOT NULL,
-    placa TEXT
+    placa TEXT,
+    FOREIGN KEY (id_marca) REFERENCES marcas(id_marca)
 );
 
 INSERT INTO vehiculos (id_marca, modelo, anio, correo_cliente, placa) 
