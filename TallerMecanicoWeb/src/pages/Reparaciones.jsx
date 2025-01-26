@@ -15,6 +15,7 @@ function Reparaciones() {
   const [descripcion, setDescripcion] = useState("");
   const [estado, setEstado] = useState("Pendiente");
   const [repuestos, setRepuestos] = useState([]);
+  const [repuestosFiltrados, setRepuestosFiltrados] = useState([]); //Son los repuestos de un vehículo en especifico con la misma marca
   const [selectedRepuestos, setSelectedRepuestos] = useState([]);
   const [selectedReparacion, setSelectedReparacion] = useState(null); //ID de la reparacion
   const [selectedRepuesto, setSelectedRepuesto] = useState(null); //ID del repuesto
@@ -70,13 +71,31 @@ function Reparaciones() {
   const handleCloseRepuestosModal = () => {
     setIsRepuestosModalOpen(false);
     setSelectedRepuestos([]);
+    setRepuestosFiltrados([]);
     setSelectedReparacion(null);
   };
 
   const handleManageRepuestos = (reparacion) => {
-    setSelectedReparacion(reparacion);
-    getRepuestosReparacion(reparacion);
+    setSelectedReparacion(reparacion.id_reparacion);
+    getRepuestosFiltrados(reparacion);
+    getRepuestosReparacion(reparacion.id_reparacion);
     setIsRepuestosModalOpen(true);
+  };
+
+  const getRepuestosFiltrados = (reparacion) => {
+    //Primero buscamos el vehículo de la reparación
+    for (let i = 0; i < vehiculos.length; i++) {
+      console.log('Vehiculo ID',vehiculos[i].id_vehiculo, 'Reparacion ID', reparacion.id_vehiculo);
+      if (vehiculos[i].id_vehiculo === reparacion.id_vehiculo) {
+        console.log('Vehiculo encontrado');
+        for (let j = 0; j < repuestos.length; j++) {
+          console.log('Marca Vehiculo', vehiculos[i].id_marca, 'Marca Repuesto', repuestos[j].id_marca);
+          if (Number(vehiculos[i].id_marca) === Number(repuestos[j].id_marca)) {
+            repuestosFiltrados.push(repuestos[j]);
+          }
+        }
+      }
+    }
   };
 
   const getRepuestosReparacion = (id) => {
@@ -231,12 +250,9 @@ function Reparaciones() {
                   {reparacion.id_reparacion}
                 </td>
                 <td>
-               
-                    {buscarPlacaVehiculo(reparacion.id_vehiculo)}
-           
+                  {buscarPlacaVehiculo(reparacion.id_vehiculo)}
                 </td>
                 <td>
-                  
                     {buscarNombreMecanico(reparacion.id_mecanico)}
                
                 </td>
@@ -258,7 +274,7 @@ function Reparaciones() {
                     </DeleteButton>
                     <ManageButton
                       onClick={() =>
-                        handleManageRepuestos(reparacion.id_reparacion)
+                        handleManageRepuestos(reparacion)
                       }
                     >
                       <FaWrench />
@@ -343,7 +359,7 @@ function Reparaciones() {
                   onChange={(e) => setSelectedRepuesto(e.target.value)}
                 >
                   <option value="">Seleccione un repuesto</option>
-                  {repuestos.map((repuesto) => (
+                  {repuestosFiltrados.map((repuesto) => (
                     <option key={repuesto.id} value={repuesto.id_repuesto}>
                       {repuesto.descripcion} - ¢{repuesto.precio}
                     </option>
@@ -401,6 +417,7 @@ const TableContainer = styled.div`
   overflow-y: auto;
   max-height: 750px;
   margin-top: 20px;
+  z-index: 1;
 `;
 const CellContent = styled.div`
   padding: 5px;
@@ -513,6 +530,7 @@ const ModalOverlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000;
 `;
 
 const ModalContent = styled.div`

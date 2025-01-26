@@ -62,6 +62,8 @@ VALUES
 (2, 75.00, 9, NULL, 'Limpiaparabrisas');
 
 
+
+
 -- Tabla de Mecanicos
 
 CREATE TABLE mecanicos (
