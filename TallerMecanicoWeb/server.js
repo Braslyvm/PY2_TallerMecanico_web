@@ -358,6 +358,21 @@ app.post('/api/reparaciones/delete', (req, res) => {
     });
 });
 
+app.post('/api/repuestos_reparacion/delete', (req, res) => {
+    const { id } = req.body;
+    db.run('DELETE FROM repuestos_reparacion WHERE id_reparacion = ?', [id], function (err) {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        if (this.changes === 0) {
+            res.status(404).json({ message: 'Reparación no encontrada.' });
+            return;
+        }
+        res.status(200).json({ message: 'Repuestos de reparacion eliminados exitosamente.' });
+    });
+});
+
 
 app.listen(3001, () => {
     console.log('Backend corriendo en http://localhost:3001');

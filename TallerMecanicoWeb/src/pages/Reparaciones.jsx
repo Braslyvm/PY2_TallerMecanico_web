@@ -183,6 +183,9 @@ function Reparaciones() {
         getReparaciones();
       })
       .catch((error) => console.error("Error al eliminar reparación:", error));
+      axios
+      .post(`http://localhost:3001/api/repuestos_reparacion/delete`, { id })
+      .catch((error) => console.error("Error al eliminar reparación:", error));
   };
 
   const saveRepuesto = () => {
