@@ -45,6 +45,12 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
           }}>
             Reparaciones
           </Button>
+          <Button onClick={() => {
+            setSidebarOpen(false); 
+            navigate('/HReparaciones'); 
+          }}>
+            Historial de Reparaciones
+          </Button>
           
         </nav>
       )}

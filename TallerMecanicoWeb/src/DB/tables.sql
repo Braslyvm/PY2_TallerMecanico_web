@@ -11,7 +11,7 @@ CREATE TABLE vehiculos (
     FOREIGN KEY (id_marca) REFERENCES marcas(id_marca)
 );
 
-INSERT INTO vehiculos (marca, modelo, anio, correo_cliente, placa) 
+INSERT INTO vehiculos (id_marca, modelo, anio, correo_cliente, placa) 
 VALUES 
 (1, 'Corolla', 2020, 'cliente1@example.com', 'ABC123'),
 (2, 'Civic', 2022, 'cliente2@example.com', 'DEF456'),
@@ -119,3 +119,16 @@ Create table Login(
 
 
 
+INSERT INTO reparaciones (id_vehiculo, id_mecanico, fecha_reparacion, estado, descripcion) 
+VALUES 
+(1, 101, '2025-01-25', 'Finalizado', 'Cambio de filtro de aire y aceite');
+
+INSERT INTO repuestos_reparacion (id_reparacion, id_repuesto, cantidad_utilizada) 
+VALUES 
+(2, 1, 1), 
+(2, 4, 1); 
+
+
+
+
+SELECT * FROM vehiculos

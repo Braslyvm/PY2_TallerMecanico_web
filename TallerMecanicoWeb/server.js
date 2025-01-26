@@ -10,6 +10,20 @@ app.use(express.json());
 
 // Rutas para obtener todos los vehículos
 app.get('/api/vehiculos', (req, res) => {
+    db.all('SELECT v.placa, v.correo_cliente, m.nombre AS marca, v.modelo, v.id_vehiculo FROM  vehiculos v JOIN marcas m ON v.id_marca = m.id_marca', [], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(rows);
+    });
+});
+
+;
+
+
+// Rutas para obtener todos los vehículos
+app.get('/api/vehiculos/completa', (req, res) => {
     db.all('SELECT * FROM vehiculos', [], (err, rows) => {
         if (err) {
             res.status(500).json({ error: err.message });

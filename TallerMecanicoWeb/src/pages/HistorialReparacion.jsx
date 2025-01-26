@@ -56,7 +56,7 @@ function HistorialReparacion() {
             }
           })
           .catch((error) => {
-            AlertAviso(error)
+            AlertAviso("algo");
           });
       };
       useEffect(() => {

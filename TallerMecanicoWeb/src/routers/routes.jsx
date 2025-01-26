@@ -6,6 +6,7 @@ import Registro from '../pages/Register';
 import RegistroRP from '../pages/Registro_repuesto';
 import Mecanicos from '../pages/Mecanicos';
 import Reparaciones from '../pages/Reparaciones';
+import HistorialReparacion from '../pages/HistorialReparacion';
 
 export function MyRoutes() {
   return (
@@ -16,6 +17,7 @@ export function MyRoutes() {
     <Route path="/Registro_repuesto" element={<RegistroRP />} />
     <Route path="/Mecanicos" element={<Mecanicos />} />
     <Route path="/Reparaciones" element={<Reparaciones />} />
+    <Route path="/HReparaciones" element={<HistorialReparacion />} />
     </Routes>
   );
 }
