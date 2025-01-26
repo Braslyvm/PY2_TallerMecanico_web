@@ -15,6 +15,7 @@ function Reparaciones() {
   const [descripcion, setDescripcion] = useState("");
   const [estado, setEstado] = useState("Pendiente");
   const [repuestos, setRepuestos] = useState([]);
+  const [repuestosFiltrados, setRepuestosFiltrados] = useState([]); //Son los repuestos de un vehículo en especifico con la misma marca
   const [selectedRepuestos, setSelectedRepuestos] = useState([]);
   const [selectedReparacion, setSelectedReparacion] = useState(null); //ID de la reparacion
   const [selectedRepuesto, setSelectedRepuesto] = useState(null); //ID del repuesto
@@ -74,10 +75,27 @@ function Reparaciones() {
   };
 
   const handleManageRepuestos = (reparacion) => {
-    setSelectedReparacion(reparacion);
-    getRepuestosReparacion(reparacion);
+    setSelectedReparacion(reparacion.id_reparacion);
+    getRepuestosFiltrados(reparacion);
+    getRepuestosReparacion(reparacion.id_reparacion);
     setIsRepuestosModalOpen(true);
   };
+
+  const getRepuestosFiltrados = (reparacion) => {
+    //Primero buscamos el vehículo de la reparación
+    for (let i = 0; i < vehiculos.length; i++) {
+      if (vehiculos[i].id_vehiculo === reparacion.id_vehiculo) {
+        //Obtenemos la marca del vehículo
+        const marca = vehiculos[i].marca;
+        //Filtramos los repuestos por la marca del vehículo
+        const repuestosFiltrados = repuestos.filter(
+          (repuesto) => repuesto.marca === marca
+        );
+        setRepuestosFiltrados(repuestosFiltrados);
+        break;
+      }
+    }
+  }
 
   const getRepuestosReparacion = (id) => {
     axios
@@ -258,7 +276,7 @@ function Reparaciones() {
                     </DeleteButton>
                     <ManageButton
                       onClick={() =>
-                        handleManageRepuestos(reparacion.id_reparacion)
+                        handleManageRepuestos(reparacion)
                       }
                     >
                       <FaWrench />
@@ -343,7 +361,7 @@ function Reparaciones() {
                   onChange={(e) => setSelectedRepuesto(e.target.value)}
                 >
                   <option value="">Seleccione un repuesto</option>
-                  {repuestos.map((repuesto) => (
+                  {repuestosFiltrados.map((repuesto) => (
                     <option key={repuesto.id} value={repuesto.id_repuesto}>
                       {repuesto.descripcion} - ¢{repuesto.precio}
                     </option>
