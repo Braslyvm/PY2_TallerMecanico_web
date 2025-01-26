@@ -19,8 +19,6 @@ app.get('/api/vehiculos', (req, res) => {
     });
 });
 
-;
-
 
 // Rutas para obtener todos los vehículos
 app.get('/api/vehiculos/completa', (req, res) => {

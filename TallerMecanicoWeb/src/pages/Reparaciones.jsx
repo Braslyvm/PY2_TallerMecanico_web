@@ -39,7 +39,7 @@ function Reparaciones() {
 
   const getVehiculos = () => {
     axios
-      .get("http://localhost:3001/api/vehiculos")
+      .get("http://localhost:3001/api/vehiculos/completa")
       .then((response) => setVehiculos(response.data))
       .catch((error) => console.error("Error al obtener vehículos:", error));
   };
@@ -243,7 +243,7 @@ function Reparaciones() {
               <th>Acciones</th>
             </tr>
           </thead>
-          <tbody>
+          <TableBody>
             {data.map((reparacion, index) => (
               <tr key={reparacion.id_reparacion}>
                 <td>
@@ -283,7 +283,7 @@ function Reparaciones() {
                 </td>
               </tr>
             ))}
-          </tbody>
+          </TableBody>
         </Table>
       </TableContainer>
 
@@ -412,24 +412,12 @@ function Reparaciones() {
   //table container ajusta el tama;o de la tabla
 }
 const TableContainer = styled.div`
-  width: 100%;
-  max-width: 2000px;
-  overflow-y: auto;
-  max-height: 750px;
-  margin-top: 20px;
+  max-height: 90%;
+  overflow-y: auto; 
+  overflow-x: hidden;
   z-index: 1;
 `;
-const CellContent = styled.div`
-  padding: 5px;
-`;
 
-const Descripcion = styled.div`
-  max-height: 100px; /* Ajusta este valor según sea necesario */
-
-  padding: 8px;
-
-  word-wrap: break-word; /* Asegura que las palabras largas se ajusten dentro del contenedor */
-`;
 const ManageButton = styled.button`
   background-color: #5cb85c;
   color: #ffffff;
@@ -444,7 +432,7 @@ const ManageButton = styled.button`
 `;
 
 const Container = styled.div`
-  background-color: #dde6ed; /* Fondo principal */
+  background-color:rgb(254, 255, 255); /* Fondo principal */
   color: #27374d; /* Texto principal */
   padding: 20px;
   font-family: Arial, sans-serif;
@@ -476,29 +464,39 @@ const AddButton = styled.button`
   }
 `;
 
+const TableBody = styled.tbody`
+  max-height: 300px;
+  overflow-y: auto; 
+  overflow-x: hidden;
+`;
+
 const Table = styled.table`
   width: 100%;
-
   border-collapse: collapse;
-  background-color: #ffffff; /* Fondo de la tabla */
-
-  th,
-  td {
-    border: 1px solid #9db2bf; /* Bordes de celdas */
-    padding: 10px;
-    text-align: left;
+  margin-top: 10px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  table-layout: fixed; /* Forzar el ancho de las columnas */
+  
+  th, td {
+    padding: 12px;
+    text-align: center; /* Centrar el texto */
+    border-bottom: 1px solid #dee2e6;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* Evitar que el texto se divida */
   }
-
+  
   th {
-    background-color: #526d82;
-    color: white;
+    background-color: #526D82;
     position: sticky;
     top: 0;
     z-index: 1;
+    color: white;
   }
-
-  tbody tr:hover {
-    background-color: #f0f4f8; /* Hover en filas */
+  
+  tr:hover {
+    background-color: #f1f1f1;
   }
 `;
 
