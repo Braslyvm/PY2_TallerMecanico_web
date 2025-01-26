@@ -83,59 +83,84 @@ function Reparaciones() {
     axios
       .get(`http://localhost:3001/api/repuestos_reparacion/${id}`)
       .then((response) => {
-        searchRepuestos(response.data.map((r) => r.id_repuesto));
+        searchRepuestos(response.data);
       })
-      .catch((error) => console.error("Error al obtener repuestos de la reparación:", error));
+      .catch((error) =>
+        console.error("Error al obtener repuestos de la reparación:", error)
+      );
   };
 
-  const searchRepuestos = (repuestosRep) => {
-    for(let i = 0; i < repuestos.length; i++) {
-      if(repuestosRep.includes(repuestos[i].id_repuesto)) {
-        setSelectedRepuestos([...selectedRepuestos, repuestos[i]]);
+  const searchRepuestos = (ids) => {
+    const updatedRepuestos = [...selectedRepuestos]; // Copia del estado actual
+
+    ids.forEach((idObj) => {
+      // Buscar si el repuesto ya existe en selectedRepuestos
+      const existing = updatedRepuestos.find(
+        (repuesto) => repuesto.id_repuesto === idObj.id_repuesto
+      );
+
+      if (existing) {
+        // Si existe, actualizar la cantidad
+        existing.cantidad += idObj.cantidad_utilizada;
+      } else {
+        // Si no existe, buscar el repuesto original y agregarlo
+        const newRepuesto = repuestos.find(
+          (repuesto) => repuesto.id_repuesto === idObj.id_repuesto
+        );
+        if (newRepuesto) {
+          updatedRepuestos.push({
+            ...newRepuesto,
+            cantidad: idObj.cantidad_utilizada,
+          });
+        }
       }
-    }
+    });
+
+    // Actualizar el estado una sola vez
+    setSelectedRepuestos(updatedRepuestos);
   };
 
   const setReparacion = () => {
-    console.log({ vehiculo, mecanico, fechaReparacion, descripcion, estado });
-
     // Validación previa
     if (!vehiculo || !mecanico || !descripcion || !estado || !fechaReparacion) {
-        Swal.fire("Error", "Por favor, completa todos los campos.", "error");
-        return;
+      Swal.fire("Error", "Por favor, completa todos los campos.", "error");
+      return;
     }
 
     // Crear nueva reparación, con los nombres correctos para la base de datos
-    const nuevaReparacion = { 
-        id_vehiculo: vehiculo, // Cambié 'vehiculo' por 'id_vehiculo'
-        id_mecanico: mecanico, // Cambié 'mecanico' por 'id_mecanico'
-        fecha_reparacion: fechaReparacion,
-        descripcion, 
-        estado 
+    const nuevaReparacion = {
+      id_vehiculo: vehiculo, // Cambié 'vehiculo' por 'id_vehiculo'
+      id_mecanico: mecanico, // Cambié 'mecanico' por 'id_mecanico'
+      fecha_reparacion: fechaReparacion,
+      descripcion,
+      estado,
     };
 
+    console.log(nuevaReparacion);
+
     axios
-        .post("http://localhost:3001/api/reparaciones", nuevaReparacion)
-        .then(() => {
-            Swal.fire("¡Éxito!", "Reparación registrada correctamente.", "success");
-            getReparaciones();
-            handleCloseModal();
-        })
-        .catch((error) => console.error("Error al agregar reparación:", error));
+      .post("http://localhost:3001/api/reparaciones", nuevaReparacion)
+      .then(() => {
+        Swal.fire("¡Éxito!", "Reparación registrada correctamente.", "success");
+        getReparaciones();
+        handleCloseModal();
+      })
+      .catch((error) => console.error("Error al agregar reparación:", error));
   };
-
-
-
 
   const deleteReparacion = (id) => {
     axios
       .post(`http://localhost:3001/api/reparaciones/delete`, { id })
       .then(() => {
-        Swal.fire({text: "Reparación eliminada correctamente.", imageUrl: 'https://cdn1.iconfinder.com/data/icons/ionicons-outline-vol-2/512/trash-bin-outline-512.png', 
+        Swal.fire({
+          text: "Reparación eliminada correctamente.",
+          imageUrl:
+            "https://cdn1.iconfinder.com/data/icons/ionicons-outline-vol-2/512/trash-bin-outline-512.png",
           imageWidth: 100,
           imageHeight: 100,
-          imageAlt: 'Basurero',
-          confirmButtonText: 'Aceptar'});
+          imageAlt: "Basurero",
+          confirmButtonText: "Aceptar",
+        });
         getReparaciones();
       })
       .catch((error) => console.error("Error al eliminar reparación:", error));
@@ -147,17 +172,11 @@ function Reparaciones() {
       return;
     }
 
-    console.log({
-      id_repuesto: selectedRepuesto, 
-      id_reparacion: selectedReparacion, 
-      cantidad: cantidad
-    });
-
     axios
       .post("http://localhost:3001/api/repuestos_reparacion", {
         id_reparacion: selectedReparacion,
         id_repuesto: selectedRepuesto,
-        cantidad_utilizada:cantidad,
+        cantidad_utilizada: cantidad,
       })
       .then(() => {
         Swal.fire("¡Éxito!", "Repuesto añadido a la reparación.", "success");
@@ -168,14 +187,13 @@ function Reparaciones() {
       });
   };
 
-  
   const buscarPlacaVehiculo = (id) => {
     for (let i = 0; i < vehiculos.length; i++) {
       if (vehiculos[i].id_vehiculo === id) {
         return vehiculos[i].placa;
       }
     }
-  }
+  };
 
   const buscarNombreMecanico = (cedula) => {
     for (let i = 0; i < mecanicos.length; i++) {
@@ -183,7 +201,7 @@ function Reparaciones() {
         return mecanicos[i].nombre;
       }
     }
-  }
+  };
 
   return (
     <Container>
@@ -193,41 +211,66 @@ function Reparaciones() {
           <FaPlus /> Nueva Reparación
         </AddButton>
       </Header>
-      <Table>
-        <thead>
-          <tr>
-            <th>ID de reparación</th>
-            <th>Placa de vehículo</th>
-            <th>Nombre de mecánico</th>
-            <th>Fecha</th>
-            <th>Descripción</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((reparacion, index) => (
-            <tr key={reparacion.id_reparacion}>
-              <td>{reparacion.id_reparacion}</td>
-              <td>{buscarPlacaVehiculo(reparacion.id_vehiculo)}</td>
-              <td>{buscarNombreMecanico(reparacion.id_mecanico)}</td>
-              <td>{reparacion.fecha_reparacion}</td>
-              <td>{reparacion.descripcion}</td>
-              <td>{reparacion.estado}</td>
-              <td>
-                <ActionsCell>
-                  <DeleteButton onClick={() => deleteReparacion(reparacion.id_reparacion)}>
-                    <FaTrashAlt />
-                  </DeleteButton>
-                  <ManageButton onClick={() => handleManageRepuestos(reparacion.id_reparacion)}>
-                    <FaWrench />
-                  </ManageButton>
-                </ActionsCell>
-              </td>
+      <TableContainer>
+        <Table>
+          <thead>
+            <tr>
+              <th>ID de reparación</th>
+              <th>Placa de vehículo</th>
+              <th>Nombre de mecánico</th>
+              <th>Fecha</th>
+              <th>Descripción</th>
+              <th>Estado</th>
+              <th>Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {data.map((reparacion, index) => (
+              <tr key={reparacion.id_reparacion}>
+                <td>
+                  {reparacion.id_reparacion}
+                </td>
+                <td>
+               
+                    {buscarPlacaVehiculo(reparacion.id_vehiculo)}
+           
+                </td>
+                <td>
+                  
+                    {buscarNombreMecanico(reparacion.id_mecanico)}
+               
+                </td>
+                <td>
+                {reparacion.fecha_reparacion}
+                </td>
+                <td>
+                 {reparacion.descripcion}
+                </td>
+                <td>
+               {reparacion.estado}
+                </td>
+                <td>
+                  <ActionsCell>
+                    <DeleteButton
+                      onClick={() => deleteReparacion(reparacion.id_reparacion)}
+                    >
+                      <FaTrashAlt />
+                    </DeleteButton>
+                    <ManageButton
+                      onClick={() =>
+                        handleManageRepuestos(reparacion.id_reparacion)
+                      }
+                    >
+                      <FaWrench />
+                    </ManageButton>
+                  </ActionsCell>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </TableContainer>
+
       {isModalOpen && (
         <ModalOverlay>
           <ModalContent>
@@ -255,12 +298,14 @@ function Reparaciones() {
                 >
                   <option value="">Seleccione un mecánico</option>
                   {mecanicos.map((m) => (
-                    <option key={m.cedula} value={m.cedula}> {/* El value es el id */}
-                      {m.nombre} {/* El texto visible es el nombre del mecánico */}
+                    <option key={m.cedula} value={m.cedula}>
+                      {" "}
+                      {/* El value es el id */}
+                      {m.nombre}{" "}
+                      {/* El texto visible es el nombre del mecánico */}
                     </option>
-                  ))} 
+                  ))}
                 </select>
-
               </label>
               <label>
                 Descripción:
@@ -278,7 +323,6 @@ function Reparaciones() {
                 />
               </label>
 
-
               <ActionButtons>
                 <SaveButton onClick={setReparacion}>Guardar</SaveButton>
                 <CloseButton onClick={handleCloseModal}>Cerrar</CloseButton>
@@ -288,67 +332,87 @@ function Reparaciones() {
         </ModalOverlay>
       )}
       {isRepuestosModalOpen && (
-      <ModalOverlay>
-        <ModalContent>
-          <h3>Gestionar Repuestos</h3>
-          <Form>
-            <label>
-              Repuestos:
-              <select
-                value={selectedRepuesto || ""}
-                onChange={(e) => setSelectedRepuesto(e.target.value)}
-              >
-                <option value="">Seleccione un repuesto</option>
-                {repuestos.map((repuesto) => (
-                  <option key={repuesto.id} value={repuesto.id_repuesto}>
-                    {repuesto.descripcion} - ¢{repuesto.precio}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Cantidad:
-              <input
-                type="number"
-                min="1"
-                value={cantidad}
-                onChange={(e) => setCantidad(e.target.value)}
-              />
-            </label>
-            <ActionButtons>
-              <SaveButton onClick={saveRepuesto}>Guardar</SaveButton>
-              <CloseButton onClick={handleCloseRepuestosModal}>Cerrar</CloseButton>
-            </ActionButtons>
-          </Form>
+        <ModalOverlay>
+          <ModalContent>
+            <h3>Gestionar Repuestos</h3>
+            <Form>
+              <label>
+                Repuestos:
+                <select
+                  value={selectedRepuesto || ""}
+                  onChange={(e) => setSelectedRepuesto(e.target.value)}
+                >
+                  <option value="">Seleccione un repuesto</option>
+                  {repuestos.map((repuesto) => (
+                    <option key={repuesto.id} value={repuesto.id_repuesto}>
+                      {repuesto.descripcion} - ¢{repuesto.precio}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Cantidad:
+                <input
+                  type="number"
+                  min="1"
+                  value={cantidad}
+                  onChange={(e) => setCantidad(e.target.value)}
+                />
+              </label>
+              <ActionButtons>
+                <SaveButton onClick={saveRepuesto}>Guardar</SaveButton>
+                <CloseButton onClick={handleCloseRepuestosModal}>
+                  Cerrar
+                </CloseButton>
+              </ActionButtons>
+            </Form>
 
-          <h4>Repuestos seleccionados:</h4>
-          <Table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Descripción</th>
-                <th>Precio</th>
-                <th>Cantidad</th>
-              </tr>
-            </thead>
-            <tbody>
-              {selectedRepuestos.map((repuesto, index) => (
-                <tr key={index}>
-                  <td>{repuesto.id_repuesto}</td>
-                  <td>{repuesto.descripcion}</td>
-                  <td>{repuesto.precio}</td>
-                  <td>{repuesto.cantidad}</td>
+            <h4>Repuestos seleccionados:</h4>
+            <Table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Descripción</th>
+                  <th>Precio</th>
+                  <th>Cantidad</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
-        </ModalContent>
-      </ModalOverlay>
-    )}
+              </thead>
+              <tbody>
+                {selectedRepuestos.map((repuesto, index) => (
+                  <tr key={index}>
+                    <td>{repuesto.id_repuesto}</td>
+                    <td>{repuesto.descripcion}</td>
+                    <td>{repuesto.precio}</td>
+                    <td>{repuesto.cantidad}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </ModalContent>
+        </ModalOverlay>
+      )}
     </Container>
   );
+  //table container ajusta el tama;o de la tabla
 }
+const TableContainer = styled.div`
+  width: 100%;
+  max-width: 2000px;
+  overflow-y: auto;
+  max-height: 750px;
+  margin-top: 20px;
+`;
+const CellContent = styled.div`
+  padding: 5px;
+`;
 
+const Descripcion = styled.div`
+  max-height: 100px; /* Ajusta este valor según sea necesario */
+
+  padding: 8px;
+
+  word-wrap: break-word; /* Asegura que las palabras largas se ajusten dentro del contenedor */
+`;
 const ManageButton = styled.button`
   background-color: #5cb85c;
   color: #ffffff;
@@ -367,7 +431,7 @@ const Container = styled.div`
   color: #27374d; /* Texto principal */
   padding: 20px;
   font-family: Arial, sans-serif;
-  min-height: 100vh;
+  height: 91vh;
 `;
 
 const Header = styled.div`
@@ -397,18 +461,23 @@ const AddButton = styled.button`
 
 const Table = styled.table`
   width: 100%;
+
   border-collapse: collapse;
   background-color: #ffffff; /* Fondo de la tabla */
 
-  th, td {
+  th,
+  td {
     border: 1px solid #9db2bf; /* Bordes de celdas */
     padding: 10px;
     text-align: left;
   }
 
   th {
-    background-color: #526d82; /* Encabezado de la tabla */
-    color: #dde6ed;
+    background-color: #526d82;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 1;
   }
 
   tbody tr:hover {
@@ -453,6 +522,7 @@ const ModalContent = styled.div`
   border-radius: 10px;
   width: 400px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
 
   h3 {
     margin-bottom: 15px;
@@ -468,7 +538,8 @@ const Form = styled.div`
     font-size: 14px;
     color: #526d82;
 
-    input, select {
+    input,
+    select {
       width: 100%;
       padding: 8px;
       border: 1px solid #9db2bf;
@@ -508,6 +579,5 @@ const CloseButton = styled.button`
     background-color: #c9302c;
   }
 `;
-
 
 export default Reparaciones;

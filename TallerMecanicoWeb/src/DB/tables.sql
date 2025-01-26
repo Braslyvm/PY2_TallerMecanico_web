@@ -3,19 +3,20 @@
 
 CREATE TABLE vehiculos (
     id_vehiculo INTEGER PRIMARY KEY AUTOINCREMENT,
-    marca TEXT NOT NULL,
+    id_marca TEXT NOT NULL,
     modelo TEXT NOT NULL,
     anio INTEGER NOT NULL,
     correo_cliente TEXT NOT NULL,
-    placa TEXT
+    placa TEXT,
+    FOREIGN KEY (id_marca) REFERENCES marcas(id_marca)
 );
 
 INSERT INTO vehiculos (marca, modelo, anio, correo_cliente, placa) 
 VALUES 
-('Toyota', 'Corolla', 2020, 'cliente1@example.com', 'ABC123'),
-('Honda', 'Civic', 2022, 'cliente2@example.com', 'DEF456'),
-('Ford', 'Focus', 2019, 'cliente3@example.com', 'GHI789'),
-('Chevrolet', 'Cruze', 2021, 'cliente4@example.com', 'JKL012');
+(1, 'Corolla', 2020, 'cliente1@example.com', 'ABC123'),
+(2, 'Civic', 2022, 'cliente2@example.com', 'DEF456'),
+(3, 'Focus', 2019, 'cliente3@example.com', 'GHI789'),
+(4, 'Cruze', 2021, 'cliente4@example.com', 'JKL012');
 
 
 -- Tabla de Marcas
@@ -94,7 +95,7 @@ CREATE TABLE reparaciones (
     fecha_reparacion TEXT NOT NULL,
     estado TEXT NOT NULL,
     descripcion TEXT,
-    FOREIGN KEY (id_vehiculo) REFERENCES vehiculos(placa),
+    FOREIGN KEY (id_vehiculo) REFERENCES vehiculos(id_vehiculo),
     FOREIGN KEY (id_mecanico) REFERENCES mecanicos(cedula)
 );
 
@@ -105,7 +106,6 @@ CREATE TABLE repuestos_reparacion (
     id_reparacion INTEGER NOT NULL,
     id_repuesto INTEGER NOT NULL,
     cantidad_utilizada INTEGER NOT NULL,
-    PRIMARY KEY (id_reparacion, id_repuesto),
     FOREIGN KEY (id_reparacion) REFERENCES reparaciones(id_reparacion),
     FOREIGN KEY (id_repuesto) REFERENCES repuestos(id_repuesto)
 );
