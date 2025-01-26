@@ -19,6 +19,32 @@ app.get('/api/vehiculos', (req, res) => {
     });
 });
 
+// Rutas para obtener todas las reparaciones 
+app.get('/api/reparaciones2/:id', (req, res) => {
+    const { id } = req.params;
+    db.get('SELECT r.id_reparacion, r.id_vehiculo, m.nombre AS mecanico, r.fecha_reparacion, r.descripcion FROM reparaciones r JOIN mecanicos m ON r.id_mecanico = m.cedula WHERE r.estado = "Finalizado" AND r.id_vehiculo = ?', [id], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(rows);
+    });
+});
+
+// Rutas para obtener todas las reparaciones 
+app.get('/api/RepuestosR/:id', (req, res) => {
+    const { id } = req.params;
+    db.all('SELECT repuestos.descripcion AS descripcion, repuestos_reparacion.cantidad_utilizada FROM repuestos_reparacion JOIN repuestos ON repuestos_reparacion.id_repuesto = repuestos.id_repuesto WHERE repuestos_reparacion.id_reparacion = ?', [id], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(rows);
+    });
+});
+
+
+
 // Rutas para obtener todas las marcas
 app.get('/api/marcas', (req, res) => {
     db.all('SELECT * FROM marcas', [], (err, rows) => {
@@ -200,7 +226,6 @@ app.post('/api/mecanicos', (req, res) => {
 
 app.post('/api/reparaciones', (req, res) => {
     const { id_vehiculo, id_mecanico, fecha_reparacion, descripcion, estado } = req.body;
-    console.log(req.body);
     // Validar que los campos requeridos no sean nulos
     if (!id_vehiculo.le || !id_mecanico) {
         return res.status(400).json({ error: "Vehículo y mecánico son campos obligatorios." });

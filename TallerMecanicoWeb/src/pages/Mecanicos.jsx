@@ -510,7 +510,7 @@ const CloseButton = styled.button`
   -moz-appearance: none;
 `;
 const TableContainer = styled.div`
-  width: 700px;
+  width: 100%;
 
 `;
 

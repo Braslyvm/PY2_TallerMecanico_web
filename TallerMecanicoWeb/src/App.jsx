@@ -4,6 +4,7 @@ import { MyRoutes } from './routers/routes.jsx';
 import { BrowserRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import Sidebar from './components/Sidebar';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
