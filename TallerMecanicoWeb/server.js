@@ -211,17 +211,42 @@ app.post('/api/marcas', (req, res) => {
 });
 
 // Agregar un repuesto
-app.post('/api/repuestos', (req, res) => {
-    const { id_marca, precio, cantidad, vehiculos_compatibles, foto, descripcion } = req.body;
-    db.run('INSERT INTO repuestos (id_marca, precio, cantidad, vehiculos_compatibles, foto, descripcion) VALUES (?, ?, ?, ?, ?, ?)', 
-    [id_marca, precio, cantidad, vehiculos_compatibles, foto, descripcion], function (err) {
+app.post("/api/repuestos", (req, res) => {
+   
+    const { selectedMarca, precio, foto, descripcion } = req.body;
+  
+   
+  
+   
+    if (!selectedMarca || !precio || !foto || !descripcion) {
+      console.log("Faltan datos"); // Agrega una advertencia si faltan datos
+      return res.status(400).json({ error: "Faltan datos PUTASAAA3" });
+    }
+  
+    // Asegúrate de que el precio es un número válido
+    if (isNaN(precio)) {
+      return res.status(400).json({ error: "Precio debe ser un número válido" });
+    }
+  
+    const insertQuery = `
+        INSERT INTO repuestos (id_marca, precio, foto, descripcion)
+        VALUES (?, ?, ?, ?)`;
+  
+    db.run(
+      insertQuery,
+      [selectedMarca, precio, foto, descripcion],
+      function (err) {
         if (err) {
-            res.status(500).json({ error: err.message });
-            return;
+          console.error(err);
+          return res
+            .status(500)
+            .json({ error: "Error en la base de datos: " + err.message });
         }
         res.status(201).json({ id_repuesto: this.lastID });
-    });
-});
+      }
+    );
+  });
+  
 
 // Agregar un mecánico
 app.post('/api/mecanicos', (req, res) => {
@@ -373,7 +398,24 @@ app.post('/api/repuestos_reparacion/delete', (req, res) => {
     });
 });
 
-
+app.delete("/api/repuestos/delete/:id", (req, res) => {
+    const { id } = req.params;
+    console.log("ID recibido para eliminar:", id);  // Añadir un log para verificar el id
+    db.run("DELETE FROM repuestos WHERE id_repuesto = ?", [id], function (err) {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+  
+      if (this.changes === 0) {
+        return res.status(404).json({ message: "Repuesto no encontrado." });
+      }
+  
+      res.status(200).json({ message: "Repuesto eliminado exitosamente." });
+    });
+  });
+  
+  
 app.listen(3001, () => {
     console.log('Backend corriendo en http://localhost:3001');
 });
