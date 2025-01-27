@@ -51,6 +51,12 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
           }}>
             Historial de Reparaciones
           </Button>
+          <Button onClick={() => {
+            setSidebarOpen(false); 
+            navigate('/Diagnostico'); 
+          }}>
+            Diagnóstico de vehículos
+          </Button>
           
         </nav>
       )}

@@ -8,6 +8,7 @@ function Reparaciones() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRepuestosModalOpen, setIsRepuestosModalOpen] = useState(false);
   const [vehiculos, setVehiculos] = useState([]);
+  const [diagnosticos, setDiagnosticos] = useState([]);
   const [mecanicos, setMecanicos] = useState([]);
   const [vehiculo, setVehiculo] = useState("");
   const [mecanico, setMecanico] = useState("");
@@ -28,6 +29,7 @@ function Reparaciones() {
     getVehiculos();
     getMecanicos();
     getRepuestos();
+    diagnosticosVehiculos();
   }, []);
 
   const getReparaciones = () => {
@@ -43,6 +45,15 @@ function Reparaciones() {
       .then((response) => setVehiculos(response.data))
       .catch((error) => console.error("Error al obtener vehículos:", error));
   };
+
+  const diagnosticosVehiculos = async () => {
+    const diagnosticosResponse = await axios.get("http://localhost:3001/api/diagnostico");
+      setDiagnosticos(diagnosticosResponse.data);
+
+      // Ordenar los diagnósticos por fecha_diagnostico en orden descendente
+      diagnosticos.sort((a, b) => new Date(b.fecha_diagnostico) - new Date(a.fecha_diagnostico));
+  }
+
 
   const getMecanicos = () => {
     axios
@@ -237,13 +248,14 @@ function Reparaciones() {
         <Table>
           <thead>
             <tr>
-              <th>ID de reparación</th>
-              <th>Placa de vehículo</th>
-              <th>Nombre de mecánico</th>
+              <th>ID</th>
+              <th>Placa</th>
+              <th>Mecánico</th>
               <th>Fecha</th>
               <th>Descripción</th>
               <th>Estado</th>
               <th>Acciones</th>
+              <th>Solicitud</th>
             </tr>
           </thead>
           <TableBody>
@@ -282,7 +294,17 @@ function Reparaciones() {
                     >
                       <FaWrench />
                     </ManageButton>
+                    <ViewButton onClick={() => handleViewClick(persona.cedula, persona.nombre, persona.edad, persona.foto)}>
+                      <FaEye />
+                    </ViewButton>
                   </ActionsCell>
+                </td>
+                <td> 
+                  <RequestButton 
+                    onClick={()=> 
+                    handleRequest(reparacion)}
+                    >Realizar solicitud
+                  </RequestButton>
                 </td>
               </tr>
             ))}
@@ -302,9 +324,9 @@ function Reparaciones() {
                   onChange={(e) => setVehiculo(e.target.value)}
                 >
                   <option value="">Seleccione un vehículo</option>
-                  {vehiculos.map((v) => (
-                    <option key={v.id_vehiculo} value={v.id_vehiculo}>
-                      {v.placa}
+                  {diagnosticos.map((d) => (
+                    <option key={d.id_vehiculo} value={d.id_vehiculo}>
+                      Placa del vehículo: {buscarPlacaVehiculo(d.id_vehiculo)}, Fecha de diagnóstico: {d.fecha_diagnostico}
                     </option>
                   ))}
                 </select>
@@ -345,6 +367,7 @@ function Reparaciones() {
               <ActionButtons>
                 <SaveButton onClick={setReparacion}>Guardar</SaveButton>
                 <CloseButton onClick={handleCloseModal}>Cerrar</CloseButton>
+
               </ActionButtons>
             </Form>
           </ModalContent>
@@ -467,6 +490,20 @@ const AddButton = styled.button`
   }
 `;
 
+const RequestButton = styled.button`
+  background-color: #526d82; /* Botón primario */
+  color: #dde6ed; /* Texto del botón */
+  padding: 5px 9px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+
+  &:hover {
+    background-color: #9db2bf; /* Hover del botón */
+  }
+`;
+
 const TableBody = styled.tbody`
   max-height: 300px;
   overflow-y: auto; 
@@ -505,7 +542,7 @@ const Table = styled.table`
 
 const ActionsCell = styled.td`
   display: flex;
-  gap: 10px;
+  gap: 5px;
 `;
 
 const DeleteButton = styled.button`
@@ -596,6 +633,21 @@ const CloseButton = styled.button`
 
   &:hover {
     background-color: #c9302c;
+  }
+`;
+
+const ViewButton = styled.button`
+  padding: 5px 8px;
+  background-color:rgba(236, 240, 32, 0.95);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  &:hover {
+    background-color:rgb(178, 180, 39);
+  }
+  svg {
+    font-size: 14px;
   }
 `;
 

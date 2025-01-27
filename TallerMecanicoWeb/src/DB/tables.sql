@@ -130,6 +130,16 @@ VALUES
 (2, 1, 1), 
 (2, 4, 1); 
 
+CREATE TABLE diagnostico_vehiculo(
+    id_diagnostico INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_vehiculo INTEGER NOT NULL,
+    fecha_diagnostico TEXT NOT NULL,
+    diagnostico_tecnico TEXT NOT NULL,
+    descripcion_cliente TEXT NOT NULL,
+    foto BLOB,
+    FOREIGN KEY (id_vehiculo) REFERENCES vehiculos(id_vehiculo)
+);
+
 
 
 

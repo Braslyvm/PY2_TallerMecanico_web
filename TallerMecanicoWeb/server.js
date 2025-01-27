@@ -373,6 +373,28 @@ app.post('/api/repuestos_reparacion/delete', (req, res) => {
     });
 });
 
+// Obtener todos los diagnósticos
+app.get('/api/diagnostico', (req, res) => {
+    db.all('SELECT * FROM diagnostico_vehiculo', [], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.status(200).json(rows);
+    });
+});
+
+// Agregar un nuevo diagnóstico
+app.post('/api/diagnostico', (req, res) => {
+    const { id_vehiculo, fecha_diagnostico, diagnostico_tecnico, descripcion_cliente, foto } = req.body;
+    db.run('INSERT INTO diagnostico_vehiculo ( id_vehiculo, fecha_diagnostico, diagnostico_tecnico, descripcion_cliente, foto ) VALUES (?, ?, ?,?,?)', [id_vehiculo, fecha_diagnostico, diagnostico_tecnico, descripcion_cliente, foto], function (err) {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.status(201).json({ id: this.lastID });
+    });
+});
 
 app.listen(3001, () => {
     console.log('Backend corriendo en http://localhost:3001');
