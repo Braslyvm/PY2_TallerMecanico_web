@@ -421,6 +421,42 @@ app.post('/api/diagnostico', (req, res) => {
     });
 });
 
+// Obtener reparaciones por estado
+app.get('/api/reparaciones/estado/:estado', (req, res) => {
+    const { estado } = req.params;
+    db.all('SELECT * FROM reparaciones WHERE estado = ?', [estado], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.status(200).json(rows);
+    });
+});
+
+// Actualizar el estado de una reparación por ID
+app.put('/api/reparaciones/id/estado', (req, res) => {
+    const { id } = req.body;
+    const { estado } = req.body;
+
+    // Verificar que el estado es uno de los permitidos
+    const estadosPermitidos = ['Pendiente', 'En espera', 'Denegado', 'En curso', 'Facturar', 'Finalizado'];
+    if (!estadosPermitidos.includes(estado)) {
+        return res.status(400).json({ error: 'Estado no permitido' });
+    }
+
+    db.run('UPDATE reparaciones SET estado = ? WHERE id_reparacion = ?', [estado, id], function (err) {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        if (this.changes === 0) {
+            res.status(404).json({ error: 'Reparación no encontrada' });
+            return;
+        }
+        res.status(200).json({ message: 'Estado actualizado correctamente' });
+    });
+});
+
 app.listen(3001, () => {
     console.log('Backend corriendo en http://localhost:3001');
 });

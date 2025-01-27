@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { FaTrashAlt, FaEye, FaPlus, FaWrench } from "react-icons/fa";
+import { Modal,Button,Form } from "react-bootstrap";
 import Swal from "sweetalert2";
 import axios from "axios";
 
 function Reparaciones() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRepuestosModalOpen, setIsRepuestosModalOpen] = useState(false);
+  const [verOpen, setVerOpen] = useState(false);
   const [vehiculos, setVehiculos] = useState([]);
   const [diagnosticos, setDiagnosticos] = useState([]);
   const [mecanicos, setMecanicos] = useState([]);
@@ -22,6 +24,7 @@ function Reparaciones() {
   const [selectedRepuesto, setSelectedRepuesto] = useState(null); //ID del repuesto
   const [cantidad, setCantidad] = useState(1);
   const [data, setData] = useState([]);
+  const [dataComplete, setDataComplete] = useState([]);
 
   // Obtener datos iniciales
   useEffect(() => {
@@ -32,11 +35,17 @@ function Reparaciones() {
     diagnosticosVehiculos();
   }, []);
 
+  const getReparacionesCompletas = () => {
+    axios
+      .get("http://localhost:3001/api/reparacion")
+      .then((response) => setDataComplete(response.data))
+      .catch((error) => console.error("Error al obtener reparaciones completas:", error));
+  }
   const getReparaciones = () => {
     axios
-      .get("http://localhost:3001/api/reparaciones")
+      .get("http://localhost:3001/api/reparaciones/estado/Pendiente")
       .then((response) => setData(response.data))
-      .catch((error) => console.error("Error al obtener reparaciones:", error));
+      .catch((error) => console.error("Error al obtener reparaciones pendientes:", error));
   };
 
   const getVehiculos = () => {
@@ -166,8 +175,6 @@ function Reparaciones() {
       estado,
     };
 
-    console.log(nuevaReparacion);
-
     axios
       .post("http://localhost:3001/api/reparaciones", nuevaReparacion)
       .then(() => {
@@ -176,6 +183,28 @@ function Reparaciones() {
         handleCloseModal();
       })
       .catch((error) => console.error("Error al agregar reparación:", error));
+  };
+
+  const handleViewClick = (reparacion) => {
+    setSelectedReparacion(reparacion);
+    console.log(reparacion);
+    setVerOpen(true);
+  }
+
+  //cerrar modal de ver mecanico
+  const handleViewModal = () => {
+    setVerOpen(false);
+    setSelectedReparacion(null);
+  };
+
+  const handleRequest = (id_reparacion) => {
+    axios
+      .put(`http://localhost:3001/api/reparaciones/id/estado`, {id: id_reparacion, estado: 'En espera' })
+      .then((response) => {
+        console.log(response.data);
+        getReparaciones(); // Actualizar la lista de reparaciones pendientes
+      })
+      .catch((error) => console.error("Error al actualizar el estado de la reparación:", error));
   };
 
   const deleteReparacion = (id) => {
@@ -294,7 +323,7 @@ function Reparaciones() {
                     >
                       <FaWrench />
                     </ManageButton>
-                    <ViewButton onClick={() => handleViewClick(persona.cedula, persona.nombre, persona.edad, persona.foto)}>
+                    <ViewButton onClick={() => handleViewClick(reparacion)}>
                       <FaEye />
                     </ViewButton>
                   </ActionsCell>
@@ -302,7 +331,7 @@ function Reparaciones() {
                 <td> 
                   <RequestButton 
                     onClick={()=> 
-                    handleRequest(reparacion)}
+                    handleRequest(reparacion.id_reparacion)}
                     >Realizar solicitud
                   </RequestButton>
                 </td>
@@ -317,9 +346,10 @@ function Reparaciones() {
           <ModalContent>
             <h3>Registrar Reparación</h3>
             <Form>
-              <label>
-                Vehículo:
-                <select
+              <Form.Group controlId="formVehiculo">
+                <Form.Label>Vehículo</Form.Label>
+                <Form.Control
+                  as="select"
                   value={vehiculo}
                   onChange={(e) => setVehiculo(e.target.value)}
                 >
@@ -329,45 +359,44 @@ function Reparaciones() {
                       Placa del vehículo: {buscarPlacaVehiculo(d.id_vehiculo)}, Fecha de diagnóstico: {d.fecha_diagnostico}
                     </option>
                   ))}
-                </select>
-              </label>
-              <label>
-                Mecánico:
-                <select
+                </Form.Control>
+              </Form.Group>
+              <Form.Group controlId="formMecanico">
+                <Form.Label>Mecánico</Form.Label>
+                <Form.Control
+                  as="select"
                   value={mecanico}
-                  onChange={(e) => setMecanico(e.target.value)} // Aquí se obtiene el id
+                  onChange={(e) => setMecanico(e.target.value)}
                 >
                   <option value="">Seleccione un mecánico</option>
                   {mecanicos.map((m) => (
                     <option key={m.cedula} value={m.cedula}>
-                      {" "}
-                      {/* El value es el id */}
-                      {m.nombre}{" "}
-                      {/* El texto visible es el nombre del mecánico */}
+                      {m.nombre}
                     </option>
                   ))}
-                </select>
-              </label>
-              <label>
-                Descripción:
-                <textarea
+                </Form.Control>
+              </Form.Group>
+              <Form.Group controlId="formDescripcion">
+                <Form.Label>Descripción</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
                   value={descripcion}
                   onChange={(e) => setDescripcion(e.target.value)}
                 />
-              </label>
-              <label>
-                Fecha de Reparación:
-                <input
+              </Form.Group>
+              <Form.Group controlId="formFechaReparacion">
+                <Form.Label>Fecha de Reparación</Form.Label>
+                <Form.Control
                   type="date"
                   value={fechaReparacion}
                   onChange={(e) => setFechaReparacion(e.target.value)}
                 />
-              </label>
+              </Form.Group>
 
               <ActionButtons>
                 <SaveButton onClick={setReparacion}>Guardar</SaveButton>
                 <CloseButton onClick={handleCloseModal}>Cerrar</CloseButton>
-
               </ActionButtons>
             </Form>
           </ModalContent>
@@ -433,6 +462,28 @@ function Reparaciones() {
           </ModalContent>
         </ModalOverlay>
       )}
+      <Modal show={verOpen} onHide={handleViewModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Detalles de la reparacion</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedReparacion && (
+            <div>
+              <p><strong>ID de reparacion:</strong> {selectedReparacion.id_reparacion}</p>
+              <p><strong>Placa de vehículo:</strong> {buscarPlacaVehiculo(selectedReparacion.id_vehiculo)}</p>
+              <p><strong>Mecánico asignado:</strong> {buscarNombreMecanico(selectedReparacion.id_mecanico)}</p>
+              <p><strong>Descripción del cliente:</strong> {selectedReparacion.descripcion}</p>
+              <p><strong>Fecha:</strong> {selectedReparacion.fecha_reparacion}</p>
+              <p><strong>Estado:</strong> {selectedReparacion.estado}</p>
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleViewModal}>
+            Cerrar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
   //table container ajusta el tama;o de la tabla
@@ -585,25 +636,6 @@ const ModalContent = styled.div`
   }
 `;
 
-const Form = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-
-  label {
-    font-size: 14px;
-    color: #526d82;
-
-    input,
-    select {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #9db2bf;
-      border-radius: 5px;
-      margin-top: 5px;
-    }
-  }
-`;
 
 const ActionButtons = styled.div`
   display: flex;

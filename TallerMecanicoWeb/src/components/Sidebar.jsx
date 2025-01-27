@@ -9,6 +9,7 @@ import MagicIcon from '@rsuite/icons/legacy/Magic';
 import HomeIcon from '@rsuite/icons/legacy/Home';
 import ToolsIcon from '@rsuite/icons/Tools';
 import RateIcon from '@rsuite/icons/Rate';
+import CarIcon from "@rsuite/icons/legacy/Car";
 import BarChartHorizontalIcon from '@rsuite/icons/BarChartHorizontal';
 import GearCircleIcon from '@rsuite/icons/legacy/GearCircle';
 import { FaBars } from 'react-icons/fa'; // Importa el ícono de 3 rayas
@@ -68,9 +69,13 @@ const MySidebar = () => {
             <Nav.Item style={{ backgroundColor: '#ffffff' }} eventKey="5" icon={<RateIcon />} onClick={() => {navigate("/Registro_repuesto");}}>
               Repuesto
             </Nav.Item>
+            <Nav.Item style={{ backgroundColor: '#ffffff' }}eventKey="5" icon={<CarIcon />} onClick={() => {navigate("/Diagnostico");}}>
+              Diagnósticos
+            </Nav.Item>
             <Nav.Item style={{ backgroundColor: '#ffffff' }}eventKey="5" icon={<GearCircleIcon />} onClick={() => {navigate("/Mecanicos");}}>
               Ajustes
             </Nav.Item>
+            
           </Nav>
         </Sidenav.Body>
       </Sidenav>

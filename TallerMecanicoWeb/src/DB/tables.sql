@@ -98,9 +98,9 @@ CREATE TABLE reparaciones (
     estado TEXT NOT NULL,
     descripcion TEXT,
     FOREIGN KEY (id_vehiculo) REFERENCES vehiculos(id_vehiculo),
-    FOREIGN KEY (id_mecanico) REFERENCES mecanicos(cedula)
+    FOREIGN KEY (id_mecanico) REFERENCES mecanicos(cedula),
+    CHECK (estado IN ('Pendiente', 'En espera', 'Denegado', 'En curso', 'Facturar', 'Finalizado'))
 );
-
 
 -- Tabla que asocia los repuestos con cada reparacion
 

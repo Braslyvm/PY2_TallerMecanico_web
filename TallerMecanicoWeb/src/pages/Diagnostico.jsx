@@ -164,9 +164,20 @@ const Diagnostico = () => {
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="formVehiculo">
-              <Form.Label>ID Vehículo</Form.Label>
-              <Form.Control type="text" value={vehiculo} onChange={(e) => setVehiculo(e.target.value)} />
+          <Form.Group controlId="formVehiculo">
+              <Form.Label>Vehículo</Form.Label>
+              <Form.Control
+                as="select"
+                value={vehiculo}
+                onChange={(e) => setVehiculo(e.target.value)}
+              >
+                <option value="">Seleccione un vehículo</option>
+                {vehiculos.map((v) => (
+                  <option key={v.id_vehiculo} value={v.id_vehiculo}>
+                    Placa del vehículo: {v.placa}
+                  </option>
+                ))}
+              </Form.Control>
             </Form.Group>
             <Form.Group controlId="formDescripcion">
               <Form.Label>Descripción Técnica</Form.Label>
