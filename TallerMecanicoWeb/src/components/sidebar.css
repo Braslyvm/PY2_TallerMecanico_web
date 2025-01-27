@@ -1,0 +1,15 @@
+.pro-sidebar {
+    background-color: #333;
+    color: white;
+  }
+  
+  .pro-menu-item {
+    padding: 10px;
+    font-size: 16px;
+  }
+  
+  .pro-menu-item:hover {
+    background-color: #555;
+    color: #fff;
+  }
+  
