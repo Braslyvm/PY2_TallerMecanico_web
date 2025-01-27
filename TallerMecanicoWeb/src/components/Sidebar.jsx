@@ -30,37 +30,45 @@ const MySidebar = () => {
     >
       <FaBars
         onClick={() => setExpanded(!expanded)}
-        style={{ fontSize: '24px', color: '#000', cursor: 'pointer', margin: '10px' }}
+        style={{ 
+          fontSize: '24px', 
+          color: '#000', 
+          cursor: 'pointer', 
+          margin: '10px',
+          backgroundColor: expanded ? '#ffffff' : '#f0f0f0', 
+          borderRadius: '5px', 
+          padding: '5px' 
+        }}
       />
       <hr />
       <Sidenav
         expanded={expanded}
-        defaultOpenKeys={['3', '4']}
         style={{
           height: 'calc(100vh - px)', 
           overflowY: 'auto',
           overflowX: 'hidden', 
-          backgroundColor: '#ffffff', 
+          backgroundColor: expanded ? '#ffffff' : '#ffffff'
+          
         }}
       >
         <Sidenav.Body style={{ backgroundColor: '#ffffff' }}> 
           <Nav>
-            <Nav.Item eventKey="1" icon={<HomeIcon /> } onClick={() => {navigate("/");}}>
+            <Nav.Item style={{ backgroundColor: '#ffffff' }} eventKey="1" icon={<HomeIcon /> } onClick={() => {navigate("/");}}>
               Inicio
             </Nav.Item>
-            <Nav.Item eventKey="2" icon={<GroupIcon />} onClick={() => {navigate("/Mecanicos");}}>
+            <Nav.Item style={{ backgroundColor: '#ffffff' }}eventKey="2" icon={<GroupIcon />} onClick={() => {navigate("/Mecanicos");}}>
               Planilla
             </Nav.Item>
-            <Nav.Item eventKey="3" icon={<ToolsIcon />} onClick={() => {navigate("/Reparaciones");}}>
+            <Nav.Item style={{ backgroundColor: '#ffffff' }}eventKey="3" icon={<ToolsIcon />} onClick={() => {navigate("/Reparaciones");}}>
               Reparaciones
             </Nav.Item>
-            <Nav.Item eventKey="4" icon={<BarChartHorizontalIcon />} onClick={() => {navigate("/HReparaciones");}}>
+            <Nav.Item style={{ backgroundColor: '#ffffff' }} eventKey="4" icon={<BarChartHorizontalIcon />} onClick={() => {navigate("/HReparaciones");}}>
               Historial de Reparaciones
             </Nav.Item>
-            <Nav.Item eventKey="5" icon={<RateIcon />} onClick={() => {navigate("/Registro_repuesto");}}>
+            <Nav.Item style={{ backgroundColor: '#ffffff' }} eventKey="5" icon={<RateIcon />} onClick={() => {navigate("/Registro_repuesto");}}>
               Repuesto
             </Nav.Item>
-            <Nav.Item eventKey="5" icon={<GearCircleIcon />} onClick={() => {navigate("/Mecanicos");}}>
+            <Nav.Item style={{ backgroundColor: '#ffffff' }}eventKey="5" icon={<GearCircleIcon />} onClick={() => {navigate("/Mecanicos");}}>
               Ajustes
             </Nav.Item>
           </Nav>
