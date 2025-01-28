@@ -8,6 +8,7 @@ import Mecanicos from '../pages/Mecanicos';
 import Reparaciones from '../pages/Reparaciones';
 import HistorialReparacion from '../pages/HistorialReparacion';
 import Diagnostico from '../pages/Diagnostico';
+import Facturar from '../pages/Facturar';
 
 export function MyRoutes() {
   return (
@@ -20,6 +21,7 @@ export function MyRoutes() {
     <Route path="/Reparaciones" element={<Reparaciones />} />
     <Route path="/HReparaciones" element={<HistorialReparacion />} />
     <Route path="/Diagnostico" element={<Diagnostico />} />
+    <Route path="/Facturas" element={<Facturar />} />
     </Routes>
   );
 }
