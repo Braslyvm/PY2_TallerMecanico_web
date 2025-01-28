@@ -92,8 +92,8 @@ function Facturar() {
   return (
     <FormContainer>
       <Header>
-      <h1>Facturación</h1>
-    </Header>
+        <h1>Facturación</h1>
+      </Header>
       <TableContainer>
         <Table>
           <thead>
@@ -115,7 +115,6 @@ function Facturar() {
                     >
                       <FaMoneyBillAlt />
                     </ViewButton2>
-                  
                   </ActionsCellCustom>
                 </td>
               </tr>
@@ -160,8 +159,7 @@ function Facturar() {
               <CloseButton onClick={() => setIsModalOpen2(false)}>
                 Cerrar
               </CloseButton>
-              {/* Ahora accedemos a 'repuesto.id_reparacion' correctamente */}
-              <PayButton onClick={() => handlePagar()}>Pagar</PayButton>
+              {/* <PayButton onClick={() => handlePagar()}>Pagar</PayButton> Ahora accedemos a 'repuesto.id_reparacion' correctamente */}
             </ActionButtons>
           </ModalContent>
         </ModalOverlay>
@@ -229,7 +227,7 @@ const ActionsCellCustom = styled.div`
 `;
 
 const ViewButton2 = styled.button`
-  background-color:rgb(83, 224, 32);
+  background-color: rgb(83, 224, 32);
   color: white;
   border: none;
   padding: 8px 12px;
@@ -239,12 +237,12 @@ const ViewButton2 = styled.button`
   transition: background-color 0.3s;
 
   &:hover {
-    background-color:rgb(109, 226, 12);
+    background-color: rgb(109, 226, 12);
   }
 `;
 
 const CloseButton = styled.button`
-  background-color:rgb(222, 23, 23);
+  background-color: rgb(222, 23, 23);
   color: white;
   border: none;
   padding: 8px 16px;
@@ -253,12 +251,12 @@ const CloseButton = styled.button`
   transition: background-color 0.3s;
 
   &:hover {
-    background-color:rgb(184, 62, 28);
+    background-color: rgb(184, 62, 28);
   }
 `;
 
 const PayButton = styled.button`
-  background-color:rgb(48, 238, 89);
+  background-color: rgb(48, 238, 89);
   color: white;
   border: none;
   padding: 8px 16px;
@@ -267,7 +265,7 @@ const PayButton = styled.button`
   transition: background-color 0.3s;
 
   &:hover {
-    background-color:hsl(103, 83.30%, 44.70%);
+    background-color: hsl(103, 83.3%, 44.7%);
   }
 `;
 
