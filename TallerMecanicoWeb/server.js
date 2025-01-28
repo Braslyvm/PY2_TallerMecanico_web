@@ -43,19 +43,76 @@ app.get('/api/reparaciones2/:id', (req, res) => {
     });
 });
 
-// Rutas para obtener todas las reparaciones 
-app.get('/api/RepuestosR/:id', (req, res) => {
-    const { id } = req.params;
-    db.all('SELECT repuestos.descripcion AS descripcion, repuestos_reparacion.cantidad_utilizada FROM repuestos_reparacion JOIN repuestos ON repuestos_reparacion.id_repuesto = repuestos.id_repuesto WHERE repuestos_reparacion.id_reparacion = ?', [id], (err, rows) => {
+
+//facturas en facturar
+app.get("/api/Facturas", (req, res) => {
+    db.all(
+      "SELECT r.id_reparacion, r.id_vehiculo, v.placa as placa, v.correo_cliente as cliente, m.nombre AS mecanico, r.fecha_reparacion, r.descripcion " +
+        "FROM reparaciones r " +
+        "JOIN mecanicos m ON r.id_mecanico = m.cedula " +
+        "JOIN vehiculos v ON r.id_vehiculo = v.id_vehiculo " +
+        "WHERE r.estado = 'Facturar'",
+      (err, rows) => {
         if (err) {
-            res.status(500).json({ error: err.message });
-            return;
+          res.status(500).json({ error: err.message });
+          return;
         }
+        res.json(rows); // Retorna todas las filas obtenidas
+      }
+    );
+  });
+  //repuestos
+  app.get("/api/RepuestosR/:id", (req, res) => {
+    const { id } = req.params;
+    console.log("ID recibido en el servidor:", id);
+  
+    db.all(
+      "SELECT repuestos.descripcion AS descripcion, repuestos_reparacion.cantidad_utilizada, repuestos.precio, repuestos_reparacion.id_reparacion, (repuestos.precio * repuestos_reparacion.cantidad_utilizada) AS total " +
+        "FROM repuestos_reparacion " +
+        "JOIN repuestos ON repuestos_reparacion.id_repuesto = repuestos.id_repuesto " +
+        "WHERE repuestos_reparacion.id_reparacion = ?",
+      [id],
+      (err, rows) => {
+        if (err) {
+          console.error("Error en la consulta SQL:", err.message);
+          res.status(500).json({ error: err.message });
+          return;
+        }
+        console.log("Datos obtenidos:", rows);
         res.json(rows);
-    });
-});
-
-
+      }
+    );
+  });
+  
+  app.post("/api/reparacionesU", (req, res) => {
+    const { id_reparacion, estado } = req.body;
+  
+    // Validar que los campos requeridos no sean nulos
+    if (!id_reparacion || !estado) {
+      return res
+        .status(400)
+        .json({ error: "ID de reparación y estado son campos obligatorios." });
+    }
+  
+    // Actualizar el estado de la reparación especificada por id_reparacion
+    db.run(
+      "UPDATE reparaciones SET estado = ? WHERE id_reparacion = ?",
+      [estado, id_reparacion],
+      function (err) {
+        if (err) {
+          res.status(500).json({ error: err.message });
+          return;
+        }
+        // Verificar si se modificó alguna fila
+        if (this.changes === 0) {
+          return res.status(404).json({ error: "Reparación no encontrada." });
+        }
+        res
+          .status(200)
+          .json({ message: "Estado de reparación actualizado correctamente." });
+      }
+    );
+  });
 
 // Rutas para obtener todas las marcas
 app.get('/api/marcas', (req, res) => {
