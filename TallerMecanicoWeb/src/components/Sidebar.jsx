@@ -69,10 +69,10 @@ const MySidebar = () => {
             <Nav.Item style={{ backgroundColor: '#ffffff' }} eventKey="5" icon={<RateIcon />} onClick={() => {navigate("/Registro_repuesto");}}>
               Repuesto
             </Nav.Item>
-            <Nav.Item style={{ backgroundColor: '#ffffff' }}eventKey="5" icon={<CarIcon />} onClick={() => {navigate("/Diagnostico");}}>
+            <Nav.Item style={{ backgroundColor: '#ffffff' }}eventKey="6" icon={<CarIcon />} onClick={() => {navigate("/Diagnostico");}}>
               Diagnósticos
             </Nav.Item>
-            <Nav.Item style={{ backgroundColor: '#ffffff' }}eventKey="5" icon={<GearCircleIcon />} onClick={() => {navigate("/Mecanicos");}}>
+            <Nav.Item style={{ backgroundColor: '#ffffff' }}eventKey="7" icon={<GearCircleIcon />} onClick={() => {navigate("/Mecanicos");}}>
               Ajustes
             </Nav.Item>
             

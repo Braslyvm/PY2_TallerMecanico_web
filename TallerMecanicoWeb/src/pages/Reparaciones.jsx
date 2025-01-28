@@ -37,6 +37,16 @@ function Reparaciones() {
     getReparacionesCompletas();
   }, []);
 
+  const AlertaCamposVacios=()=>{
+    //Alertas 
+      Swal.fire({
+        title: 'Error',
+        text: 'Debe completar todos los campos',
+        icon: 'Error',
+        confirmButtonText: 'Aceptar'
+      });
+  }
+
   const getReparacionesCompletas = () => {
     axios
       .get("http://localhost:3001/api/reparaciones")
@@ -170,31 +180,32 @@ function Reparaciones() {
     setSelectedRepuestos(updatedRepuestos);
   };
 
-  const setReparacion = () => {
+  const setReparacion = (e) => {
     // Validación previa
+    e.preventDefault();
     if (!vehiculo || !mecanico || !descripcion || !estado || !fechaReparacion) {
-      Swal.fire("Error", "Por favor, completa todos los campos.", "error");
-      return;
+      AlertaCamposVacios();
+    }else{
+      // Crear nueva reparación, con los nombres correctos para la base de datos
+      const nuevaReparacion = {
+        id_vehiculo: vehiculo, // Cambié 'vehiculo' por 'id_vehiculo'
+        id_mecanico: mecanico, // Cambié 'mecanico' por 'id_mecanico'
+        fecha_reparacion: fechaReparacion,
+        descripcion,
+        estado,
+      };
+
+      axios
+        .post("http://localhost:3001/api/reparaciones", nuevaReparacion)
+        .then(() => {
+          Swal.fire("¡Éxito!", "Reparación registrada correctamente.", "success");
+          getReparaciones();
+          handleCloseModal();
+        })
+        .catch((error) => console.error("Error al agregar reparación:", error));
     }
-
-    // Crear nueva reparación, con los nombres correctos para la base de datos
-    const nuevaReparacion = {
-      id_vehiculo: vehiculo, // Cambié 'vehiculo' por 'id_vehiculo'
-      id_mecanico: mecanico, // Cambié 'mecanico' por 'id_mecanico'
-      fecha_reparacion: fechaReparacion,
-      descripcion,
-      estado,
-    };
-
-    axios
-      .post("http://localhost:3001/api/reparaciones", nuevaReparacion)
-      .then(() => {
-        Swal.fire("¡Éxito!", "Reparación registrada correctamente.", "success");
-        getReparaciones();
-        handleCloseModal();
-      })
-      .catch((error) => console.error("Error al agregar reparación:", error));
   };
+
 
   const handleViewClick = (reparacion) => {
     setSelectedReparacion(reparacion);
@@ -572,9 +583,10 @@ const ManageButton = styled.button`
 const Container = styled.div`
   background-color:rgb(254, 255, 255); /* Fondo principal */
   color: #27374d; /* Texto principal */
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
   font-family: Arial, sans-serif;
-  height: 91vh;
+  height: 90vh;
 `;
 
 const Header = styled.div`
