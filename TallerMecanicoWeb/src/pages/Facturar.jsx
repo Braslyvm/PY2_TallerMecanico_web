@@ -160,8 +160,6 @@ function Facturar() {
               <CloseButton onClick={() => setIsModalOpen2(false)}>
                 Cerrar
               </CloseButton>
-              {/* Ahora accedemos a 'repuesto.id_reparacion' correctamente */}
-              <PayButton onClick={() => handlePagar()}>Pagar</PayButton>
             </ActionButtons>
           </ModalContent>
         </ModalOverlay>
