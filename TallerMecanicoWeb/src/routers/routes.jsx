@@ -9,6 +9,8 @@ import Reparaciones from '../pages/Reparaciones';
 import HistorialReparacion from '../pages/HistorialReparacion';
 import Diagnostico from '../pages/Diagnostico';
 import Facturar from '../pages/Facturar';
+import ReparacionesCompletas from '../pages/ReparacionesCompletas';
+import ReparacionesCurso from '../pages/ReparacionesCurso';
 
 export function MyRoutes() {
   return (
@@ -22,6 +24,8 @@ export function MyRoutes() {
     <Route path="/HReparaciones" element={<HistorialReparacion />} />
     <Route path="/Diagnostico" element={<Diagnostico />} />
     <Route path="/Facturas" element={<Facturar />} />
+    <Route path="/ReparacionesCompletas" element={<ReparacionesCompletas />} />
+    <Route path="/ReparacionesCurso" element={<ReparacionesCurso />} />
     </Routes>
   );
 }

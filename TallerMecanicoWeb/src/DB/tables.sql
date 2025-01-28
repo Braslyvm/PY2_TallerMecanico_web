@@ -101,6 +101,16 @@ CREATE TABLE reparaciones (
     CHECK (estado IN ('Pendiente', 'En espera', 'Denegado', 'En curso', 'Facturar', 'Finalizado'))
 );
 
+-- Insertar reparaciones con estado 'En curso'
+INSERT INTO reparaciones (id_vehiculo, id_mecanico, fecha_reparacion, estado, descripcion)
+VALUES (1, 101, '2023-11-01', 'En curso', 'Reparación de motor en proceso');
+
+INSERT INTO reparaciones (id_vehiculo, id_mecanico, fecha_reparacion, estado, descripcion)
+VALUES (2, 102, '2023-11-02', 'En curso', 'Cambio de frenos en proceso');
+
+INSERT INTO reparaciones (id_vehiculo, id_mecanico, fecha_reparacion, estado, descripcion)
+VALUES (3, 103, '2023-11-03', 'En curso', 'Revisión de sistema eléctrico en proceso');
+
 -- Tabla que asocia los repuestos con cada reparacion
 
 CREATE TABLE repuestos_reparacion (

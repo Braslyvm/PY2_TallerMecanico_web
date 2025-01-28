@@ -2,6 +2,9 @@
 import React from 'react';
 import { Sidenav, Nav } from 'rsuite';
 import { FaBars } from 'react-icons/fa'; 
+import { CiSquareQuestion } from "react-icons/ci";
+import { BiSolidCarMechanic } from "react-icons/bi";
+import { GiMechanicGarage } from "react-icons/gi";
 import { useNavigate } from 'react-router-dom';
 import HomeIcon from '@rsuite/icons/legacy/Home';
 import GroupIcon from '@rsuite/icons/legacy/Group';
@@ -77,33 +80,30 @@ const MySidebar = () => {
             <Nav.Item eventKey="2" icon={<GroupIcon style={{ color: '#ffffff' }} />} onClick={() => {navigate("/Mecanicos");}}>
               Planilla
             </Nav.Item>
+            <Nav.Item eventKey="3" icon={<CarIcon style={{ color: '#ffffff' }} />} onClick={() => {navigate("/Diagnostico");}}>
+              Diagnósticos
+            </Nav.Item>
             <Nav.Menu
               placement="rightStart"
-              eventKey="3"
-              title="solicitudes"
+              eventKey="4"
+              title="Reparaciones"
               icon={<ToolsIcon style={{ color: '#ffffff' }} />}
-              onToggle={() => handleMenuToggle('3')} 
-              open={openedMenu === '3'} 
+              onToggle={() => handleMenuToggle('4')} 
+              open={openedMenu === '4'} 
             >
-              <Nav.Item eventKey="3-1" onClick={() => {navigate("/Reparaciones");}}>Reparaciones</Nav.Item>
-              <Nav.Item eventKey="3-2">Devices</Nav.Item>
-              <Nav.Item eventKey="3-3">Loyalty</Nav.Item>
-              <Nav.Item eventKey="3-4">Visit Depth</Nav.Item>
+              <Nav.Item eventKey="4-1" icon={<CiSquareQuestion style={{ color: '#ffffff' }} />} onClick={() => {navigate("/Reparaciones");}}>  Solicitudes</Nav.Item>
+              <Nav.Item eventKey="4-2" icon={<BiSolidCarMechanic style={{ color: '#ffffff' }} />} onClick={()=>{navigate("/ReparacionesCompletas")}}>  Todas las reparaciones</Nav.Item>
+              <Nav.Item eventKey="4-3" icon={<GiMechanicGarage style={{ color: '#ffffff' }} />} onClick={()=>{navigate("/ReparacionesCurso")}}>  Reparaciones en curso</Nav.Item>
+              <Nav.Item eventKey="4-4" icon={<BarChartHorizontalIcon style={{ color: '#ffffff' }} />} onClick={() => {navigate("/HReparaciones");}}>  Historial de reparaciones</Nav.Item>
             </Nav.Menu>
-            <Nav.Item eventKey="4" icon={<BarChartHorizontalIcon style={{ color: '#ffffff' }} />} onClick={() => {navigate("/HReparaciones");}}>
-              Historial de Reparaciones
-            </Nav.Item>
             <Nav.Item eventKey="5" icon={<RateIcon style={{ color: '#ffffff' }} />} onClick={() => {navigate("/Registro_repuesto");}}>
               Repuesto
             </Nav.Item>
-            <Nav.Item eventKey="6" icon={<CarIcon style={{ color: '#ffffff' }} />} onClick={() => {navigate("/Diagnostico");}}>
-              Diagnósticos
+            <Nav.Item eventKey="6" icon={<CreditCardPlusIcon style={{ color: '#ffffff' }} />} onClick={() => {navigate("/Facturas");}}>
+              Facturar
             </Nav.Item>
             <Nav.Item eventKey="7" icon={<GearCircleIcon style={{ color: '#ffffff' }} />} onClick={() => {navigate("/Mecanicos");}}>
               Ajustes
-            </Nav.Item>
-            <Nav.Item eventKey="8" icon={<CreditCardPlusIcon style={{ color: '#ffffff' }} />} onClick={() => {navigate("/Facturas");}}>
-              Facturar
             </Nav.Item>
           </Nav>
         </Sidenav.Body>

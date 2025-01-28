@@ -294,9 +294,6 @@ function Reparaciones() {
         <AddButton onClick={handleAddClick}>
           <FaPlus /> Nueva Reparación
         </AddButton>
-        <AddButton variant="secondary" onClick={handleViewAllClick}>
-            <FaTable /> Ver Todas las Reparaciones
-        </AddButton>
       </Header>
       <TableContainer>
         <Table>
