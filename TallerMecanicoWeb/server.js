@@ -305,6 +305,8 @@ app.post("/api/marcas", (req, res) => {
 app.post("/api/repuestos", upload.single("foto"), (req, res) => {
   const { selectedMarca, precio, descripcion } = req.body;
   const foto = req.file ? req.file.path : null; // Ruta de la imagen guardada
+  console.log("Datos recibidos:", req.body); // Imprime los datos del formulario
+  console.log("Archivo recibido:", req.file); // Imprime la información del archivo (si existe)
 
   // Validar que todos los campos estén presentes
   if (!selectedMarca || !precio || !descripcion || !foto) {
@@ -391,12 +393,10 @@ app.post("/api/repuestos_reparacion", (req, res) => {
 
   // Validar que los campos requeridos estén presentes
   if (!id_reparacion || !id_repuesto || !cantidad_utilizada) {
-    return res
-      .status(400)
-      .json({
-        error:
-          "Todos los campos son obligatorios: id_reparacion, id_repuesto, cantidad_utilizada",
-      });
+    return res.status(400).json({
+      error:
+        "Todos los campos son obligatorios: id_reparacion, id_repuesto, cantidad_utilizada",
+    });
   }
 
   const sql = `

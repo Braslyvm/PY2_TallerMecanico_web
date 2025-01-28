@@ -66,6 +66,10 @@ function GestionDeRepuestos() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log(selectedMarca)
+    console.log(precio)
+    console.log(descripcion)
+
 
     // Validación de campos
     if (!precio || !selectedMarca || !descripcion || !foto) {
@@ -74,7 +78,7 @@ function GestionDeRepuestos() {
     }
 
     const formData = new FormData();
-    formData.append("selectedMarca", selectedMarca);
+    formData.append("selectedMarca", selectedMarca.id_marca);
     formData.append("precio", precio);
     formData.append("foto", foto);
     formData.append("descripcion", descripcion);
@@ -102,12 +106,34 @@ function GestionDeRepuestos() {
         );
       });
   };
-
+  const obtenerMarcaPorId = (id) => {
+    fetch(`http://localhost:3001/api/marcas/${id}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setSelectedMarca(data);
+      })
+      .catch((error) => {
+        console.error("Error al obtener la marca:", error);
+        Swal.fire(
+          "Error",
+          "No se pudo obtener la marca. Intenta nuevamente.",
+          "error"
+        );
+      });
+  };
   const handleEdit = (precio, foto, descripcion, id_marca) => {
     setPrecio(precio);
     setFoto(foto);
+    obtenerMarcaPorId(id_marca);
+    //console.log(selectedMarca);
+
     setDescripcion(descripcion);
-    setSelectedMarca(id_marca);
+
     setIsModalOpen3(true);
   };
 
@@ -322,7 +348,7 @@ function GestionDeRepuestos() {
                   <strong>Precio:</strong> {selected.precio}
                 </p>
                 <p>
-                  <strong>Marca:</strong> {selectedMarca.nombre}
+                  <strong>Marca:</strong> {selectedMarca.id_marca}
                 </p>
               </FormFields>
             </FormContainer>
