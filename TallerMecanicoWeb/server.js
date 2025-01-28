@@ -1,9 +1,26 @@
 import express from 'express';
 import sqlite3 from 'sqlite3';
 import cors from 'cors';
+import multer from 'multer';
+import path from 'path';
 
 const app = express();
 const db = new sqlite3.Database('./src/DB/TallerMecanico.db'); // Base de datos SQLite
+
+app.use(cors());
+app.use(express.json());
+
+// Configuración de Multer para manejar la carga de archivos
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // Carpeta donde se guardarán las imágenes
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // Renombrar el archivo
+  }
+});
+
+const upload = multer({ storage }); // Base de datos SQLite
 
 app.use(cors());
 app.use(express.json());
@@ -268,51 +285,50 @@ app.post('/api/marcas', (req, res) => {
 });
 
 // Agregar un repuesto
-app.post("/api/repuestos", (req, res) => {
-   
-    const { selectedMarca, precio, foto, descripcion } = req.body;
-  
-   
-  
-   
-    if (!selectedMarca || !precio || !foto || !descripcion) {
-      console.log("Faltan datos"); // Agrega una advertencia si faltan datos
-      return res.status(400).json({ error: "Faltan datos PUTASAAA3" });
+app.post('/api/repuestos', upload.single('foto'), (req, res) => {
+    const { selectedMarca, precio, descripcion } = req.body;
+    const foto = req.file ? req.file.path : null; // Ruta de la imagen guardada
+
+    // Validar que todos los campos estén presentes
+    if (!selectedMarca || !precio || !descripcion || !foto) {
+        console.log("Faltan datos"); // Agrega una advertencia si faltan datos
+        return res.status(400).json({ error: "Faltan datos" });
     }
-  
+
     // Asegúrate de que el precio es un número válido
     if (isNaN(precio)) {
-      return res.status(400).json({ error: "Precio debe ser un número válido" });
+        return res.status(400).json({ error: "Precio debe ser un número válido" });
     }
-  
+
     const insertQuery = `
         INSERT INTO repuestos (id_marca, precio, foto, descripcion)
         VALUES (?, ?, ?, ?)`;
-  
-    db.run(
-      insertQuery,
-      [selectedMarca, precio, foto, descripcion],
-      function (err) {
+
+    db.run(insertQuery, [selectedMarca, precio, foto, descripcion], function (err) {
         if (err) {
-          console.error(err);
-          return res
-            .status(500)
-            .json({ error: "Error en la base de datos: " + err.message });
+            console.error(err);
+            return res.status(500).json({ error: "Error en la base de datos: " + err.message });
         }
         res.status(201).json({ id_repuesto: this.lastID });
-      }
-    );
-  });
+    });
+});
   
 
 // Agregar un mecánico
-app.post('/api/mecanicos', (req, res) => {
-    const { cedula, nombre, edad, foto } = req.body;
+app.post('/api/mecanicos', upload.single('foto'), (req, res) => {
+    const { cedula, nombre, edad } = req.body;
+    console.log(foto);
+    const foto = req.file ? req.file.path : null; // Ruta de la imagen guardada
+    // Validar que todos los campos estén presentes
+    if (!cedula || !nombre || !edad || !foto) {
+        return res.status(400).json({ error: "Todos los campos son obligatorios." });
+    }
+
     db.run('INSERT INTO mecanicos (cedula, nombre, edad, foto) VALUES (?, ?, ?, ?)', 
     [cedula, nombre, edad, foto], function (err) {
         if (err) {
-            res.status(500).json({ error: err.message });
-            return;
+            console.error("Error al agregar mecánico:", err.message); // Log del error
+            return res.status(500).json({ error: err.message });
         }
         res.status(201).json({ cedula: this.lastID });
     });
@@ -467,16 +483,26 @@ app.get('/api/diagnostico', (req, res) => {
 });
 
 // Agregar un nuevo diagnóstico
-app.post('/api/diagnostico', (req, res) => {
-    const { id_vehiculo, fecha_diagnostico, diagnostico_tecnico, descripcion_cliente, foto } = req.body;
-    db.run('INSERT INTO diagnostico_vehiculo ( id_vehiculo, fecha_diagnostico, diagnostico_tecnico, descripcion_cliente, foto ) VALUES (?, ?, ?,?,?)', [id_vehiculo, fecha_diagnostico, diagnostico_tecnico, descripcion_cliente, foto], function (err) {
+app.post('/api/diagnostico', upload.single('foto'), (req, res) => {
+    const { id_vehiculo, fecha_diagnostico, diagnostico_tecnico, descripcion_cliente } = req.body;
+    console.log(req.file);
+    const foto = req.file ? req.file.path : null; // Cambié a req.file.path para obtener la ruta completa
+    // Validar que todos los campos estén presentes
+    if (!id_vehiculo || !fecha_diagnostico || !diagnostico_tecnico || !descripcion_cliente || !foto) {
+        return res.status(400).json({ error: 'Por favor, completa todos los campos.' });
+    }
+
+    // Insertar en la base de datos
+    db.run('INSERT INTO diagnostico_vehiculo (id_vehiculo, fecha_diagnostico, diagnostico_tecnico, descripcion_cliente, foto) VALUES (?, ?, ?, ?, ?)', 
+    [id_vehiculo, fecha_diagnostico, diagnostico_tecnico, descripcion_cliente, foto], function (err) {
         if (err) {
-            res.status(500).json({ error: err.message });
-            return;
+            console.error("Error al insertar diagnóstico:", err.message); // Log del error
+            return res.status(500).json({ error: err.message });
         }
         res.status(201).json({ id: this.lastID });
     });
 });
+
 
 // Obtener reparaciones por estado
 app.get('/api/reparaciones/estado/:estado', (req, res) => {

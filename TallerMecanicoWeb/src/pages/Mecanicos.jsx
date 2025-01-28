@@ -15,7 +15,6 @@ function Mecanicos() {
   const [data, setData] = useState([]);
   const [selectedMecanico, setSelectedMecanico] = useState(null);
 
-  //Alertas de registro de mecanicos 
   const AlertRegiter = () => {
     Swal.fire({
       title: '¡Alerta!',
@@ -24,7 +23,7 @@ function Mecanicos() {
       confirmButtonText: 'Aceptar'
     });
   };
-  //Alertas de eliminacion de mecanicos
+
   const AlertDelete = () => {
     Swal.fire({
       text: 'Mecanico eliminado correctamente!.',  
@@ -36,9 +35,7 @@ function Mecanicos() {
     });
   };
 
-  //Alertas de eliminacion de mecanicos
   const AlertAviso = (text1) => {
-    console.log(text1);
     Swal.fire({
       text: text1,  
       imageUrl: 'https://cdn0.iconfinder.com/data/icons/user-interface-2063/24/UI_Essential_icon_expanded-76-512.png', 
@@ -48,7 +45,7 @@ function Mecanicos() {
       confirmButtonText: 'Aceptar'
     });
   };
-  // Obtener datos de mecánicos desde la API
+
   const getMecanicos = () => {
     axios
       .get("http://localhost:3001/api/mecanicos") 
@@ -66,17 +63,16 @@ function Mecanicos() {
   useEffect(() => {
     getMecanicos();
   }, []);
-  //desplegar modal para agregar un nuevo mecanico
+
   const handleAddClick = () => {
     setIsModalOpen(true);
   };
-  //desplegar modal para ver un mecanico
+
   const handleViewClick = (cedula, nombre, edad, foto) => {
     setSelectedMecanico({ cedula, nombre, edad, foto });
     setVerOpen(true);
   };
 
-  //cerrar modal de agregar mecanico
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setNombre("");
@@ -84,18 +80,18 @@ function Mecanicos() {
     setFoto(null);
     setEdad("");
   };
-  //cerrar modal de ver mecanico
+
   const handleViewModal = () => {
     setVerOpen(false);
     setSelectedMecanico(null);
   };
-  // Configuración de Dropzone
+
   const onDrop = (acceptedFiles) => {
     const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     const file = acceptedFiles[0];
 
     if (file && validTypes.includes(file.type)) {
-      setFoto(URL.createObjectURL(file));
+      setFoto(file); // Cambiar a file en lugar de URL.createObjectURL
     } else {
       alert('Por favor, selecciona un archivo de imagen válido.');
     }
@@ -110,15 +106,25 @@ function Mecanicos() {
     },
     onDrop,
   });
-  // Agregar un nuevo mecánico
+
   const setMecanico = () => {
-    if (!nombre || !cedula || !edad) {
+    if (!nombre || !cedula || !edad || !foto) {
       AlertAviso("Por favor, completa todos los campos.");
       return;
     }
-    const nuevoMecanico = { nombre, cedula, edad, foto };
+
+    const formData = new FormData();
+    formData.append('nombre', nombre);
+    formData.append('cedula', cedula);
+    formData.append('edad', edad);
+    formData.append('foto', foto); // Enviar el archivo de imagen
+
     axios
-      .post("http://localhost:3001/api/mecanicos", nuevoMecanico) 
+      .post("http://localhost:3001/api/mecanicos", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
       .then((response) => {
         AlertRegiter();
         getMecanicos(); 
@@ -128,7 +134,7 @@ function Mecanicos() {
         AlertAviso("Error al agregar mecánico:", error);
       });
   };
-  //Borrar un mecánico
+
   const deleteMecanico = (cedula) => {
     axios
       .post("http://localhost:3001/api/mecanico/delete", { cedula }) 
@@ -150,47 +156,47 @@ function Mecanicos() {
         </AddButton>
       </Header>
       <TableContainer>
-      <Table>
-      <colgroup>
-        <col style={{ width: '20%' }} />
-        <col style={{ width: '40%' }} /> 
-        <col style={{ width: '20%' }} /> 
-        <col style={{ width: '20%' }} /> 
-      </colgroup>
-      <thead>
-        <tr>
-          <th>Cédula</th>
-          <th>Nombre Completo</th>
-          <th>Edad</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      </Table>
-      <TableBodyContainer>
         <Table>
-          <tbody>
-            {data.map((persona, index) => (
-              <tr key={index}>
-                <td style={{ width: '20%' }}>{persona.cedula}</td>
-                <td style={{ width: '40%' }}>{persona.nombre}</td>
-                <td style={{ width: '25%' }}>{persona.edad}</td>
-                <td style={{ width: '15%' }}>
-                  <ActionsCell>
-                    <ViewButton onClick={() => handleViewClick(persona.cedula, persona.nombre, persona.edad, persona.foto)}>
-                      <FaEye />
-                    </ViewButton>
-                    <DeleteButton onClick={() => deleteMecanico(persona.cedula)}>
-                      <FaTrashAlt />
-                    </DeleteButton>
-                  </ActionsCell>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+          <colgroup>
+            <col style={{ width: '20%' }} />
+            <col style={{ width: '40%' }} /> 
+            <col style={{ width: '20%' }} /> 
+            <col style={{ width: '20%' }} /> 
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Cédula</th>
+              <th>Nombre Completo</th>
+              <th>Edad</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
         </Table>
-      </TableBodyContainer>
-    </TableContainer>
-    {isModalOpen && (
+        <TableBodyContainer>
+          <Table>
+            <tbody>
+              {data.map((persona, index) => (
+                <tr key={index}>
+                  <td style={{ width: '20%' }}>{persona.cedula}</td>
+                  <td style={{ width: '40%' }}>{persona.nombre}</td>
+                  <td style={{ width: '25%' }}>{persona.edad}</td>
+                  <td style={{ width: '15%' }}>
+                    <ActionsCell>
+                      <ViewButton onClick={() => handleViewClick(persona.cedula, persona.nombre, persona.edad, persona.foto)}>
+                        <FaEye />
+                      </ViewButton>
+                      <DeleteButton onClick={() => deleteMecanico(persona.cedula)}>
+                        <FaTrashAlt />
+                      </DeleteButton>
+                    </ActionsCell>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </TableBodyContainer>
+      </TableContainer>
+      {isModalOpen && (
         <ModalOverlay>
           <ModalContent>
             <h3>Agregar Mecánico</h3>
@@ -198,7 +204,7 @@ function Mecanicos() {
               <PhotoInputContainer {...getRootProps()}>
                 <input {...getInputProps()} />
                 {foto ? (
-                  <PreviewImage src={foto} alt="Vista previa" />
+                  <PreviewImage src={URL.createObjectURL(foto)} alt="Vista previa" />
                 ) : (
                   <div className="upload-box">Arrastra o selecciona una foto</div>
                 )}
@@ -239,11 +245,11 @@ function Mecanicos() {
       )}
       {verOpen && selectedMecanico && (
         <ModalOverlay>
-          <ModalContent style={{ width: '400pX'}}>
+          <ModalContent style={{ width: '400px'}}>
             <h3>Detalles del Mecánico</h3>
             <FormContainer>
               <PhotoviewContainer> 
-              <img src={selectedMecanico.foto} alt="Foto del mecánico" style={{ maxWidth: '100px', borderRadius: '8px' }} />
+                <img src={selectedMecanico.foto} alt="Foto del mecánico" style={{ maxWidth: '100px', borderRadius: '8px' }} />
               </PhotoviewContainer>
               <FormFields>
                 <p><strong>Nombre:</strong> {selectedMecanico.nombre}</p>
@@ -252,8 +258,8 @@ function Mecanicos() {
               </FormFields>
             </FormContainer>
             <ActionButtons style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <CloseButton onClick={handleViewModal}>Cerrar</CloseButton>
-              </ActionButtons>
+              <CloseButton onClick={handleViewModal}>Cerrar</CloseButton>
+            </ActionButtons>
           </ModalContent>
         </ModalOverlay>
       )}
@@ -263,7 +269,7 @@ function Mecanicos() {
 
 export default Mecanicos;
 
-
+// Styled Components
 const HomeContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -271,7 +277,7 @@ const HomeContainer = styled.div`
   overflow-y: auto;
   justify-content: center;
   height: 90vh;
-  background-color: #f8f9fa;
+  background-color: #f8f9fa;
 `;
 
 const Header = styled.div`
@@ -303,7 +309,7 @@ const AddButton = styled.button`
     margin-right: 5px;
   }
   &:hover {
-    background-color:rgb(86, 113, 134);
+    background-color: rgb(86, 113, 134);
   }
 `;
 
@@ -333,6 +339,7 @@ const Table = styled.table`
     background-color: #f1f1f1;
   }
 `;
+
 const ActionsCell = styled.div`
   display: flex;
   justify-content: flex-start;
@@ -509,9 +516,9 @@ const CloseButton = styled.button`
   -webkit-appearance: none; 
   -moz-appearance: none;
 `;
+
 const TableContainer = styled.div`
   width: 100%;
-
 `;
 
 const TableBodyContainer = styled.div`

@@ -3,7 +3,8 @@ import axios from 'axios';
 import { FaEye, FaPlus } from "react-icons/fa";
 import styled from "styled-components";
 import { useDropzone } from "react-dropzone";
-import { Modal,Button, Form } from "react-bootstrap";
+import { Modal, Button, Form } from "react-bootstrap";
+import Swal from "sweetalert2";
 
 const Diagnostico = () => {
   const [diagnosticos, setDiagnosticos] = useState([]);
@@ -11,10 +12,16 @@ const Diagnostico = () => {
   const [verOpen, setVerOpen] = useState(false);
   const [selectedDiagnostico, setSelectedDiagnostico] = useState(null);
   const [vehiculo, setVehiculo] = useState("");
-  const [foto, setFoto] = useState("");
+  const [foto, setFoto] = useState(null);
   const [descripcion, setDescripcion] = useState("");
   const [descripcionCliente, setDescripcionCliente] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Obtener diagnósticos y vehículos al cargar el componente
+  useEffect(() => {
+    cargarDiagnosticos();
+    getVehiculos();
+  }, []);
 
   const cargarDiagnosticos = async () => {
     try {
@@ -23,8 +30,14 @@ const Diagnostico = () => {
     } catch (error) {
       console.error("Error al cargar los diagnósticos:", error);
     }
-    
-  }; 
+  };
+
+  const getVehiculos = () => {
+    axios
+      .get("http://localhost:3001/api/vehiculos/completa")
+      .then((response) => setVehiculos(response.data))
+      .catch((error) => console.error("Error al obtener vehículos:", error));
+  };
 
   // Configuración de Dropzone
   const onDrop = (acceptedFiles) => {
@@ -32,7 +45,7 @@ const Diagnostico = () => {
     const file = acceptedFiles[0];
 
     if (file && validTypes.includes(file.type)) {
-      setFoto(URL.createObjectURL(file));
+      setFoto(file); // Guardar el archivo en lugar de la URL
     } else {
       alert('Por favor, selecciona un archivo de imagen válido.');
     }
@@ -47,41 +60,41 @@ const Diagnostico = () => {
     },
     onDrop,
   });
-  
+
   const agregarDiagnostico = async () => {
     const fechaActual = new Date().toISOString().split('T')[0];
-    const nuevoDiagnostico = {
-      id_vehiculo: vehiculo,
-      fecha_diagnostico: fechaActual,
-      diagnostico_tecnico: descripcion,
-      descripcion_cliente: descripcionCliente,
-      foto
-    };
-    
+    const nuevoDiagnostico = new FormData();
+    nuevoDiagnostico.append('id_vehiculo', vehiculo);
+    nuevoDiagnostico.append('fecha_diagnostico', fechaActual);
+    nuevoDiagnostico.append('diagnostico_tecnico', descripcion);
+    nuevoDiagnostico.append('descripcion_cliente', descripcionCliente);
+    if (foto) {
+      nuevoDiagnostico.append('foto', foto); // Agregar la foto al FormData
+    }
+
     try {
-      await axios.post("http://localhost:3001/api/diagnostico", nuevoDiagnostico);
+      await axios.post("http://localhost:3001/api/diagnostico", nuevoDiagnostico, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       cargarDiagnosticos();
       setVehiculo("");
-      setFoto("");
+      setFoto(null);
       setDescripcion("");
       setDescripcionCliente("");
       setIsModalOpen(false);
     } catch (error) {
       console.error("Error al agregar el diagnóstico:", error);
+      Swal.fire("Error", "No se pudo agregar el diagnóstico.", "error");
     }
   };
 
-  useEffect(() => {
-    cargarDiagnosticos();
-    getVehiculos();
-  }, []);
-
   const handleViewClick = (id_diagnostico, id_vehiculo, fecha_diagnostico, diagnostico_tecnico, descripcion_cliente, foto) => {
-    setSelectedDiagnostico({  id_diagnostico,id_vehiculo, fecha_diagnostico, diagnostico_tecnico, descripcion_cliente, foto });
+    setSelectedDiagnostico({ id_diagnostico, id_vehiculo, fecha_diagnostico, diagnostico_tecnico, descripcion_cliente, foto });
     setVerOpen(true);
-  }
+  };
 
-  //cerrar modal de ver mecanico
   const handleViewModal = () => {
     setVerOpen(false);
     setSelectedDiagnostico(null);
@@ -92,18 +105,10 @@ const Diagnostico = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setVehiculo("");
-    setFoto("");
+    setFoto(null);
     setDescripcion("");
     setDescripcionCliente("");
-  }
-
-  const getVehiculos = () => {
-    axios
-      .get("http://localhost:3001/api/vehiculos/completa")
-      .then((response) => setVehiculos(response.data))
-      .catch((error) => console.error("Error al obtener vehículos:", error));
   };
-
 
   const buscarPlacaVehiculo = (id) => {
     for (let i = 0; i < vehiculos.length; i++) {
@@ -128,7 +133,7 @@ const Diagnostico = () => {
               <th>ID de diagnóstico</th>
               <th>Placa de vehículo</th>
               <th>Fecha de diagnóstico</th>
-              <th>Diagnostico técnico</th>
+              <th>Diagnóstico técnico</th>
               <th>Descripción del cliente</th>
               <th>Acciones</th>
             </tr>
@@ -144,7 +149,7 @@ const Diagnostico = () => {
                   <td>{diagnostico.descripcion_cliente}</td>
                   <td style={{ width: '15%' }}>
                     <ActionsCell>
-                      <ViewButton onClick={() => handleViewClick(diagnostico.id_diagnostico, buscarPlacaVehiculo(diagnostico.id_vehiculo),diagnostico.fecha_diagnostico, diagnostico.diagnostico_tecnico, diagnostico.descripcion_cliente,diagnostico.foto)}>
+                      <ViewButton onClick={() => handleViewClick(diagnostico.id_diagnostico, buscarPlacaVehiculo(diagnostico.id_vehiculo), diagnostico.fecha_diagnostico, diagnostico.diagnostico_tecnico, diagnostico.descripcion_cliente, diagnostico.foto)}>
                         <FaEye />
                       </ViewButton>
                     </ActionsCell>
@@ -159,13 +164,15 @@ const Diagnostico = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {/* Modal para agregar diagnóstico */}
       <Modal show={isModalOpen} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title>Registrar diagnóstico</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
-          <Form.Group controlId="formVehiculo">
+            <Form.Group controlId="formVehiculo">
               <Form.Label>Vehículo</Form.Label>
               <Form.Control
                 as="select"
@@ -193,7 +200,7 @@ const Diagnostico = () => {
               <PhotoInputContainer {...getRootProps()}>
                 <input {...getInputProps()} />
                 {foto ? (
-                  <PreviewImage src={foto} alt="Vista previa" />
+                  <PreviewImage src={URL.createObjectURL(foto)} alt="Vista previa" />
                 ) : (
                   <div className="upload-box">Arrastra o selecciona una foto</div>
                 )}
@@ -211,6 +218,7 @@ const Diagnostico = () => {
         </Modal.Footer>
       </Modal>
 
+      {/* Modal para ver detalles del diagnóstico */}
       <Modal show={verOpen} onHide={handleViewModal}>
         <Modal.Header closeButton>
           <Modal.Title>Detalles del Diagnóstico</Modal.Title>
