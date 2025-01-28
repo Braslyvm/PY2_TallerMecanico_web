@@ -1,5 +1,4 @@
 
-
 -- Tabla de Vehículos
 
 CREATE TABLE vehiculos (
@@ -123,12 +122,13 @@ Create table Login(
 
 INSERT INTO reparaciones (id_vehiculo, id_mecanico, fecha_reparacion, estado, descripcion) 
 VALUES 
-(1, 101, '2025-01-25', 'Finalizado', 'Cambio de filtro de aire y aceite');
-
+(1, 101, '2025-01-25', 'Finalizado', 'Cambio de filtro de aire y aceite'),
+(2, 101, '2025-01-25', 'Facturar', 'Cambio de filtro de aire y aceite');
 INSERT INTO repuestos_reparacion (id_reparacion, id_repuesto, cantidad_utilizada) 
 VALUES 
 (2, 1, 1), 
-(2, 4, 1); 
+(2, 4, 1),
+(1, 4, 1); 
 
 CREATE TABLE diagnostico_vehiculo(
     id_diagnostico INTEGER PRIMARY KEY AUTOINCREMENT,
