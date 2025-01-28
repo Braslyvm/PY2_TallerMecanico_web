@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { FaCog, FaSearch, FaToolbox, FaCut } from "react-icons/fa";
 import axios from "axios";
-import { Modal, Button as BootstrapButton, Table as BootstrapTable } from "react-bootstrap";
+import {
+  Modal,
+  Button as BootstrapButton,
+  Table as BootstrapTable,
+} from "react-bootstrap";
 import Swal from "sweetalert2";
 import { useDropzone } from "react-dropzone";
 
@@ -113,10 +117,12 @@ function GestionDeRepuestos() {
     setIsModalOpen2(true);
   };
 
-  const handleDelete = (id_repuesto) => {
+  const handleDelete = (precio, foto, descripcion, id_marca, id_repuesto) => {
+    console.log(id_repuesto);
+    // Confirmación antes de eliminar el repuesto
     Swal.fire({
       title: "¿Estás seguro?",
-      text: "¿Quieres eliminar este repuesto?",
+      text: `¿Quieres eliminar el repuesto: ${descripcion}?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -124,15 +130,30 @@ function GestionDeRepuestos() {
       confirmButtonText: "Sí, eliminar",
     }).then((result) => {
       if (result.isConfirmed) {
+        // Si el usuario confirma, se procede a eliminar el repuesto
         axios
           .delete(`http://localhost:3001/api/repuestos/delete/${id_repuesto}`)
+
           .then((response) => {
-            Swal.fire("¡Éxito!", "Repuesto eliminado correctamente.", "success");
+            Swal.fire(
+              "¡Éxito!",
+              "Repuesto eliminado correctamente.",
+              "success"
+            );
             getPiezas(); // Recargar las piezas después de eliminar una
           })
           .catch((error) => {
-            console.error("Error al eliminar repuesto:", error.response || error);
-            Swal.fire("Error", "No se pudo eliminar el repuesto.", "error");
+            console.error(
+              "Error al eliminar repuesto:",
+              error.response || error
+            );
+            Swal.fire(
+              "Error",
+              `No se pudo eliminar el repuesto. Detalles: ${
+                error.response?.data?.message || error.message
+              }`,
+              "error"
+            );
           });
       }
     });
@@ -190,19 +211,88 @@ function GestionDeRepuestos() {
                   required
                 />
               </InputField>
-
               {/* Cargar imagen con Dropzone */}
               <PhotoInputContainer {...getRootProps()}>
                 <input {...getInputProps()} />
                 {foto ? (
-                  <PreviewImage src={URL.createObjectURL(foto)} alt="Vista previa" />
+                  <PreviewImage
+                    src={URL.createObjectURL(foto)}
+                    alt="Vista previa"
+                  />
                 ) : (
-                  <div className="upload-box">Arrastra o selecciona una foto</div>
+                  <div className="upload-box">
+                    Arrastra o selecciona una foto
+                  </div>
                 )}
               </PhotoInputContainer>
               <ActionButtons>
                 <SubmitButton type="submit">Guardar</SubmitButton>
                 <CloseButton onClick={() => setIsModalOpen(false)}>
+                  Cerrar
+                </CloseButton>
+              </ActionButtons>
+            </Form>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+      {isModalOpen3 && (
+        <ModalOverlay>
+          <ModalContent>
+            <h3>Editar repuesto</h3>
+            <Form onSubmit={handleSubmit}>
+              <InputField>
+                <label>Precio</label>
+                <input
+                  type="number"
+                  value={precio}
+                  onChange={(e) => setPrecio(e.target.value)}
+                  required
+                />
+              </InputField>
+
+              <InputField>
+                <label>Marca</label>
+                <select
+                  value={selectedMarca.id_marca || ""}
+                  onChange={(e) => {
+                    const marcaSeleccionada = marcas.find(
+                      (marca) => marca.id_marca === parseInt(e.target.value)
+                    );
+                    setSelectedMarca(marcaSeleccionada.id_marca);
+                  }}
+                >
+                  <option value="">Selecciona una marca</option>
+                  {marcas.map((marca) => (
+                    <option key={marca.id_marca} value={marca.id_marca}>
+                      {marca.nombre}
+                    </option>
+                  ))}
+                </select>
+              </InputField>
+
+              <InputField>
+                <label>Descripción</label>
+                <textarea
+                  value={descripcion}
+                  onChange={(e) => setDescripcion(e.target.value)}
+                  required
+                />
+              </InputField>
+
+              {/* Cargar imagen con Dropzone */}
+              <PhotoInputContainer {...getRootProps()}>
+                <input {...getInputProps()} />
+                {foto ? (
+                  <PreviewImage src={foto} alt="Vista previa" />
+                ) : (
+                  <div className="upload-box">
+                    Arrastra o selecciona una foto
+                  </div>
+                )}
+              </PhotoInputContainer>
+              <ActionButtons>
+                <SubmitButton type="submit">Guardar</SubmitButton>
+                <CloseButton onClick={() => setIsModalOpen3(false)}>
                   Cerrar
                 </CloseButton>
               </ActionButtons>
@@ -257,56 +347,60 @@ function GestionDeRepuestos() {
               <th>Acciones</th>
             </tr>
           </thead>
-          <TableBodyContainer>
-            <Table>
-              <tbody>
-                {piezas.map((pieza, index) => (
-                  <tr key={index}>
-                    <td>{pieza.descripcion}</td>
-                    <td>₡{parseFloat(pieza.precio).toFixed(2)}</td>
-                    <td>
-                      <ActionsCellCustom>
-                        <EditButton2
-                          onClick={() =>
-                            handleEdit(
-                              pieza.precio,
-                              pieza.foto,
-                              pieza.descripcion,
-                              pieza.id_marca
-                            )
-                          }
-                        >
-                          <FaCog />
-                        </EditButton2>
-                        <ViewButton2
-                          onClick={() =>
-                            handleView(
-                              pieza.precio,
-                              pieza.foto,
-                              pieza.descripcion,
-                              pieza.id_marca
-                            )
-                          }
-                        >
-                          <FaSearch />
-                        </ViewButton2>
-                        <DeleteButton2
-                          onClick={() =>
-                            handleDelete(
-                              pieza.id_repuesto
-                            )
-                          }
-                        >
-                          <FaCut />
-                        </DeleteButton2>
-                      </ActionsCellCustom>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </TableBodyContainer>
         </Table>
+        <TableBodyContainer>
+          <Table>
+            <tbody>
+              {piezas.map((pieza, index) => (
+                <tr key={index}>
+                  <td>{pieza.descripcion}</td>
+                  <td>₡{parseFloat(pieza.precio).toFixed(2)}</td>
+                  <td>
+                    <ActionsCellCustom>
+                      <EditButton2
+                        onClick={() =>
+                          handleEdit(
+                            pieza.precio,
+                            pieza.foto,
+                            pieza.descripcion,
+                            pieza.id_marca
+                          )
+                        }
+                      >
+                        <FaCog />
+                      </EditButton2>
+                      <ViewButton2
+                        onClick={() =>
+                          handleView(
+                            pieza.precio,
+                            pieza.foto,
+                            pieza.descripcion,
+                            pieza.id_marca
+                          )
+                        }
+                      >
+                        <FaSearch />
+                      </ViewButton2>
+                      <DeleteButton2
+                        onClick={() =>
+                          handleDelete(
+                            pieza.precio,
+                            pieza.foto,
+                            pieza.descripcion,
+                            pieza.id_marca,
+                            pieza.id_repuesto
+                          )
+                        }
+                      >
+                        <FaCut />
+                      </DeleteButton2>
+                    </ActionsCellCustom>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </TableBodyContainer>
       </TableContainer>
     </FormContainer>
   );
