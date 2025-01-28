@@ -57,6 +57,7 @@ const Diagnostico = () => {
       descripcion_cliente: descripcionCliente,
       foto
     };
+    
     try {
       await axios.post("http://localhost:3001/api/diagnostico", nuevoDiagnostico);
       cargarDiagnosticos();

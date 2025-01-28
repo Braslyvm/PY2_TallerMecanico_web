@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { FaTrashAlt, FaEye, FaPlus, FaWrench } from "react-icons/fa";
+import { FaTrashAlt, FaEye, FaPlus, FaWrench, FaTable } from "react-icons/fa";
 import { Modal,Button,Form } from "react-bootstrap";
 import Swal from "sweetalert2";
 import axios from "axios";
@@ -25,6 +25,7 @@ function Reparaciones() {
   const [cantidad, setCantidad] = useState(1);
   const [data, setData] = useState([]);
   const [dataComplete, setDataComplete] = useState([]);
+  const [isViewAllModalOpen, setIsViewAllModalOpen] = useState(false); // Nuevo estado para el modal de visualización de todas las reparaciones
 
   // Obtener datos iniciales
   useEffect(() => {
@@ -33,13 +34,15 @@ function Reparaciones() {
     getMecanicos();
     getRepuestos();
     diagnosticosVehiculos();
+    getReparacionesCompletas();
   }, []);
 
   const getReparacionesCompletas = () => {
     axios
-      .get("http://localhost:3001/api/reparacion")
+      .get("http://localhost:3001/api/reparaciones")
       .then((response) => setDataComplete(response.data))
       .catch((error) => console.error("Error al obtener reparaciones completas:", error));
+      console.log(dataComplete);
   }
   const getReparaciones = () => {
     axios
@@ -79,6 +82,14 @@ function Reparaciones() {
   };
 
   const handleAddClick = () => setIsModalOpen(true);
+
+  const handleViewAllClick = () => {
+    getReparacionesCompletas();
+    setIsViewAllModalOpen(true);
+  };
+
+  const handleCloseViewAllModal = () => setIsViewAllModalOpen(false);
+
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -272,6 +283,9 @@ function Reparaciones() {
         <AddButton onClick={handleAddClick}>
           <FaPlus /> Nueva Reparación
         </AddButton>
+        <AddButton variant="secondary" onClick={handleViewAllClick}>
+            <FaTable /> Ver Todas las Reparaciones
+        </AddButton>
       </Header>
       <TableContainer>
         <Table>
@@ -340,6 +354,53 @@ function Reparaciones() {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Modal show={isViewAllModalOpen} onHide={handleCloseViewAllModal} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Ver Todas las Reparaciones</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <TableContainer>
+            <Table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Vehículo</th>
+                  <th>Mecánico</th>
+                  <th>Fecha</th>
+                  <th>Estado</th>
+                  <th>Descripción</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dataComplete.map((reparacion) => (
+                  <tr key={reparacion.id_reparacion}>
+                    <td>{reparacion.id_reparacion}</td>
+                    <td>{buscarPlacaVehiculo(reparacion.id_vehiculo)}</td>
+                    <td>{buscarNombreMecanico(reparacion.id_mecanico)}</td>
+                    <td>{reparacion.fecha_reparacion}</td>
+                    <td>{reparacion.estado}</td>
+                    <td>{reparacion.descripcion}</td>
+                    <td>
+                      <ActionsCell>
+                        <ViewButton onClick={() => handleViewClick(reparacion)}>
+                          <FaEye />
+                        </ViewButton>
+                      </ActionsCell>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </TableContainer>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseViewAllModal}>
+            Cerrar
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
       {isModalOpen && (
         <ModalOverlay>
