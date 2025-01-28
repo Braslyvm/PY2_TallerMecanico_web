@@ -587,6 +587,7 @@ const Container = styled.div`
   flex-direction: column;
   font-family: Arial, sans-serif;
   height: 90vh;
+  padding: 20px;
 `;
 
 const Header = styled.div`
