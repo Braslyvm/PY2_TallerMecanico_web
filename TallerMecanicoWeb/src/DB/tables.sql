@@ -1,4 +1,11 @@
-
+DROP TABLE IF EXISTS repuestos_reparacion;
+DROP TABLE IF EXISTS reparaciones;
+DROP TABLE IF EXISTS mecanicos;
+DROP TABLE IF EXISTS repuestos;
+DROP TABLE IF EXISTS marcas;
+DROP TABLE IF EXISTS vehiculos;
+DROP TABLE IF EXISTS diagnostico_vehiculo;
+DROP TABLE IF EXISTS Login;
 -- Tabla de Vehículos
 
 CREATE TABLE vehiculos (
@@ -45,7 +52,6 @@ CREATE TABLE repuestos (
     descripcion TEXT,
     FOREIGN KEY (id_marca) REFERENCES marcas(id_marca)
 );
-
 
 INSERT INTO repuestos (id_marca, precio, foto, descripcion) 
 VALUES 
@@ -153,4 +159,4 @@ CREATE TABLE diagnostico_vehiculo(
 
 
 
-SELECT * FROM vehiculos
+SELECT * FROM repuestos
