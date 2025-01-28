@@ -1,5 +1,4 @@
 
-
 -- Tabla de Vehículos
 
 CREATE TABLE vehiculos (
