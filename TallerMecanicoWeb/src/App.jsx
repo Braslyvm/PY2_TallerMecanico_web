@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './App.css';
 import { MyRoutes } from './routers/routes.jsx';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import MySidebar from './components/Sidebar'; // Asegúrate de que este sea el correcto
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -11,7 +11,7 @@ function App() {
   return (
     <BrowserRouter>
       <AppContainer>
-        <MySidebar />
+        <Sidebar />
         <Content>
           <MyRoutes />
         </Content>
@@ -19,6 +19,13 @@ function App() {
     </BrowserRouter>
   );
 }
+
+const Sidebar = () => {
+  const location = useLocation();
+  const isAuthPage = location.pathname === '/Login' || location.pathname === '/Registro';
+
+  return !isAuthPage ? <MySidebar /> : null; // Renderiza el sidebar solo si no estamos en las páginas de autenticación
+};
 
 export default App;
 

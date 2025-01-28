@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { FaEye } from "react-icons/fa";
+import { FaEye, FaWrench } from "react-icons/fa";
 import { Modal, Button } from "react-bootstrap";
 import axios from "axios";
 
@@ -10,11 +10,15 @@ function ReparacionesCompletas() {
   const [selectedReparacion, setSelectedReparacion] = useState(null);
   const [vehiculos, setVehiculos] = useState([]);
   const [mecanicos, setMecanicos] = useState([]);
+  const [repuestos, setRepuestos] = useState([]);
+  const [selectedRepuestos, setSelectedRepuestos] = useState([]);
+  const [isRepuestosModalOpen, setIsRepuestosModalOpen] = useState(false);
 
   useEffect(() => {
     getReparacionesCompletas();
     getVehiculos();
     getMecanicos();
+    getRepuestos();
   }, []);
 
   const getReparacionesCompletas = () => {
@@ -38,6 +42,13 @@ function ReparacionesCompletas() {
       .catch((error) => console.error("Error al obtener mecánicos:", error));
   };
 
+  const getRepuestos = () => {
+    axios
+      .get("http://localhost:3001/api/repuestos")
+      .then((response) => setRepuestos(response.data))
+      .catch((error) => console.error("Error al obtener repuestos:", error));
+  };
+
   const buscarPlacaVehiculo = (id) => {
     const vehiculo = vehiculos.find(v => v.id_vehiculo === id);
     return vehiculo ? vehiculo.placa : "Desconocido";
@@ -58,6 +69,60 @@ function ReparacionesCompletas() {
     setSelectedReparacion(null);
   };
 
+  const handleManageRepuestos = (reparacion) => {
+    setSelectedReparacion(reparacion.id_reparacion);
+    getRepuestosReparacion(reparacion.id_reparacion);
+    setIsRepuestosModalOpen(true);
+  };
+
+  const getRepuestosReparacion = (id) => {
+    axios
+      .get(`http://localhost:3001/api/repuestos_reparacion/${id}`)
+      .then((response) => {
+        searchRepuestos(response.data);
+      })
+      .catch((error) =>
+        console.error("Error al obtener repuestos de la reparación:", error)
+      );
+  };
+
+  const searchRepuestos = (ids) => {
+    const updatedRepuestos = [...selectedRepuestos]; // Copia del estado actual
+
+    ids.forEach((idObj) => {
+      // Buscar si el repuesto ya existe en selectedRepuestos
+      const existing = updatedRepuestos.find(
+        (repuesto) => repuesto.id_repuesto === idObj.id_repuesto
+      );
+
+      if (existing) {
+        // Si existe, actualizar la cantidad
+        existing.cantidad += idObj.cantidad_utilizada;
+      } else {
+        // Si no existe, buscar el repuesto original y agregarlo
+        const newRepuesto = repuestos.find(
+          (repuesto) => repuesto.id_repuesto === idObj.id_repuesto
+        );
+        if (newRepuesto) {
+          updatedRepuestos.push({
+            ...newRepuesto,
+            cantidad: idObj.cantidad_utilizada,
+          });
+        }
+      }
+    });
+
+    // Actualizar el estado una sola vez
+    setSelectedRepuestos(updatedRepuestos);
+  };
+
+  const handleCloseRepuestosModal = () => {
+    setIsRepuestosModalOpen(false);
+    setSelectedRepuestos([]);
+    setSelectedReparacion(null);
+  };
+
+
   return (
     <Container>
       <Header>
@@ -76,7 +141,7 @@ function ReparacionesCompletas() {
               <th>Acciones</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody style={{ overflowY: "auto" }}>
             {dataComplete.map((reparacion) => (
               <tr key={reparacion.id_reparacion}>
                 <td>{reparacion.id_reparacion}</td>
@@ -90,6 +155,13 @@ function ReparacionesCompletas() {
                     <ViewButton onClick={() => handleViewClick(reparacion)}>
                       <FaEye />
                     </ViewButton>
+                    <ManageButton
+                        onClick={() =>
+                        handleManageRepuestos(reparacion)
+                        }
+                    >
+                        <FaWrench />
+                    </ManageButton>
                   </ActionsCell>
                 </td>
               </tr>
@@ -120,6 +192,39 @@ function ReparacionesCompletas() {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      <Modal show={isRepuestosModalOpen} onHide={handleCloseRepuestosModal} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Repuestos de la Reparación</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Cantidad</th>
+              </tr>
+            </thead>
+            <tbody>
+              {selectedRepuestos.map((repuesto, index) => (
+                <tr key={index}>
+                  <td>{repuesto.id_repuesto}</td>
+                  <td>{repuesto.descripcion}</td>
+                  <td>{repuesto.precio}</td>
+                  <td>{repuesto.cantidad}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseRepuestosModal}>
+            Cerrar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 }
@@ -143,8 +248,6 @@ const Header = styled.div`
 
 const TableContainer = styled.div`
   max-height: 90%;
-  overflow-y: auto;
-  overflow-x: hidden;
   z-index: 1;
 `;
 
@@ -195,6 +298,19 @@ const ViewButton = styled.button`
   }
   svg {
     font-size: 14px;
+  }
+`;
+
+const ManageButton = styled.button`
+  background-color: #5cb85c;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #4cae4c;
   }
 `;
 

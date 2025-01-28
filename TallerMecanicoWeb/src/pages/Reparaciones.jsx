@@ -93,12 +93,6 @@ function Reparaciones() {
 
   const handleAddClick = () => setIsModalOpen(true);
 
-  const handleViewAllClick = () => {
-    getReparacionesCompletas();
-    setIsViewAllModalOpen(true);
-  };
-
-  const handleCloseViewAllModal = () => setIsViewAllModalOpen(false);
 
 
   const handleCloseModal = () => {
@@ -250,7 +244,8 @@ function Reparaciones() {
       .catch((error) => console.error("Error al eliminar reparación:", error));
   };
 
-  const saveRepuesto = () => {
+  const saveRepuesto = (e) => {
+    e.preventDefault();
     if (!selectedRepuesto) {
       Swal.fire("Error", "Debe seleccionar un repuesto.", "error");
       return;
@@ -363,52 +358,6 @@ function Reparaciones() {
         </Table>
       </TableContainer>
 
-      <Modal show={isViewAllModalOpen} onHide={handleCloseViewAllModal} size="lg">
-        <Modal.Header closeButton>
-          <Modal.Title>Ver Todas las Reparaciones</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <TableContainer>
-            <Table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Vehículo</th>
-                  <th>Mecánico</th>
-                  <th>Fecha</th>
-                  <th>Estado</th>
-                  <th>Descripción</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dataComplete.map((reparacion) => (
-                  <tr key={reparacion.id_reparacion}>
-                    <td>{reparacion.id_reparacion}</td>
-                    <td>{buscarPlacaVehiculo(reparacion.id_vehiculo)}</td>
-                    <td>{buscarNombreMecanico(reparacion.id_mecanico)}</td>
-                    <td>{reparacion.fecha_reparacion}</td>
-                    <td>{reparacion.estado}</td>
-                    <td>{reparacion.descripcion}</td>
-                    <td>
-                      <ActionsCell>
-                        <ViewButton onClick={() => handleViewClick(reparacion)}>
-                          <FaEye />
-                        </ViewButton>
-                      </ActionsCell>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </TableContainer>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseViewAllModal}>
-            Cerrar
-          </Button>
-        </Modal.Footer>
-      </Modal>
 
       {isModalOpen && (
         <ModalOverlay>
@@ -651,9 +600,6 @@ const Table = styled.table`
   
   th {
     background-color: #526D82;
-    position: sticky;
-    top: 0;
-    z-index: 1;
     color: white;
   }
   

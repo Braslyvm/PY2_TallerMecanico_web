@@ -86,7 +86,7 @@ function ReparacionesCurso() {
               <th>Descripción</th>
               <th>Estado</th>
               <th>Acciones</th>
-              <th>Finalizar</th>
+              <th>Factura</th>
             </tr>
           </thead>
           <tbody>
@@ -187,9 +187,6 @@ const Table = styled.table`
   
   th {
     background-color: #526D82;
-    position: sticky;
-    top: 0;
-    z-index: 1;
     color: white;
   }
   
