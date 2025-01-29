@@ -51,7 +51,7 @@ export default function Login() {
           AlertAviso("Contraseña incorrecta.");
           return;
         }
-        navigate('/'); 
+        navigate('/Home'); 
       })
       .catch((error) => {
         console.error("Error al iniciar sesión:", error);

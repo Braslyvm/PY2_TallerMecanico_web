@@ -40,7 +40,7 @@ export default function Registro() {
     axios
       .post("http://localhost:3001/api/login", nuevoUsuario) 
       .then((response) => {
-        navigate('/Login');
+        navigate('/');
       })
       .catch((error) => {
         AlertAviso("Error, Usuario ya registrado.");

@@ -22,7 +22,7 @@ function App() {
 
 const Sidebar = () => {
   const location = useLocation();
-  const isAuthPage = location.pathname === '/Login' || location.pathname === '/Registro';
+  const isAuthPage = location.pathname === '/' || location.pathname === '/Registro';
 
   return !isAuthPage ? <MySidebar /> : null; // Renderiza el sidebar solo si no estamos en las páginas de autenticación
 };

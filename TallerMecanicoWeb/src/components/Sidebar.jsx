@@ -41,7 +41,7 @@ const MySidebar = () => {
     // Aquí puedes implementar la lógica de cierre de sesión
     // Por ejemplo, eliminar el token de autenticación y redirigir al usuario
     // localStorage.removeItem('token'); // Si usas localStorage
-    navigate('/Login'); // Redirigir a la página de inicio de sesión
+    navigate('/'); // Redirigir a la página de inicio de sesión
   };
 
   return (

@@ -15,8 +15,8 @@ import ReparacionesCurso from '../pages/ReparacionesCurso';
 export function MyRoutes() {
   return (
     <Routes>
-    <Route path="/" element={<Home />} />
-    <Route path="/Login" element={<Login />} />
+    <Route path="/Home" element={<Home />} />
+    <Route path="/" element={<Login />} />
     <Route path="/Registro" element={<Registro />} />
     <Route path="/Registro_repuesto" element={<RegistroRP />} />
     <Route path="/Mecanicos" element={<Mecanicos />} />
