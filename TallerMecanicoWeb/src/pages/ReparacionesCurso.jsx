@@ -22,7 +22,9 @@ function ReparacionesCurso() {
     axios
       .get("http://localhost:3001/api/reparaciones/estado/En curso")
       .then((response) => setData(response.data))
-      .catch((error) => console.error("Error al obtener reparaciones en curso:", error));
+      .catch((error) =>
+        console.error("Error al obtener reparaciones en curso:", error)
+      );
   };
 
   const getVehiculos = () => {
@@ -40,12 +42,12 @@ function ReparacionesCurso() {
   };
 
   const buscarPlacaVehiculo = (id) => {
-    const vehiculo = vehiculos.find(v => v.id_vehiculo === id);
+    const vehiculo = vehiculos.find((v) => v.id_vehiculo === id);
     return vehiculo ? vehiculo.placa : "Desconocido";
   };
 
   const buscarNombreMecanico = (cedula) => {
-    const mecanico = mecanicos.find(m => m.cedula === cedula);
+    const mecanico = mecanicos.find((m) => m.cedula === cedula);
     return mecanico ? mecanico.nombre : "Desconocido";
   };
 
@@ -61,13 +63,18 @@ function ReparacionesCurso() {
 
   const handleFinalizarClick = (id_reparacion) => {
     axios
-      .put(`http://localhost:3001/api/reparaciones/id/estado`, { id: id_reparacion,estado: 'Facturar' })
+      .put(`http://localhost:3001/api/reparaciones/id/estado`, {
+        id: id_reparacion,
+        estado: "Facturar",
+      })
       .then((response) => {
         console.log(response.data);
         getReparacionesCurso(); // Actualizar la lista de reparaciones en curso
         Swal.fire("¡Éxito!", "Reparación finalizada correctamente.", "success");
       })
-      .catch((error) => console.error("Error al finalizar la reparación:", error));
+      .catch((error) =>
+        console.error("Error al finalizar la reparación:", error)
+      );
   };
 
   return (
@@ -77,7 +84,7 @@ function ReparacionesCurso() {
       </Header>
       <TableContainer>
         <Table>
-          <thead>
+          <thead style={{ position: "sticky", top: 0, zIndex: 10 }}>
             <tr>
               <th>ID</th>
               <th>Vehículo</th>
@@ -89,6 +96,7 @@ function ReparacionesCurso() {
               <th>Factura</th>
             </tr>
           </thead>
+
           <tbody>
             {data.map((reparacion) => (
               <tr key={reparacion.id_reparacion}>
@@ -106,11 +114,15 @@ function ReparacionesCurso() {
                   </ActionsCell>
                 </td>
                 <td>
-                    <ActionsCell>
-                        <FinalizarButton onClick={() => handleFinalizarClick(reparacion.id_reparacion)}>
-                            <FaCheck /> Facturar
-                        </FinalizarButton>
-                    </ActionsCell>
+                  <ActionsCell>
+                    <FinalizarButton
+                      onClick={() =>
+                        handleFinalizarClick(reparacion.id_reparacion)
+                      }
+                    >
+                      <FaCheck /> Facturar
+                    </FinalizarButton>
+                  </ActionsCell>
                 </td>
               </tr>
             ))}
@@ -125,12 +137,27 @@ function ReparacionesCurso() {
         <Modal.Body>
           {selectedReparacion && (
             <div>
-              <p><strong>ID de reparación:</strong> {selectedReparacion.id_reparacion}</p>
-              <p><strong>Placa de vehículo:</strong> {buscarPlacaVehiculo(selectedReparacion.id_vehiculo)}</p>
-              <p><strong>Mecánico asignado:</strong> {buscarNombreMecanico(selectedReparacion.id_mecanico)}</p>
-              <p><strong>Descripción:</strong> {selectedReparacion.descripcion}</p>
-              <p><strong>Fecha:</strong> {selectedReparacion.fecha_reparacion}</p>
-              <p><strong>Estado:</strong> {selectedReparacion.estado}</p>
+              <p>
+                <strong>ID de reparación:</strong>{" "}
+                {selectedReparacion.id_reparacion}
+              </p>
+              <p>
+                <strong>Placa de vehículo:</strong>{" "}
+                {buscarPlacaVehiculo(selectedReparacion.id_vehiculo)}
+              </p>
+              <p>
+                <strong>Mecánico asignado:</strong>{" "}
+                {buscarNombreMecanico(selectedReparacion.id_mecanico)}
+              </p>
+              <p>
+                <strong>Descripción:</strong> {selectedReparacion.descripcion}
+              </p>
+              <p>
+                <strong>Fecha:</strong> {selectedReparacion.fecha_reparacion}
+              </p>
+              <p>
+                <strong>Estado:</strong> {selectedReparacion.estado}
+              </p>
             </div>
           )}
         </Modal.Body>
@@ -148,6 +175,7 @@ const Container = styled.div`
   background-color: rgb(254, 255, 255); /* Fondo principal */
   color: #27374d; /* Texto principal */
   padding: 20px;
+  height: 95vh;
 `;
 
 const Header = styled.div`
@@ -175,8 +203,9 @@ const Table = styled.table`
   border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   table-layout: fixed; /* Forzar el ancho de las columnas */
-  
-  th, td {
+
+  th,
+  td {
     padding: 12px;
     text-align: center; /* Centrar el texto */
     border-bottom: 1px solid #dee2e6;
@@ -184,12 +213,12 @@ const Table = styled.table`
     text-overflow: ellipsis;
     white-space: nowrap; /* Evitar que el texto se divida */
   }
-  
+
   th {
-    background-color: #526D82;
+    background-color: #526d82;
     color: white;
   }
-  
+
   tr:hover {
     background-color: #f1f1f1;
   }
