@@ -1,15 +1,18 @@
 import React from 'react';
 import styled from 'styled-components';
-import './Truck.css'; // Asegúrate de que este archivo contenga los estilos del camión
+import './Truck.css';
 
 function Home() {
   return (
     <HomeContainer>
       <Text>Bienvenido a nuestra página</Text>
-      <SkyContainer></SkyContainer>
+      <SkyContainer>
+        <Sun />
+        <Cloud className="cloud cloud1" />
+        <Cloud className="cloud cloud2" />
+      </SkyContainer>
       <RoadContainer>
         <TruckContainer>
-          {/* Aquí va el código del camión */}
           <div className="truck">
             <div className="truck__body">
               <div className="truck__body truck__body--top">
@@ -27,53 +30,44 @@ function Home() {
               </div>
             </div>
             <div className="truck__wheel truck__wheel--front">
-              <div className="truck__wheel-arch"></div>
-              <div className="truck__wheel-arch-trim truck__wheel-arch-trim--top"></div>
-              <div className="truck__wheel-arch-trim truck__wheel-arch-trim--left"></div>
-              <div className="truck__wheel-arch-trim truck__wheel-arch-trim--right"></div>
               <div className="truck-wheel">
                 <div className="truck-wheel__rim">
-                  <div style={{ '--index': 0 }} className="truck-wheel__spoke"></div>
-                  <div style={{ '--index': 1 }} className="truck-wheel__spoke"></div>
-                  <div style={{ '--index': 2 }} className="truck-wheel__spoke"></div>
-                  <div style={{ '--index': 3 }} className="truck-wheel__spoke"></div>
-                  <div style={{ '--index': 4 }} className="truck-wheel__spoke"></div>
-                  <div style={{ '--index': 5 }} className="truck-wheel__spoke"></div>
-                  <div style={{ '--index': 6 }} className="truck-wheel__spoke"></div>
+                  {[...Array(7)].map((_, i) => (
+                    <div key={i} style={{ '--index': i }} className="truck-wheel__spoke"></div>
+                  ))}
                 </div>
               </div>
             </div>
             <div className="truck__wheel truck__wheel--rear">
-              <div className="truck__wheel-arch"></div>
-              <div className="truck__wheel-arch-trim truck__wheel-arch-trim--top"></div>
-              <div className="truck__wheel-arch-trim truck__wheel-arch-trim--left"></div>
-              <div className="truck__wheel-arch-trim truck__wheel-arch-trim--right"></div>
               <div className="truck-wheel">
                 <div className="truck-wheel__rim">
-                  <div style={{ '--index': 0 }} className="truck-wheel__spoke"></div>
-                  <div style={{ '--index': 1 }} className="truck-wheel__spoke"></div>
-                  <div style={{ '--index': 2 }} className="truck-wheel__spoke"></div>
-                  <div style={{ '--index': 3 }} className="truck-wheel__spoke"></div>
-                  <div style={{ '--index': 4 }} className="truck-wheel__spoke"></div>
-                  <div style={{ '--index': 5 }} className="truck-wheel__spoke"></div>
-                  <div style={{ '--index': 6 }} className="truck-wheel__spoke"></div>
+                  {[...Array(7)].map((_, i) => (
+                    <div key={i} style={{ '--index': i }} className="truck-wheel__spoke"></div>
+                  ))}
                 </div>
               </div>
             </div>
-            <div className="truck__headlight"></div>
-            <div className="truck__taillight"></div>
-            <div className="truck__indicator"></div>
-            <div className="truck__foglight"></div>
           </div>
         </TruckContainer>
       </RoadContainer>
+      <InfoContainer>
+        <h3>Sobre Nosotros</h3>
+        <p>Ofrecemos acceso a talleres mecánicos para reparación de vehículos, seguimiento del proceso de reparación y gestión del historial de reparaciones.</p>
+        <h3>Servicios</h3>
+        <ul>
+          <li>Registro y autenticación de administradores y clientes</li>
+          <li>Diagnóstico y asignación de reparaciones</li>
+          <li>Compra y asignación de repuestos</li>
+          <li>Historial de reparaciones</li>
+          <li>Facturación y salida de vehículos</li>
+        </ul>
+      </InfoContainer>
     </HomeContainer>
   );
 }
 
 export default Home;
 
-// Estilos para el contenedor principal de la página
 const HomeContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -84,7 +78,15 @@ const HomeContainer = styled.div`
   background-color: #f8f9fa;
 `;
 
-// Texto de bienvenida
+const InfoContainer = styled.div`
+  margin-top: 20px;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 80%;
+`;
+
 const Text = styled.h1`
   font-size: 2rem;
   color: #333;
@@ -94,25 +96,59 @@ const Text = styled.h1`
 const SkyContainer = styled.div`
   position: relative;
   width: 100%;
-  height: 100px; // Altura del cielo
-  border-radius: 10px;
-  
-  background: linear-gradient(to bottom, #87ceeb, #f8f9fa); // Degradado de cielo
+  height: 150px;
+  background: linear-gradient(to bottom, #87ceeb, #f8f9fa);
   overflow: hidden;
 `;
 
+const Sun = styled.div`
+  position: absolute;
+  top: 20px;
+  right: 50px;
+  width: 60px;
+  height: 60px;
+  background-color: yellow;
+  border-radius: 50%;
+`;
 
+const Cloud = styled.div`
+  position: absolute;
+  width: 100px;
+  height: 50px;
+  background: white;
+  border-radius: 50px;
+  box-shadow: 30px 10px 20px rgba(0, 0, 0, 0.1);
+  opacity: 0.8;
+  animation: moveClouds 10s linear infinite;
 
-// Estilos de la carretera
+  &.cloud1 {
+    top: 20px;
+    left: -100px;
+  }
+  &.cloud2 {
+    top: 60px;
+    left: -150px;
+    animation-delay: 3s;
+  }
+
+  @keyframes moveClouds {
+    0% {
+      transform: translateX(-100px);
+    }
+    100% {
+      transform: translateX(100vw);
+    }
+  }
+`;
+
 const RoadContainer = styled.div`
   position: relative;
   width: 100%;
   height: 110px;
-  background: #555; // Color de la carretera
+  background: #555;
   border-radius: 10px;
   overflow: hidden;
 
-  // Líneas horizontales animadas
   &::before {
     content: '';
     position: absolute;
@@ -127,7 +163,7 @@ const RoadContainer = styled.div`
       transparent 50px,
       transparent 100px
     );
-    animation: moveRoad 1s linear infinite; // Animación para mover las líneas
+    animation: moveRoad 1s linear infinite;
   }
 
   @keyframes moveRoad {
@@ -135,17 +171,16 @@ const RoadContainer = styled.div`
       background-position-x: 0;
     }
     100% {
-      background-position-x: -100px; // Mueve las líneas horizontalmente
+      background-position-x: -100px;
     }
   }
 `;
 
-// Estilos del contenedor del camión
 const TruckContainer = styled.div`
   position: absolute;
   bottom: 20px;
   left: 0;
-  animation: moveTruck 5s linear infinite; // Animación para mover el camión
+  animation: moveTruck 5s linear infinite;
   display: flex;
   justify-content: center;
 
