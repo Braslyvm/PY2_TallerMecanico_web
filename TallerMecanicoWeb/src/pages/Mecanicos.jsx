@@ -4,7 +4,7 @@ import { FaTrashAlt, FaEye, FaPlus } from "react-icons/fa";
 import { useDropzone } from "react-dropzone";
 import Swal from 'sweetalert2';
 import axios from "axios";
-import { useGlobalContext } from './componentes/GlobalContext'; // Asegúrate de importar el contexto
+import { useGlobalContext } from '../components/GlobalContext'; // Asegúrate de importar el contexto
 
 function Mecanicos() {
   const { translate } = useGlobalContext(); // Obtener el estado de traducción
