@@ -19,6 +19,7 @@ function GestionDeRepuestos() {
   const [descripcion, setDescripcion] = useState("");
   const [foto, setFoto] = useState(null);
   const [selectedMarca, setSelectedMarca] = useState("");
+  const [id_repuesto, setIdRepuesto] = useState("");
   const [marcas, setMarcas] = useState([]);
   const [piezas, setPiezas] = useState([]);
 
@@ -63,13 +64,58 @@ function GestionDeRepuestos() {
     },
     onDrop,
   });
+  const handleedit = (e) => {
+    e.preventDefault();
+    // Validación de campos
+    if (!precio || !selectedMarca || !descripcion) {
+      Swal.fire(
+        "Error",
+        "Por favor, completa todos los campos obligatorios.",
+        "error"
+      );
+      return;
+    }
+
+    const formData = new FormData();
+
+    if (typeof selectedMarca === "object" && selectedMarca !== null) {
+      formData.append("selectedMarca", selectedMarca.id_marca); // Extrae el ID si es un objeto
+    } else {
+      formData.append("selectedMarca", selectedMarca); // Si ya es un ID, lo usa directamente
+    }
+
+    formData.append("precio", precio);
+    formData.append("descripcion", descripcion);
+
+    // Solo agregar foto si es un nuevo archivo
+    if (foto instanceof File) {
+      formData.append("foto", foto);
+    }
+
+    // Enviar la solicitud PUT con el ID del repuesto
+    axios
+      .put(`http://localhost:3001/api/repuestos2/${id_repuesto}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then((response) => {
+        Swal.fire("¡Éxito!", "Repuesto actualizado correctamente.", "success");
+        setIsModalOpen(false);
+        getPiezas(); // Recargar la lista de repuestos
+      })
+      .catch((error) => {
+        console.error("Error al actualizar repuesto:", error.response || error);
+        Swal.fire(
+          "Error",
+          `No se pudo actualizar el repuesto. Detalles: ${
+            error.response?.data?.message || error.message
+          }`,
+          "error"
+        );
+      });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(selectedMarca)
-    console.log(precio)
-    console.log(descripcion)
-
 
     // Validación de campos
     if (!precio || !selectedMarca || !descripcion || !foto) {
@@ -78,7 +124,7 @@ function GestionDeRepuestos() {
     }
 
     const formData = new FormData();
-    formData.append("selectedMarca", selectedMarca.id_marca);
+    formData.append("selectedMarca", selectedMarca);
     formData.append("precio", precio);
     formData.append("foto", foto);
     formData.append("descripcion", descripcion);
@@ -93,7 +139,7 @@ function GestionDeRepuestos() {
       .then((response) => {
         Swal.fire("¡Éxito!", "Repuesto ingresado correctamente.", "success");
         setIsModalOpen(false);
-        getPiezas(); // Recargar las piezas después de agregar una nueva
+        getPiezas();
       })
       .catch((error) => {
         console.error("Error al agregar repuesto:", error.response || error);
@@ -107,6 +153,7 @@ function GestionDeRepuestos() {
       });
   };
   const obtenerMarcaPorId = (id) => {
+    console.log(id + "id obeter");
     fetch(`http://localhost:3001/api/marcas/${id}`)
       .then((response) => {
         if (!response.ok) {
@@ -115,6 +162,7 @@ function GestionDeRepuestos() {
         return response.json();
       })
       .then((data) => {
+        console.log("aaaaaaa" + data);
         setSelectedMarca(data);
       })
       .catch((error) => {
@@ -126,25 +174,30 @@ function GestionDeRepuestos() {
         );
       });
   };
-  const handleEdit = (precio, foto, descripcion, id_marca) => {
+  const handleEdit = (precio, foto, descripcion, id_marca, id_repuesto) => {
     setPrecio(precio);
     setFoto(foto);
-    obtenerMarcaPorId(id_marca);
-    //console.log(selectedMarca);
-
     setDescripcion(descripcion);
+    obtenerMarcaPorId(id_marca);
 
+    console.log(id_marca); //llega id
+
+    console.log(selectedMarca); //llega objeto
+    setIdRepuesto(id_repuesto); // Asegúrate de tener este estado en el componente
     setIsModalOpen3(true);
+    getPiezas();
   };
 
   const handleView = (precio, foto, descripcion, id_marca) => {
+    obtenerMarcaPorId(id_marca);
+
     const fotoUrl = foto instanceof Blob ? URL.createObjectURL(foto) : foto;
     setSelected({ precio, foto: fotoUrl, descripcion });
     setIsModalOpen2(true);
+    getPiezas();
   };
 
   const handleDelete = (precio, foto, descripcion, id_marca, id_repuesto) => {
-    console.log(id_repuesto);
     // Confirmación antes de eliminar el repuesto
     Swal.fire({
       title: "¿Estás seguro?",
@@ -265,7 +318,7 @@ function GestionDeRepuestos() {
         <ModalOverlay>
           <ModalContent>
             <h3>Editar repuesto</h3>
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={handleedit}>
               <InputField>
                 <label>Precio</label>
                 <input
@@ -279,13 +332,8 @@ function GestionDeRepuestos() {
               <InputField>
                 <label>Marca</label>
                 <select
-                  value={selectedMarca.id_marca || ""}
-                  onChange={(e) => {
-                    const marcaSeleccionada = marcas.find(
-                      (marca) => marca.id_marca === parseInt(e.target.value)
-                    );
-                    setSelectedMarca(marcaSeleccionada.id_marca);
-                  }}
+                  value={selectedMarca.id_marca}
+                  onChange={(e) => setSelectedMarca(e.target.value)}
                 >
                   <option value="">Selecciona una marca</option>
                   {marcas.map((marca) => (
@@ -348,7 +396,7 @@ function GestionDeRepuestos() {
                   <strong>Precio:</strong> {selected.precio}
                 </p>
                 <p>
-                  <strong>Marca:</strong> {selectedMarca.id_marca}
+                  <strong>Marca:</strong> {selectedMarca.nombre}
                 </p>
               </FormFields>
             </FormContainer>
@@ -389,7 +437,8 @@ function GestionDeRepuestos() {
                             pieza.precio,
                             pieza.foto,
                             pieza.descripcion,
-                            pieza.id_marca
+                            pieza.id_marca,
+                            pieza.id_repuesto
                           )
                         }
                       >
