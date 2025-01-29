@@ -80,7 +80,7 @@ const MySidebar = () => {
       >
         <Sidenav.Body style={{ backgroundColor: '#27374D' }}> {/* Cambiado a #27374D */}
           <Nav activeKey={activeKey} onSelect={handleNavSelect}>
-            <Nav.Item eventKey="1" icon={<HomeIcon style={{ color: '#ffffff', fontSize: '20px' }} />} onClick={() => {navigate("/");}}>
+            <Nav.Item eventKey="1" icon={<HomeIcon style={{ color: '#ffffff', fontSize: '20px' }} />} onClick={() => {navigate("/Home");}}>
               Inicio
             </Nav.Item>
             <Nav.Item eventKey="2" icon={<GroupIcon style={{ color: '#ffffff', fontSize: '20px' }} />} onClick={() => {navigate("/Mecanicos");}}>

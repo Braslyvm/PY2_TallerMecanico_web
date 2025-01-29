@@ -341,7 +341,6 @@ app.post("/api/repuestos", upload.single("foto"), (req, res) => {
 // Agregar un mecánico
 app.post("/api/mecanicos", upload.single("foto"), (req, res) => {
   const { cedula, nombre, edad } = req.body;
-  console.log(foto);
   const foto = req.file ? req.file.path : null; // Ruta de la imagen guardada
   // Validar que todos los campos estén presentes
   if (!cedula || !nombre || !edad || !foto) {

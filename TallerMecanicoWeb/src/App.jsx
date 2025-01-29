@@ -4,19 +4,22 @@ import { MyRoutes } from './routers/routes.jsx';
 import { BrowserRouter, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import MySidebar from './components/Sidebar'; // Asegúrate de que este sea el correcto
+import { GlobalProvider } from "./components/GlobalContext";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'rsuite/dist/rsuite.min.css';
 
 function App() {
   return (
-    <BrowserRouter>
-      <AppContainer>
-        <Sidebar />
-        <Content>
-          <MyRoutes />
-        </Content>
-      </AppContainer>
-    </BrowserRouter>
+    <GlobalProvider>
+      <BrowserRouter>
+        <AppContainer>
+          <Sidebar />
+          <Content>
+            <MyRoutes />
+          </Content>
+        </AppContainer>
+      </BrowserRouter>
+    </GlobalProvider>
   );
 }
 

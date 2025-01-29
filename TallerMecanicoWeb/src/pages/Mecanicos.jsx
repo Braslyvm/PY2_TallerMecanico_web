@@ -4,8 +4,10 @@ import { FaTrashAlt, FaEye, FaPlus } from "react-icons/fa";
 import { useDropzone } from "react-dropzone";
 import Swal from 'sweetalert2';
 import axios from "axios";
+import { useGlobalContext } from './componentes/GlobalContext'; // Asegúrate de importar el contexto
 
 function Mecanicos() {
+  const { translate } = useGlobalContext(); // Obtener el estado de traducción
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [verOpen, setVerOpen] = useState(false);
   const [nombre, setNombre] = useState("");
@@ -15,10 +17,27 @@ function Mecanicos() {
   const [data, setData] = useState([]);
   const [selectedMecanico, setSelectedMecanico] = useState(null);
 
+  const translatedContent = {
+    title: translate ? 'Mechanics Sheet' : 'Planilla de Mecánicos',
+    addButton: translate ? 'Add Mechanic' : 'Agregar Mecánico',
+    noMechanics: translate ? 'No mechanics registered' : 'No hay mecanicos registrados',
+    alertSuccess: translate ? 'User  added successfully!' : '¡Alerta! Usuario agregado Exitosamente!',
+    alertDelete: translate ? 'Mechanic deleted successfully!' : 'Mecanico eliminado correctamente!',
+    alertCompleteFields: translate ? 'Please complete all fields.' : 'Por favor, completa todos los campos.',
+    alertErrorAdd: translate ? 'Error adding mechanic:' : 'Error al agregar mecánico:',
+    alertErrorDelete: translate ? 'Error deleting mechanic:' : 'Error al eliminar mecánico:',
+    detailsTitle: translate ? 'Mechanic Details' : 'Detalles del Mecánico',
+    name: translate ? 'Name:' : 'Nombre:',
+    id: translate ? 'ID:' : 'Cédula:',
+    age: translate ? 'Age:' : 'Edad:',
+    save: translate ? 'Save' : 'Guardar',
+    close: translate ? 'Close' : 'Cerrar',
+  };
+
   const AlertRegiter = () => {
     Swal.fire({
       title: '¡Alerta!',
-      text: 'Usuario agregado Exitosamente!.',
+      text: translatedContent.alertSuccess,
       icon: 'success',
       confirmButtonText: 'Aceptar'
     });
@@ -26,7 +45,7 @@ function Mecanicos() {
 
   const AlertDelete = () => {
     Swal.fire({
-      text: 'Mecanico eliminado correctamente!.',  
+      text: translatedContent.alertDelete,  
       imageUrl: 'https://cdn1.iconfinder.com/data/icons/ionicons-outline-vol-2/512/trash-bin-outline-512.png', 
       imageWidth: 100,
       imageHeight: 100,
@@ -52,7 +71,7 @@ function Mecanicos() {
       .then((response) => {
         setData(response.data); 
         if (response.data.length === 0) {
-          AlertAviso('No hay mecanicos registrados');
+          AlertAviso(translatedContent.noMechanics);
         }
       })
       .catch((error) => {
@@ -93,7 +112,7 @@ function Mecanicos() {
     if (file && validTypes.includes(file.type)) {
       setFoto(file); // Cambiar a file en lugar de URL.createObjectURL
     } else {
-      alert('Por favor, selecciona un archivo de imagen válido.');
+      alert(translatedContent.alertCompleteFields);
     }
   };
 
@@ -109,7 +128,7 @@ function Mecanicos() {
 
   const setMecanico = () => {
     if (!nombre || !cedula || !edad || !foto) {
-      AlertAviso("Por favor, completa todos los campos.");
+      AlertAviso(translatedContent.alertCompleteFields);
       return;
     }
 
@@ -131,7 +150,7 @@ function Mecanicos() {
         handleCloseModal();
       })
       .catch((error) => {
-        AlertAviso("Error al agregar mecánico:", error);
+        AlertAviso(translatedContent.alertErrorAdd + error);
       });
   };
 
@@ -143,16 +162,16 @@ function Mecanicos() {
         getMecanicos(); 
       })
       .catch((error) => {
-        AlertAviso("Error al eliminar mecánico:", error);
+        AlertAviso(translatedContent.alertErrorDelete + error);
       });
   }
 
   return (
     <HomeContainer>
       <Header>
-        <h2>Planilla de Mecánicos</h2>
+        <h2>{translatedContent.title}</h2>
         <AddButton onClick={handleAddClick}>
-          <FaPlus /> Agregar Mecánico
+          <FaPlus /> {translatedContent.addButton}
         </AddButton>
       </Header>
       <TableContainer>
@@ -165,9 +184,9 @@ function Mecanicos() {
           </colgroup>
           <thead>
             <tr>
-              <th>Cédula</th>
-              <th>Nombre Completo</th>
-              <th>Edad</th>
+              <th>{translatedContent.id}</th>
+              <th>{translatedContent.name}</th>
+              <th>{translatedContent.age}</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -199,7 +218,7 @@ function Mecanicos() {
       {isModalOpen && (
         <ModalOverlay>
           <ModalContent>
-            <h3>Agregar Mecánico</h3>
+            <h3>{translatedContent.addButton}</h3>
             <FormContainer>
               <PhotoInputContainer {...getRootProps()}>
                 <input {...getInputProps()} />
@@ -211,7 +230,7 @@ function Mecanicos() {
               </PhotoInputContainer>
               <FormFields>
                 <label>
-                  Nombre:
+                  {translatedContent.name}
                   <input
                     type="text"
                     value={nombre}
@@ -219,7 +238,7 @@ function Mecanicos() {
                   />
                 </label>
                 <label>
-                  Cédula:
+                  {translatedContent.id}
                   <input
                     type="number"
                     value={cedula}
@@ -227,7 +246,7 @@ function Mecanicos() {
                   />
                 </label>
                 <label>
-                  Edad:
+                  {translatedContent.age}
                   <input
                     type="number"
                     value={edad}
@@ -237,8 +256,8 @@ function Mecanicos() {
               </FormFields>
             </FormContainer>
             <ActionButtons>
-              <SaveButton onClick={setMecanico}>Guardar</SaveButton>
-              <CloseButton style={{ backgroundColor: 'rgb(200, 16, 16)' }} onClick={handleCloseModal}>Cerrar</CloseButton>
+              <SaveButton onClick={setMecanico}>{translatedContent.save}</SaveButton>
+              <CloseButton style={{ backgroundColor: 'rgb(200, 16, 16)' }} onClick={handleCloseModal}>{translatedContent.close}</CloseButton>
             </ActionButtons>
           </ModalContent>
         </ModalOverlay>
@@ -246,19 +265,19 @@ function Mecanicos() {
       {verOpen && selectedMecanico && (
         <ModalOverlay>
           <ModalContent style={{ width: '400px'}}>
-            <h3>Detalles del Mecánico</h3>
+            <h3>{translatedContent.detailsTitle}</h3>
             <FormContainer>
               <PhotoviewContainer> 
                 <img src={selectedMecanico.foto} alt="Foto del mecánico" style={{ maxWidth: '100px', borderRadius: '8px' }} />
               </PhotoviewContainer>
               <FormFields>
-                <p><strong>Nombre:</strong> {selectedMecanico.nombre}</p>
-                <p><strong>Cédula:</strong> {selectedMecanico.cedula}</p>
-                <p><strong>Edad:</strong> {selectedMecanico.edad}</p>
+                <p><strong>{translatedContent.name}</strong> {selectedMecanico.nombre}</p>
+                <p><strong>{translatedContent.id}</strong> {selectedMecanico.cedula}</p>
+                <p><strong>{translatedContent.age}</strong> {selectedMecanico.edad}</p>
               </FormFields>
             </FormContainer>
             <ActionButtons style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <CloseButton onClick={handleViewModal}>Cerrar</CloseButton>
+              <CloseButton onClick={handleViewModal}>{translatedContent.close}</CloseButton>
             </ActionButtons>
           </ModalContent>
         </ModalOverlay>
