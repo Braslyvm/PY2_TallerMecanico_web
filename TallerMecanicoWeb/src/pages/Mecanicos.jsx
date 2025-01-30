@@ -32,6 +32,9 @@ function Mecanicos() {
     age: translate ? 'Age:' : 'Edad:',
     save: translate ? 'Save' : 'Guardar',
     close: translate ? 'Close' : 'Cerrar',
+    accept: translate ? 'Accept' : 'Aceptar',
+    acciones: translate ? 'Actions' : 'Acciones',
+
   };
 
   const AlertRegiter = () => {
@@ -39,7 +42,7 @@ function Mecanicos() {
       title: '¡Alerta!',
       text: translatedContent.alertSuccess,
       icon: 'success',
-      confirmButtonText: 'Aceptar'
+      confirmButtonText: translatedContent.accept
     });
   };
 
@@ -50,7 +53,7 @@ function Mecanicos() {
       imageWidth: 100,
       imageHeight: 100,
       imageAlt: 'Basurero',
-      confirmButtonText: 'Aceptar'
+      confirmButtonText:  translatedContent.accept
     });
   };
 
@@ -61,7 +64,7 @@ function Mecanicos() {
       imageWidth: 100,
       imageHeight: 100,
       imageAlt: 'aviso',
-      confirmButtonText: 'Aceptar'
+      confirmButtonText: translatedContent.accept
     });
   };
 
@@ -187,7 +190,7 @@ function Mecanicos() {
               <th>{translatedContent.id}</th>
               <th>{translatedContent.name}</th>
               <th>{translatedContent.age}</th>
-              <th>Acciones</th>
+              <th>{translatedContent.acciones}</th>
             </tr>
           </thead>
         </Table>

@@ -11,6 +11,7 @@ import Diagnostico from '../pages/Diagnostico';
 import Facturar from '../pages/Facturar';
 import ReparacionesCompletas from '../pages/ReparacionesCompletas';
 import ReparacionesCurso from '../pages/ReparacionesCurso';
+import Settings from '../pages/Settings';
 
 export function MyRoutes() {
   return (
@@ -26,6 +27,7 @@ export function MyRoutes() {
     <Route path="/Facturas" element={<Facturar />} />
     <Route path="/ReparacionesCompletas" element={<ReparacionesCompletas />} />
     <Route path="/ReparacionesCurso" element={<ReparacionesCurso />} />
+    <Route path="/Settings" element={<Settings />} />
     </Routes>
   );
 }

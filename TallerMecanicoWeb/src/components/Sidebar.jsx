@@ -108,7 +108,7 @@ const MySidebar = () => {
             <Nav.Item eventKey="6" icon={<CreditCardPlusIcon style={{ color: '#ffffff', fontSize: '20px' }} />} onClick={() => {navigate("/Facturas");}}>
               Facturar
             </Nav.Item>
-            <Nav.Item eventKey="7" icon={<GearCircleIcon style={{ color: '#ffffff', fontSize: '20px' }} />} onClick={() => {navigate("/Mecanicos");}}>
+            <Nav.Item eventKey="7" icon={<GearCircleIcon style={{ color: '#ffffff', fontSize: '20px' }} />} onClick={() => {navigate("/settings");}}>
               Ajustes
             </Nav.Item>
             <hr style={{ borderColor: '#ffffff', margin: '20px 0' }} /> {/* Línea separadora */}
