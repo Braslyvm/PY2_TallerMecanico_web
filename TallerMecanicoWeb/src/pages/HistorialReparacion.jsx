@@ -48,7 +48,7 @@ function HistorialReparacion() {
       // obtener vehiculos
       const getVehiculos = () => {
         axios
-          .get("http://localhost:3001/api/vehiculos") 
+          .get("http://localhost:3001/api/vehiculos/completa") 
           .then((response) => {
             setvehiculos(response.data); 
             if (response.data.length === 0) {
@@ -56,9 +56,10 @@ function HistorialReparacion() {
             }
           })
           .catch((error) => {
-            AlertAviso("algo");
+            AlertAviso("No hay vehiculos");
           });
       };
+
       useEffect(() => {
         console.log("Estado actual de Reparacion:", Reparacion); // Verifica cómo cambia el estado
     }, [Reparacion]); // Se ejecuta cada vez que 'Reparacion' cambia
@@ -151,7 +152,7 @@ function HistorialReparacion() {
                             {vehiculos.map((Autos, index) => (
                                 <tr key={index}>
                                 <td style={{ width: '20%' }}>{Autos.placa}</td>
-                                <td style={{ width: '40%' }}>{Autos.correo_cliente}</td>
+                                <td style={{ width: '40%' }}>{Autos.nombre_completo}</td>
                                 <td style={{ width: '20%' }}>{Autos.marca}</td>
                                 <td style={{ width: '20%' }}>{Autos.modelo}</td>
                                 <td style={{ width: '20%' }}>

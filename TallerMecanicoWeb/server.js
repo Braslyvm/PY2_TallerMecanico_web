@@ -27,8 +27,9 @@ app.use(express.json());
 
 // Rutas para obtener todos los vehículos
 app.get("/api/vehiculos", (req, res) => {
+  console.log("algo")
   db.all(
-    "SELECT v.placa, v.correo_cliente, m.nombre AS marca, v.modelo, v.id_vehiculo FROM  vehiculos v JOIN marcas m ON v.id_marca = m.id_marca",
+    "SELECT v.placa, m.nombre AS marca, v.modelo, v.id_vehiculo FROM  vehiculos v JOIN marcas m ON v.id_marca = m.id_marca",
     [],
     (err, rows) => {
       if (err) {
@@ -36,13 +37,71 @@ app.get("/api/vehiculos", (req, res) => {
         return;
       }
       res.json(rows);
+      console.log(rows)
     }
   );
 });
 
+
+// Agregar un vehículo
+app.post("/api/vehiculos", (req, res) => {
+  const { marca, modelo, anio, correo_cliente } = req.body;
+  db.run(
+    "INSERT INTO vehiculos (marca, modelo, anio, correo_cliente) VALUES (?, ?, ?, ?)",
+    [marca, modelo, anio, correo_cliente],
+    function (err) {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.status(201).json({ id_vehiculo: this.lastID });
+    }
+  );
+});
+
+
+
+// Agregar un cliente
+app.post("/api/cliente", (req, res) => {
+  const { cedula, nombre, apellido1, apellido2, correo, contraseña } = req.body;
+  db.run(
+    "INSERT INTO clientes (cedula, nombre, apellido1, apellido2, correo, contraseña) VALUES (?, ?, ?, ?, ?, ?)",
+    [cedula, nombre, apellido1, apellido2, correo, contraseña],
+    function (err) {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.status(201).json({ cedula: this.lastID });
+    }
+  );
+});
+
+app.get("/api/login/Cliente/:correo", (req, res) => {
+  const { correo } = req.params;
+  db.get(
+    "SELECT contraseña FROM clientes WHERE correo = ?",
+    [correo],
+    (err, row) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      if (!row) {
+        res.status(404).json({ message: "Usuario no encontrado" });
+        return;
+      }
+      res.json({ contraseña: row.contraseña });
+    }
+  );
+});
+
+
+
+
 // Rutas para obtener todos los vehículos
 app.get("/api/vehiculos/completa", (req, res) => {
-  db.all("SELECT * FROM vehiculos", [], (err, rows) => {
+  db.all("SELECT v.id_vehiculo, v.id_marca, v.modelo, v.anio, c.nombre || ' ' || c.apellido1 || ' ' || c.apellido2 AS nombre_completo, v.placa FROM vehiculos v JOIN clientes c ON v.cedula = c.cedula", [], (err, rows) => {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
@@ -462,24 +521,7 @@ app.get("/api/login/:usuario", (req, res) => {
   );
 });
 
-app.get("/api/login/:usuario", (req, res) => {
-  const { usuario } = req.params;
-  db.get(
-    "SELECT contraseña FROM Login WHERE usuario = ?",
-    [usuario],
-    (err, row) => {
-      if (err) {
-        res.status(500).json({ error: err.message });
-        return;
-      }
-      if (!row) {
-        res.status(404).json({ message: "Usuario no encontrado" });
-        return;
-      }
-      res.json({ contraseña: row.contraseña });
-    }
-  );
-});
+
 
 app.post("/api/reparaciones/delete", (req, res) => {
   const { id } = req.body;

@@ -1,3 +1,5 @@
+
+DROP TABLE IF EXISTS clientes;
 DROP TABLE IF EXISTS repuestos_reparacion;
 DROP TABLE IF EXISTS reparaciones;
 DROP TABLE IF EXISTS mecanicos;
@@ -6,24 +8,42 @@ DROP TABLE IF EXISTS marcas;
 DROP TABLE IF EXISTS vehiculos;
 DROP TABLE IF EXISTS diagnostico_vehiculo;
 DROP TABLE IF EXISTS Login;
--- Tabla de Vehículos
+
+-- Tabla de Clientes
+CREATE table clientes (
+    cedula INTEGER PRIMARY KEY,
+    nombre TEXT NOT NULL,
+    apellido1 TEXT NOT NULL,
+    apellido2 TEXT NOT NULL,
+    correo TEXT NOT NULL,
+    contraseña TEXT NOT NULL
+); 
+
+INSERT INTO clientes (cedula, nombre, apellido1, apellido2, correo, contraseña) 
+VALUES 
+(1, 'Elder', 'Leon', 'Perez', 'cliente1@example.com', '1234'),
+(2, 'Jimena', 'Mendez', 'Apellido2', 'cliente2@example.com', '1234'),
+(3, 'Brasly', 'Villarebia', 'Morales', 'cliente3@example.com', '1');
+
+
 
 CREATE TABLE vehiculos (
     id_vehiculo INTEGER PRIMARY KEY AUTOINCREMENT,
     id_marca TEXT NOT NULL,
     modelo TEXT NOT NULL,
     anio INTEGER NOT NULL,
-    correo_cliente TEXT NOT NULL,
+    cedula INTEGER NOT NULL,
     placa TEXT,
-    FOREIGN KEY (id_marca) REFERENCES marcas(id_marca)
+    FOREIGN KEY (id_marca) REFERENCES marcas(id_marca),
+    FOREIGN KEY (cedula) REFERENCES clientes(cedula)
 );
 
-INSERT INTO vehiculos (id_marca, modelo, anio, correo_cliente, placa) 
+INSERT INTO vehiculos (id_marca, modelo, anio, cedula, placa) 
 VALUES 
-(1, 'Corolla', 2020, 'cliente1@example.com', 'ABC123'),
-(2, 'Civic', 2022, 'cliente2@example.com', 'DEF456'),
-(3, 'Focus', 2019, 'cliente3@example.com', 'GHI789'),
-(4, 'Cruze', 2021, 'cliente4@example.com', 'JKL012');
+(1, 'Corolla', 2020, 1, 'ABC123'),
+(2, 'Civic', 2022, 1, 'DEF456'),
+(3, 'Focus', 2019, 3, 'GHI789'),
+(4, 'Cruze', 2021, 3, 'JKL012');
 
 
 -- Tabla de Marcas
@@ -155,6 +175,9 @@ CREATE TABLE diagnostico_vehiculo(
     foto BLOB,
     FOREIGN KEY (id_vehiculo) REFERENCES vehiculos(id_vehiculo)
 );
+
+
+
 
 
 
