@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { FaCog, FaMoneyBillAlt } from "react-icons/fa";
+import { FaTools, FaMoneyBillAlt, FaKey } from "react-icons/fa";
 import { Table as BootstrapTable } from "react-bootstrap";
 import Swal from "sweetalert2";
 import axios from "axios";
@@ -96,7 +96,14 @@ function Facturar() {
       </Header>
       <TableContainer>
         <Table>
-          <thead>
+          <thead
+            style={{
+              position: "sticky",
+              top: 0,
+              zIndex: 10,
+              background: "white",
+            }}
+          >
             <tr>
               <th>Placa</th>
               <th>Correo Cliente</th>
@@ -125,34 +132,50 @@ function Facturar() {
 
       {isModalOpen2 && (
         <ModalOverlay>
-          <ModalContent>
+          <ModalContent style={{ zIndex: 100 }}>
             <h3>Factura Detallada</h3>
-            <FormContainer style={{ height: "400px" }}>
-              <h4>Repuestos Utilizados</h4>
-              {repuestos.length > 0 ? (
-                <RepuestosList>
-                  {repuestos.map((repuesto, index) => (
-                    <RepuestoItem key={index}>
-                      <p>
-                        <strong>Descripción:</strong> {repuesto.descripcion}
-                      </p>
-                      <p>
-                        <strong>Cantidad Utilizada:</strong>{" "}
-                        {repuesto.cantidad_utilizada}
-                      </p>
-                      <p>
-                        <strong>Precio:</strong> ${repuesto.precio}
-                      </p>
-                      <p>
-                        <strong>Total:</strong> ${repuesto.total}
-                      </p>
-                    </RepuestoItem>
-                  ))}
-                </RepuestosList>
-              ) : (
-                <p>No se encontraron repuestos para esta reparación.</p>
-              )}
-            </FormContainer>
+
+            <h4
+              style={{
+                position: "sticky",
+                top: 0,
+                zIndex: 20,
+              }}
+            >
+              Repuestos Utilizados <FaTools style={{ marginRight: "8px" }} />
+            </h4>
+
+            {repuestos.length > 0 ? (
+              <RepuestosList
+                style={{
+                  maxWidth: "600px",
+                  maxHeight: "400px",
+                  overflowY: "auto",
+                  top: 0,
+                }}
+              >
+                {repuestos.map((repuesto, index) => (
+                  <RepuestoItem key={index}>
+                    <p>
+                      <strong>Descripción:</strong> {repuesto.descripcion}
+                    </p>
+                    <p>
+                      <strong>Cantidad Utilizada:</strong>{" "}
+                      {repuesto.cantidad_utilizada}
+                    </p>
+                    <p>
+                      <strong>Precio:</strong> ${repuesto.precio}
+                    </p>
+                    <p>
+                      <strong>Total:</strong> ${repuesto.total}
+                    </p>
+                  </RepuestoItem>
+                ))}
+              </RepuestosList>
+            ) : (
+              <p>No se encontraron repuestos para esta reparación.</p>
+            )}
+
             <ActionButtons
               style={{ display: "flex", justifyContent: "flex-end" }}
             >
@@ -179,25 +202,28 @@ const Header = styled.div`
 `;
 const FormContainer = styled.div`
   padding: 16px;
-  background-color: #f8f9fa;
+  width: 100%;
+  height: 100%;
+
   color: #333;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
 const TableContainer = styled.div`
-  overflow-x: auto;
+  overflow-y: auto;
   margin-top: 16px;
+  max-height: 700px;
 `;
 
 const Table = styled(BootstrapTable)`
   width: 100%;
+
   border: 1px solid #ddd;
   border-collapse: collapse;
-  background-color: #ffffff;
 
   th {
-    background-color: #e9ecef;
+    background-color: #526d82;
     color: #333;
     font-weight: bold;
     padding: 12px;
@@ -207,15 +233,17 @@ const Table = styled(BootstrapTable)`
   td {
     padding: 10px;
     text-align: center;
-    color: #555;
+    color: black;
+    height: 10px;
+    overflow-y: auto;
   }
 
   tr:nth-child(even) {
-    background-color: #f2f2f2;
+    background-color: rgb(103, 100, 100);
   }
 
   tr:hover {
-    background-color: #e0e0e0;
+    background-color: rgb(103, 100, 100);
   }
 `;
 

@@ -641,7 +641,55 @@ app.delete("/api/repuestos/delete/:id", (req, res) => {
     res.status(200).json({ message: "Repuesto eliminado exitosamente." });
   });
 });
+//edicion de repuestos
+app.put("/api/repuestos2/:id", upload.single("foto"), (req, res) => {
+  const id_repuesto = req.params.id;
+  const { selectedMarca, precio, descripcion } = req.body;
+  const foto = req.file ? req.file.path : null; // Solo actualizar si se sube una nueva imagen
 
+  console.log("Datos recibidos:", req.body);
+  console.log("Archivo recibido:", req.file);
+
+  // Validar que los campos requeridos estén presentes
+  if (!selectedMarca || !precio || !descripcion) {
+    return res.status(400).json({ error: "Faltan datos" });
+  }
+
+  // Asegurarse de que el precio sea un número
+  if (isNaN(precio)) {
+    return res
+      .status(400)
+      .json({ error: "El precio debe ser un número válido" });
+  }
+
+  // Construir la consulta SQL dinámicamente
+  let updateQuery = `UPDATE repuestos SET id_marca = ?, precio = ?, descripcion = ?`;
+  let params = [selectedMarca, precio, descripcion];
+
+  if (foto) {
+    updateQuery += `, foto = ?`;
+    params.push(foto);
+  }
+
+  updateQuery += ` WHERE id_repuesto = ?`;
+  params.push(id_repuesto);
+
+  // Ejecutar la consulta
+  db.run(updateQuery, params, function (err) {
+    if (err) {
+      console.error("Error al actualizar el repuesto:", err);
+      return res
+        .status(500)
+        .json({ error: "Error en la base de datos: " + err.message });
+    }
+
+    if (this.changes === 0) {
+      return res.status(404).json({ error: "No se encontró el repuesto" });
+    }
+
+    res.json({ message: "Repuesto actualizado correctamente" });
+  });
+});
 app.listen(3001, () => {
   console.log("Backend corriendo en http://localhost:3001");
 });

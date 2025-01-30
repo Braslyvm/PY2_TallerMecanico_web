@@ -25,7 +25,9 @@ function ReparacionesCompletas() {
     axios
       .get("http://localhost:3001/api/reparaciones")
       .then((response) => setDataComplete(response.data))
-      .catch((error) => console.error("Error al obtener reparaciones completas:", error));
+      .catch((error) =>
+        console.error("Error al obtener reparaciones completas:", error)
+      );
   };
 
   const getVehiculos = () => {
@@ -50,12 +52,12 @@ function ReparacionesCompletas() {
   };
 
   const buscarPlacaVehiculo = (id) => {
-    const vehiculo = vehiculos.find(v => v.id_vehiculo === id);
+    const vehiculo = vehiculos.find((v) => v.id_vehiculo === id);
     return vehiculo ? vehiculo.placa : "Desconocido";
   };
 
   const buscarNombreMecanico = (cedula) => {
-    const mecanico = mecanicos.find(m => m.cedula === cedula);
+    const mecanico = mecanicos.find((m) => m.cedula === cedula);
     return mecanico ? mecanico.nombre : "Desconocido";
   };
 
@@ -122,7 +124,6 @@ function ReparacionesCompletas() {
     setSelectedReparacion(null);
   };
 
-
   return (
     <Container>
       <Header>
@@ -156,11 +157,9 @@ function ReparacionesCompletas() {
                       <FaEye />
                     </ViewButton>
                     <ManageButton
-                        onClick={() =>
-                        handleManageRepuestos(reparacion)
-                        }
+                      onClick={() => handleManageRepuestos(reparacion)}
                     >
-                        <FaWrench />
+                      <FaWrench />
                     </ManageButton>
                   </ActionsCell>
                 </td>
@@ -177,12 +176,27 @@ function ReparacionesCompletas() {
         <Modal.Body>
           {selectedReparacion && (
             <div>
-              <p><strong>ID de reparación:</strong> {selectedReparacion.id_reparacion}</p>
-              <p><strong>Placa de vehículo:</strong> {buscarPlacaVehiculo(selectedReparacion.id_vehiculo)}</p>
-              <p><strong>Mecánico asignado:</strong> {buscarNombreMecanico(selectedReparacion.id_mecanico)}</p>
-              <p><strong>Descripción:</strong> {selectedReparacion.descripcion}</p>
-              <p><strong>Fecha:</strong> {selectedReparacion.fecha_reparacion}</p>
-              <p><strong>Estado:</strong> {selectedReparacion.estado}</p>
+              <p>
+                <strong>ID de reparación:</strong>{" "}
+                {selectedReparacion.id_reparacion}
+              </p>
+              <p>
+                <strong>Placa de vehículo:</strong>{" "}
+                {buscarPlacaVehiculo(selectedReparacion.id_vehiculo)}
+              </p>
+              <p>
+                <strong>Mecánico asignado:</strong>{" "}
+                {buscarNombreMecanico(selectedReparacion.id_mecanico)}
+              </p>
+              <p>
+                <strong>Descripción:</strong> {selectedReparacion.descripcion}
+              </p>
+              <p>
+                <strong>Fecha:</strong> {selectedReparacion.fecha_reparacion}
+              </p>
+              <p>
+                <strong>Estado:</strong> {selectedReparacion.estado}
+              </p>
             </div>
           )}
         </Modal.Body>
@@ -193,7 +207,11 @@ function ReparacionesCompletas() {
         </Modal.Footer>
       </Modal>
 
-      <Modal show={isRepuestosModalOpen} onHide={handleCloseRepuestosModal} size="lg">
+      <Modal
+        show={isRepuestosModalOpen}
+        onHide={handleCloseRepuestosModal}
+        size="lg"
+      >
         <Modal.Header closeButton>
           <Modal.Title>Repuestos de la Reparación</Modal.Title>
         </Modal.Header>
@@ -230,9 +248,16 @@ function ReparacionesCompletas() {
 }
 
 const Container = styled.div`
-  background-color: rgb(254, 255, 255); /* Fondo principal */
+  background-color: rgb(255, 255, 255); /* Fondo principal */
   color: #27374d; /* Texto principal */
   padding: 20px;
+   overflow: hidden;
+  height: 95vh; /*si lo hace mas grande se hae un scrolll */
+  b
+  display: flex;
+  justify-content: center; /* Centra el contenido horizontalmente */
+  align-items: center; /* Centra el contenido verticalmente */
+  
 `;
 
 const Header = styled.div`
@@ -247,8 +272,10 @@ const Header = styled.div`
 `;
 
 const TableContainer = styled.div`
-  max-height: 90%;
+  background-color: rgb(255, 255, 255); /* Fondo principal */
+  overflow: auto;
   z-index: 1;
+  max-height: 600px; /*jimena ajuste esto a su gusto es la altura ggg */
 `;
 
 const Table = styled.table`
@@ -258,8 +285,9 @@ const Table = styled.table`
   border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   table-layout: fixed; /* Forzar el ancho de las columnas */
-  
-  th, td {
+
+  th,
+  td {
     padding: 12px;
     text-align: center; /* Centrar el texto */
     border-bottom: 1px solid #dee2e6;
@@ -267,15 +295,15 @@ const Table = styled.table`
     text-overflow: ellipsis;
     white-space: nowrap; /* Evitar que el texto se divida */
   }
-  
+
   th {
-    background-color: #526D82;
+    background-color: #526d82;
     position: sticky;
     top: 0;
     z-index: 1;
     color: white;
   }
-  
+
   tr:hover {
     background-color: #f1f1f1;
   }

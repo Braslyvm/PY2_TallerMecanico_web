@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { FaTrashAlt, FaEye, FaPlus, FaWrench, FaTable } from "react-icons/fa";
-import { Modal,Button,Form } from "react-bootstrap";
+import { Modal, Button, Form } from "react-bootstrap";
 import Swal from "sweetalert2";
 import axios from "axios";
 
@@ -37,28 +37,32 @@ function Reparaciones() {
     getReparacionesCompletas();
   }, []);
 
-  const AlertaCamposVacios=()=>{
-    //Alertas 
-      Swal.fire({
-        title: 'Error',
-        text: 'Debe completar todos los campos',
-        icon: 'Error',
-        confirmButtonText: 'Aceptar'
-      });
-  }
+  const AlertaCamposVacios = () => {
+    //Alertas
+    Swal.fire({
+      title: "Error",
+      text: "Debe completar todos los campos",
+      icon: "Error",
+      confirmButtonText: "Aceptar",
+    });
+  };
 
   const getReparacionesCompletas = () => {
     axios
       .get("http://localhost:3001/api/reparaciones")
       .then((response) => setDataComplete(response.data))
-      .catch((error) => console.error("Error al obtener reparaciones completas:", error));
-      console.log(dataComplete);
-  }
+      .catch((error) =>
+        console.error("Error al obtener reparaciones completas:", error)
+      );
+    console.log(dataComplete);
+  };
   const getReparaciones = () => {
     axios
       .get("http://localhost:3001/api/reparaciones/estado/Pendiente")
       .then((response) => setData(response.data))
-      .catch((error) => console.error("Error al obtener reparaciones pendientes:", error));
+      .catch((error) =>
+        console.error("Error al obtener reparaciones pendientes:", error)
+      );
   };
 
   const getVehiculos = () => {
@@ -69,13 +73,16 @@ function Reparaciones() {
   };
 
   const diagnosticosVehiculos = async () => {
-    const diagnosticosResponse = await axios.get("http://localhost:3001/api/diagnostico");
-      setDiagnosticos(diagnosticosResponse.data);
+    const diagnosticosResponse = await axios.get(
+      "http://localhost:3001/api/diagnostico"
+    );
+    setDiagnosticos(diagnosticosResponse.data);
 
-      // Ordenar los diagnósticos por fecha_diagnostico en orden descendente
-      diagnosticos.sort((a, b) => new Date(b.fecha_diagnostico) - new Date(a.fecha_diagnostico));
-  }
-
+    // Ordenar los diagnósticos por fecha_diagnostico en orden descendente
+    diagnosticos.sort(
+      (a, b) => new Date(b.fecha_diagnostico) - new Date(a.fecha_diagnostico)
+    );
+  };
 
   const getMecanicos = () => {
     axios
@@ -92,8 +99,6 @@ function Reparaciones() {
   };
 
   const handleAddClick = () => setIsModalOpen(true);
-
-
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -120,11 +125,21 @@ function Reparaciones() {
   const getRepuestosFiltrados = (reparacion) => {
     //Primero buscamos el vehículo de la reparación
     for (let i = 0; i < vehiculos.length; i++) {
-      console.log('Vehiculo ID',vehiculos[i].id_vehiculo, 'Reparacion ID', reparacion.id_vehiculo);
+      console.log(
+        "Vehiculo ID",
+        vehiculos[i].id_vehiculo,
+        "Reparacion ID",
+        reparacion.id_vehiculo
+      );
       if (vehiculos[i].id_vehiculo === reparacion.id_vehiculo) {
-        console.log('Vehiculo encontrado');
+        console.log("Vehiculo encontrado");
         for (let j = 0; j < repuestos.length; j++) {
-          console.log('Marca Vehiculo', vehiculos[i].id_marca, 'Marca Repuesto', repuestos[j].id_marca);
+          console.log(
+            "Marca Vehiculo",
+            vehiculos[i].id_marca,
+            "Marca Repuesto",
+            repuestos[j].id_marca
+          );
           if (Number(vehiculos[i].id_marca) === Number(repuestos[j].id_marca)) {
             repuestosFiltrados.push(repuestos[j]);
           }
@@ -179,7 +194,7 @@ function Reparaciones() {
     e.preventDefault();
     if (!vehiculo || !mecanico || !descripcion || !estado || !fechaReparacion) {
       AlertaCamposVacios();
-    }else{
+    } else {
       // Crear nueva reparación, con los nombres correctos para la base de datos
       const nuevaReparacion = {
         id_vehiculo: vehiculo, // Cambié 'vehiculo' por 'id_vehiculo'
@@ -192,7 +207,11 @@ function Reparaciones() {
       axios
         .post("http://localhost:3001/api/reparaciones", nuevaReparacion)
         .then(() => {
-          Swal.fire("¡Éxito!", "Reparación registrada correctamente.", "success");
+          Swal.fire(
+            "¡Éxito!",
+            "Reparación registrada correctamente.",
+            "success"
+          );
           getReparaciones();
           handleCloseModal();
         })
@@ -200,12 +219,11 @@ function Reparaciones() {
     }
   };
 
-
   const handleViewClick = (reparacion) => {
     setSelectedReparacion(reparacion);
     console.log(reparacion);
     setVerOpen(true);
-  }
+  };
 
   //cerrar modal de ver mecanico
   const handleViewModal = () => {
@@ -215,12 +233,17 @@ function Reparaciones() {
 
   const handleRequest = (id_reparacion) => {
     axios
-      .put(`http://localhost:3001/api/reparaciones/id/estado`, {id: id_reparacion, estado: 'En espera' })
+      .put(`http://localhost:3001/api/reparaciones/id/estado`, {
+        id: id_reparacion,
+        estado: "En espera",
+      })
       .then((response) => {
         console.log(response.data);
         getReparaciones(); // Actualizar la lista de reparaciones pendientes
       })
-      .catch((error) => console.error("Error al actualizar el estado de la reparación:", error));
+      .catch((error) =>
+        console.error("Error al actualizar el estado de la reparación:", error)
+      );
   };
 
   const deleteReparacion = (id) => {
@@ -239,7 +262,7 @@ function Reparaciones() {
         getReparaciones();
       })
       .catch((error) => console.error("Error al eliminar reparación:", error));
-      axios
+    axios
       .post(`http://localhost:3001/api/repuestos_reparacion/delete`, { id })
       .catch((error) => console.error("Error al eliminar reparación:", error));
   };
@@ -292,7 +315,7 @@ function Reparaciones() {
       </Header>
       <TableContainer>
         <Table>
-          <thead>
+          <thead style={{ position: "sticky", top: 0, zIndex: 10 }}>
             <tr>
               <th>ID</th>
               <th>Placa</th>
@@ -307,25 +330,12 @@ function Reparaciones() {
           <TableBody>
             {data.map((reparacion, index) => (
               <tr key={reparacion.id_reparacion}>
-                <td>
-                  {reparacion.id_reparacion}
-                </td>
-                <td>
-                  {buscarPlacaVehiculo(reparacion.id_vehiculo)}
-                </td>
-                <td>
-                    {buscarNombreMecanico(reparacion.id_mecanico)}
-               
-                </td>
-                <td>
-                {reparacion.fecha_reparacion}
-                </td>
-                <td>
-                 {reparacion.descripcion}
-                </td>
-                <td>
-               {reparacion.estado}
-                </td>
+                <td>{reparacion.id_reparacion}</td>
+                <td>{buscarPlacaVehiculo(reparacion.id_vehiculo)}</td>
+                <td>{buscarNombreMecanico(reparacion.id_mecanico)}</td>
+                <td>{reparacion.fecha_reparacion}</td>
+                <td>{reparacion.descripcion}</td>
+                <td>{reparacion.estado}</td>
                 <td>
                   <ActionsCell>
                     <DeleteButton
@@ -334,9 +344,7 @@ function Reparaciones() {
                       <FaTrashAlt />
                     </DeleteButton>
                     <ManageButton
-                      onClick={() =>
-                        handleManageRepuestos(reparacion)
-                      }
+                      onClick={() => handleManageRepuestos(reparacion)}
                     >
                       <FaWrench />
                     </ManageButton>
@@ -345,11 +353,11 @@ function Reparaciones() {
                     </ViewButton>
                   </ActionsCell>
                 </td>
-                <td> 
-                  <RequestButton 
-                    onClick={()=> 
-                    handleRequest(reparacion.id_reparacion)}
-                    >Realizar solicitud
+                <td>
+                  <RequestButton
+                    onClick={() => handleRequest(reparacion.id_reparacion)}
+                  >
+                    Realizar solicitud
                   </RequestButton>
                 </td>
               </tr>
@@ -357,7 +365,6 @@ function Reparaciones() {
           </TableBody>
         </Table>
       </TableContainer>
-
 
       {isModalOpen && (
         <ModalOverlay>
@@ -374,7 +381,8 @@ function Reparaciones() {
                   <option value="">Seleccione un vehículo</option>
                   {diagnosticos.map((d) => (
                     <option key={d.id_vehiculo} value={d.id_vehiculo}>
-                      Placa del vehículo: {buscarPlacaVehiculo(d.id_vehiculo)}, Fecha de diagnóstico: {d.fecha_diagnostico}
+                      Placa del vehículo: {buscarPlacaVehiculo(d.id_vehiculo)},
+                      Fecha de diagnóstico: {d.fecha_diagnostico}
                     </option>
                   ))}
                 </Form.Control>
@@ -487,12 +495,28 @@ function Reparaciones() {
         <Modal.Body>
           {selectedReparacion && (
             <div>
-              <p><strong>ID de reparacion:</strong> {selectedReparacion.id_reparacion}</p>
-              <p><strong>Placa de vehículo:</strong> {buscarPlacaVehiculo(selectedReparacion.id_vehiculo)}</p>
-              <p><strong>Mecánico asignado:</strong> {buscarNombreMecanico(selectedReparacion.id_mecanico)}</p>
-              <p><strong>Descripción del cliente:</strong> {selectedReparacion.descripcion}</p>
-              <p><strong>Fecha:</strong> {selectedReparacion.fecha_reparacion}</p>
-              <p><strong>Estado:</strong> {selectedReparacion.estado}</p>
+              <p>
+                <strong>ID de reparacion:</strong>{" "}
+                {selectedReparacion.id_reparacion}
+              </p>
+              <p>
+                <strong>Placa de vehículo:</strong>{" "}
+                {buscarPlacaVehiculo(selectedReparacion.id_vehiculo)}
+              </p>
+              <p>
+                <strong>Mecánico asignado:</strong>{" "}
+                {buscarNombreMecanico(selectedReparacion.id_mecanico)}
+              </p>
+              <p>
+                <strong>Descripción del cliente:</strong>{" "}
+                {selectedReparacion.descripcion}
+              </p>
+              <p>
+                <strong>Fecha:</strong> {selectedReparacion.fecha_reparacion}
+              </p>
+              <p>
+                <strong>Estado:</strong> {selectedReparacion.estado}
+              </p>
             </div>
           )}
         </Modal.Body>
@@ -508,7 +532,7 @@ function Reparaciones() {
 }
 const TableContainer = styled.div`
   max-height: 90%;
-  overflow-y: auto; 
+  overflow-y: auto;
   overflow-x: hidden;
   z-index: 1;
 `;
@@ -527,7 +551,7 @@ const ManageButton = styled.button`
 `;
 
 const Container = styled.div`
-  background-color:rgb(254, 255, 255); /* Fondo principal */
+  background-color: rgb(254, 255, 255); /* Fondo principal */
   color: #27374d; /* Texto principal */
   display: flex;
   flex-direction: column;
@@ -577,7 +601,7 @@ const RequestButton = styled.button`
 
 const TableBody = styled.tbody`
   max-height: 300px;
-  overflow-y: auto; 
+  overflow-y: auto;
   overflow-x: hidden;
 `;
 
@@ -588,8 +612,9 @@ const Table = styled.table`
   border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   table-layout: fixed; /* Forzar el ancho de las columnas */
-  
-  th, td {
+
+  th,
+  td {
     padding: 12px;
     text-align: center; /* Centrar el texto */
     border-bottom: 1px solid #dee2e6;
@@ -597,12 +622,12 @@ const Table = styled.table`
     text-overflow: ellipsis;
     white-space: nowrap; /* Evitar que el texto se divida */
   }
-  
+
   th {
-    background-color: #526D82;
+    background-color: #526d82;
     color: white;
   }
-  
+
   tr:hover {
     background-color: #f1f1f1;
   }
@@ -653,7 +678,6 @@ const ModalContent = styled.div`
   }
 `;
 
-
 const ActionButtons = styled.div`
   display: flex;
   justify-content: space-between;
@@ -687,13 +711,13 @@ const CloseButton = styled.button`
 
 const ViewButton = styled.button`
   padding: 5px 8px;
-  background-color:rgba(236, 240, 32, 0.95);
+  background-color: rgba(236, 240, 32, 0.95);
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   &:hover {
-    background-color:rgb(178, 180, 39);
+    background-color: rgb(178, 180, 39);
   }
   svg {
     font-size: 14px;
