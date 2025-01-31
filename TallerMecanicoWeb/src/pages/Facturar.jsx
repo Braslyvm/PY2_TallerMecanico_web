@@ -4,13 +4,42 @@ import { FaTools, FaMoneyBillAlt, FaKey } from "react-icons/fa";
 import { Table as BootstrapTable } from "react-bootstrap";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { useGlobalContext } from "../components/GlobalContext"; // Asegúrate de importar el contexto
 
 function Facturar() {
+  const { translate } = useGlobalContext(); // Obtener el estado de traducción
   const [reparaciones, setReparaciones] = useState([]);
   const [repuestos, setRepuestos] = useState([]);
   const [isModalOpen2, setIsModalOpen2] = useState(false);
   const [factura, setFactura] = useState(null);
   const [borrar, setdelete] = useState(null);
+
+  const translatedContent = {
+    title: translate ? "Billing" : "Facturación",
+    plate: translate ? "Plate" : "Placa",
+    customerEmail: translate ? "Customer Email" : "Correo Cliente",
+    actions: translate ? "Actions" : "Acciones",
+    detailedInvoice: translate ? "Detailed Invoice" : "Factura Detallada",
+    usedParts: translate ? "Used Parts" : "Repuestos Utilizados",
+    noPartsFound: translate
+      ? "No parts found for this repair."
+      : "No se encontraron repuestos para esta reparación.",
+    description: translate ? "Description" : "Descripción",
+    quantityUsed: translate ? "Quantity Used" : "Cantidad Utilizada",
+    price: translate ? "Price" : "Precio",
+    total: translate ? "Total" : "Total",
+    paymentSuccessful: translate ? "Payment successful!" : "¡Pago realizado!",
+    invoicePaid: translate
+      ? "The invoice has been paid successfully."
+      : "La factura ha sido pagada exitosamente.",
+    close: translate ? "Close" : "Cerrar",
+    errorFetchingParts: translate
+      ? "An error occurred while fetching parts."
+      : "Ocurrió un error al obtener los repuestos.",
+    errorFetchingRepairs: translate
+      ? "An error occurred while fetching repairs."
+      : "Ocurrió un error al obtener las reparaciones.",
+  };
 
   useEffect(() => {
     getReparaciones();
@@ -19,18 +48,14 @@ function Facturar() {
   const getRepuestos = (id) => {
     console.log(id);
     axios
-      .get(`http://localhost:3001/api/RepuestosR/${id}`)
+      .get(http://localhost:3001/api/RepuestosR/${id})
       .then((response) => {
         setRepuestos(response.data);
         console.log("id de reparacion:", response.data);
       })
       .catch((error) => {
         console.log(error);
-        Swal.fire(
-          "Error",
-          "Ocurrió un error al obtener los repuestos.",
-          "error"
-        );
+        Swal.fire("Error", translatedContent.errorFetchingParts, "error");
       });
   };
 
@@ -41,22 +66,16 @@ function Facturar() {
         setReparaciones(response.data);
       })
       .catch((error) => {
-        Swal.fire(
-          "Error",
-          "Ocurrió un error al obtener las reparaciones.",
-          "error"
-        );
+        Swal.fire("Error", translatedContent.errorFetchingRepairs, "error");
       });
   };
 
   const actualizarEstadoReparacion = (id_reparacion, estado) => {
     axios
-
       .post("http://localhost:3001/api/reparacionesU", {
         id_reparacion,
         estado,
       })
-
       .then((response) => {})
       .catch((error) => {
         if (error.response) {
@@ -78,8 +97,8 @@ function Facturar() {
 
   const handlePagar = () => {
     Swal.fire(
-      "¡Pago realizado!",
-      "La factura ha sido pagada exitosamente.",
+      translatedContent.paymentSuccessful,
+      translatedContent.invoicePaid,
       "success"
     );
 
@@ -92,7 +111,7 @@ function Facturar() {
   return (
     <FormContainer>
       <Header>
-        <h1>Facturación</h1>
+        <h1>{translatedContent.title}</h1>
       </Header>
       <TableContainer>
         <Table>
@@ -105,9 +124,9 @@ function Facturar() {
             }}
           >
             <tr>
-              <th>Placa</th>
-              <th>Correo Cliente</th>
-              <th>Acciones</th>
+              <th>{translatedContent.plate}</th>
+              <th>{translatedContent.customerEmail}</th>
+              <th>{translatedContent.actions}</th>
             </tr>
           </thead>
           <tbody>
@@ -133,7 +152,7 @@ function Facturar() {
       {isModalOpen2 && (
         <ModalOverlay>
           <ModalContent style={{ zIndex: 100 }}>
-            <h3>Factura Detallada</h3>
+            <h3>{translatedContent.detailedInvoice}</h3>
 
             <h4
               style={{
@@ -142,7 +161,8 @@ function Facturar() {
                 zIndex: 20,
               }}
             >
-              Repuestos Utilizados <FaTools style={{ marginRight: "8px" }} />
+              {translatedContent.usedParts}{" "}
+              <FaTools style={{ marginRight: "8px" }} />
             </h4>
 
             {repuestos.length > 0 ? (
@@ -157,30 +177,33 @@ function Facturar() {
                 {repuestos.map((repuesto, index) => (
                   <RepuestoItem key={index}>
                     <p>
-                      <strong>Descripción:</strong> {repuesto.descripcion}
+                      <strong>{translatedContent.description}:</strong>{" "}
+                      {repuesto.descripcion}
                     </p>
                     <p>
-                      <strong>Cantidad Utilizada:</strong>{" "}
+                      <strong>{translatedContent.quantityUsed}:</strong>{" "}
                       {repuesto.cantidad_utilizada}
                     </p>
                     <p>
-                      <strong>Precio:</strong> ${repuesto.precio}
+                      <strong>{translatedContent.price}:</strong> $
+                      {repuesto.precio}
                     </p>
                     <p>
-                      <strong>Total:</strong> ${repuesto.total}
+                      <strong>{translatedContent.total}:</strong> $
+                      {repuesto.total}
                     </p>
                   </RepuestoItem>
                 ))}
               </RepuestosList>
             ) : (
-              <p>No se encontraron repuestos para esta reparación.</p>
+              <p>{translatedContent.noPartsFound}</p>
             )}
 
             <ActionButtons
               style={{ display: "flex", justifyContent: "flex-end" }}
             >
               <CloseButton onClick={() => setIsModalOpen2(false)}>
-                Cerrar
+                {translatedContent.close}
               </CloseButton>
             </ActionButtons>
           </ModalContent>
@@ -342,4 +365,4 @@ const ActionButtons = styled.div`
   justify-content: flex-end;
 `;
 
-export default Facturar;
+export default Facturar;
