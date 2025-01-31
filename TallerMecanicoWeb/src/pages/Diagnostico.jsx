@@ -5,6 +5,9 @@ import styled from "styled-components";
 import { useDropzone } from "react-dropzone";
 import { Modal, Button, Form } from "react-bootstrap";
 import Swal from "sweetalert2";
+import translateText from '../components/translate'; // Importar la función de traducción
+import { useGlobalContext } from '../components/GlobalContext';
+
 
 const Diagnostico = () => {
   const [diagnosticos, setDiagnosticos] = useState([]);
@@ -16,6 +19,29 @@ const Diagnostico = () => {
   const [descripcion, setDescripcion] = useState("");
   const [descripcionCliente, setDescripcionCliente] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { translate } = useGlobalContext();
+  const translatedContent = {
+    title: translate ? 'Vehicle Diagnostics Management' : 'Gestión de diagnósticos de vehículos',
+    addButton: translate ? 'Register Diagnostic' : 'Registrar diagnóstico',
+    noDiagnostics: translate ? 'No diagnostics available.' : 'No hay diagnósticos disponibles.',
+    alertErrorLoad: translate ? 'Error loading diagnostics:' : 'Error al cargar los diagnósticos:',
+    alertErrorAdd: translate ? 'Error adding diagnostic:' : 'Error al agregar el diagnóstico:',
+    alertErrorVehicles: translate ? 'Error obtaining vehicles:' : 'Error al obtener vehículos:',
+    alertInvalidImage: translate ? 'Please select a valid image file.' : 'Por favor, selecciona un archivo de imagen válido.',
+    save: translate ? 'Save' : 'Guardar',
+    cancel: translate ? 'Cancel' : 'Cancelar',
+    actions: translate ? 'Actions' : 'Acciones',
+    id: translate ? 'Diagnostic ID' : 'ID de diagnóstico',
+    plate: translate ? 'Vehicle Plate' : 'Placa de vehículo',
+    date: translate ? 'Diagnostic Date' : 'Fecha de diagnóstico',
+    technicalDescription: translate ? 'Technical Description' : 'Diagnóstico técnico',
+    clientDescription: translate ? 'Client Description' : 'Descripción del cliente',
+    vehicle: translate ? 'Vehicle' : 'Vehículo',
+    selectVehicle: translate ? 'Select a vehicle' : 'Seleccione un vehículo',
+    detailsDiagnostic: translate ? 'Diagnostic Details' : 'Detalles del diagnóstico',
+    selectPhoto: translate ? 'Drog or select a photo' : 'Arrastra o elecciona una foto',
+    photo: translate ? 'Photo' : 'Foto'
+  };
 
   // Obtener diagnósticos y vehículos al cargar el componente
   useEffect(() => {
@@ -25,8 +51,9 @@ const Diagnostico = () => {
 
   const cargarDiagnosticos = async () => {
     try {
-      const response = await axios.get("http://localhost:3001/api/diagnostico");
+      const response =  await axios.get("/api/diagnostico");
       setDiagnosticos(response.data);
+      console.log("Diagnósticos cargados:", response.data);
     } catch (error) {
       console.error("Error al cargar los diagnósticos:", error);
     }
@@ -61,7 +88,7 @@ const Diagnostico = () => {
     onDrop,
   });
 
-  const agregarDiagnostico = async () => {
+  const agregarDiagnostico = () => {
     const fechaActual = new Date().toISOString().split('T')[0];
     const nuevoDiagnostico = new FormData();
     nuevoDiagnostico.append('id_vehiculo', vehiculo);
@@ -73,7 +100,7 @@ const Diagnostico = () => {
     }
 
     try {
-      await axios.post("http://localhost:3001/api/diagnostico", nuevoDiagnostico, {
+      axios.post("http://localhost:3001/api/diagnostico", nuevoDiagnostico, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -118,24 +145,28 @@ const Diagnostico = () => {
     }
   };
 
+  const translateCellContent = (text) => {
+    return translate ? translateText(text, 'es', 'en') : translateText(text, 'en', 'es');
+  };
+
   return (
     <Container>
       <Header>
-        <h2>Gestión de diagnósticos de vehículos</h2>
+        <h2>{translatedContent.title}</h2>
         <AddButton onClick={handleAddClick}>
-          <FaPlus /> Registrar diagnóstico
+          <FaPlus /> {translatedContent.addButton}
         </AddButton>
       </Header>
       <TableContainer>
         <Table>
           <thead>
             <tr>
-              <th>ID de diagnóstico</th>
-              <th>Placa de vehículo</th>
-              <th>Fecha de diagnóstico</th>
-              <th>Diagnóstico técnico</th>
-              <th>Descripción del cliente</th>
-              <th>Acciones</th>
+              <th>{translatedContent.id}</th>
+              <th>{translatedContent.plate}</th>
+              <th>{translatedContent.date}</th>
+              <th>{translatedContent.technicalDescription}</th>
+              <th>{translatedContent.clientDescription}</th>
+              <th>{translatedContent.actions}</th>
             </tr>
           </thead>
           <TableBody>
@@ -145,8 +176,8 @@ const Diagnostico = () => {
                   <td>{diagnostico.id_diagnostico}</td>
                   <td>{buscarPlacaVehiculo(diagnostico.id_vehiculo)}</td>
                   <td>{diagnostico.fecha_diagnostico}</td>
-                  <td>{diagnostico.diagnostico_tecnico}</td>
-                  <td>{diagnostico.descripcion_cliente}</td>
+                  <td>{translateCellContent(diagnostico.diagnostico_tecnico)}</td>
+                  <td>{translateCellContent(diagnostico.descripcion_cliente)}</td>
                   <td style={{ width: '15%' }}>
                     <ActionsCell>
                       <ViewButton onClick={() => handleViewClick(diagnostico.id_diagnostico, buscarPlacaVehiculo(diagnostico.id_vehiculo), diagnostico.fecha_diagnostico, diagnostico.diagnostico_tecnico, diagnostico.descripcion_cliente, diagnostico.foto)}>
@@ -158,7 +189,7 @@ const Diagnostico = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="5">No hay diagnósticos disponibles.</td>
+                <td colSpan="6">{translatedContent.noDiagnostics}</td>
               </tr>
             )}
           </TableBody>
@@ -167,42 +198,42 @@ const Diagnostico = () => {
 
       {/* Modal para agregar diagnóstico */}
       <Modal show={isModalOpen} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Registrar diagnóstico</Modal.Title>
+        <Modal.Header>
+          <Modal.Title>{translatedContent.addButton}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group controlId="formVehiculo">
-              <Form.Label>Vehículo</Form.Label>
+              <Form.Label>{translatedContent.vehicle}</Form.Label>
               <Form.Control
                 as="select"
                 value={vehiculo}
                 onChange={(e) => setVehiculo(e.target.value)}
               >
-                <option value="">Seleccione un vehículo</option>
+                <option value="">{translatedContent.selectVehicle}</option>
                 {vehiculos.map((v) => (
                   <option key={v.id_vehiculo} value={v.id_vehiculo}>
-                    Placa del vehículo: {v.placa}
+                    {translatedContent.plate}: {v.placa}
                   </option>
                 ))}
               </Form.Control>
             </Form.Group>
             <Form.Group controlId="formDescripcion">
-              <Form.Label>Descripción Técnica</Form.Label>
+              <Form.Label>{translatedContent.technicalDescription}</Form.Label>
               <Form.Control as="textarea" rows={3} value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
             </Form.Group>
             <Form.Group controlId="formDescripcionCliente">
-              <Form.Label>Descripción del Cliente</Form.Label>
+              <Form.Label>{translatedContent.clientDescription}</Form.Label>
               <Form.Control as="textarea" rows={3} value={descripcionCliente} onChange={(e) => setDescripcionCliente(e.target.value)} />
             </Form.Group>
             <Form.Group controlId="formFoto">
-              <Form.Label>Foto</Form.Label>
+              <Form.Label>{translatedContent.photo}</Form.Label>
               <PhotoInputContainer {...getRootProps()}>
                 <input {...getInputProps()} />
                 {foto ? (
                   <PreviewImage src={URL.createObjectURL(foto)} alt="Vista previa" />
                 ) : (
-                  <div className="upload-box">Arrastra o selecciona una foto</div>
+                  <div className="upload-box">{translatedContent.selectPhoto}</div>
                 )}
               </PhotoInputContainer>
             </Form.Group>
@@ -210,10 +241,10 @@ const Diagnostico = () => {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseModal}>
-            Cancelar
+            {translatedContent.cancel}
           </Button>
           <Button variant="primary" onClick={agregarDiagnostico}>
-            Guardar
+            {translatedContent.save}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -221,23 +252,23 @@ const Diagnostico = () => {
       {/* Modal para ver detalles del diagnóstico */}
       <Modal show={verOpen} onHide={handleViewModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Detalles del Diagnóstico</Modal.Title>
+          <Modal.Title>{translatedContent.detailsDiagnostic}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedDiagnostico && (
             <div>
               <img src={selectedDiagnostico.foto} alt="Foto del diagnóstico" style={{ maxWidth: '100px', borderRadius: '8px' }} />
-              <p><strong>ID diagnóstico:</strong> {selectedDiagnostico.id_diagnostico}</p>
-              <p><strong>Placa de vehículo:</strong> {buscarPlacaVehiculo(selectedDiagnostico.id_vehiculo)}</p>
-              <p><strong>Diagnóstico técnico:</strong> {selectedDiagnostico.diagnostico_tecnico}</p>
-              <p><strong>Descripción del cliente:</strong> {selectedDiagnostico.descripcion_cliente}</p>
-              <p><strong>Fecha:</strong> {selectedDiagnostico.fecha_diagnostico}</p>
+              <p><strong>{translatedContent.id}:</strong> {selectedDiagnostico.id_diagnostico}</p>
+              <p><strong>{translatedContent.plate}:</strong> {selectedDiagnostico.id_vehiculo}</p>
+              <p><strong>{translatedContent.technicalDescription}:</strong> {translateCellContent(selectedDiagnostico.diagnostico_tecnico)}</p>
+              <p><strong>{translatedContent.clientDescription}:</strong> {translateCellContent(selectedDiagnostico.descripcion_cliente)}</p>
+              <p><strong>{translatedContent.date}:</strong> {selectedDiagnostico.fecha_diagnostico}</p>
             </div>
           )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleViewModal}>
-            Cerrar
+            {translatedContent.cancel}
           </Button>
         </Modal.Footer>
       </Modal>

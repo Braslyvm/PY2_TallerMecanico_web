@@ -582,7 +582,6 @@ app.post("/api/diagnostico", upload.single("foto"), (req, res) => {
     diagnostico_tecnico,
     descripcion_cliente,
   } = req.body;
-  console.log(req.file);
   const foto = req.file ? req.file.path : null; // Cambié a req.file.path para obtener la ruta completa
   // Validar que todos los campos estén presentes
   if (
