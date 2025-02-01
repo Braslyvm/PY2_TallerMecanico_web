@@ -127,7 +127,7 @@ app.get("/api/vehiculos/completa/Cliente/:cedula", (req, res) => {
 // Rutas para obtener todas las reparaciones
 app.get("/api/reparaciones2/:id", (req, res) => {
   const { id } = req.params;
-  db.get(
+  db.all(
     'SELECT r.id_reparacion, r.id_vehiculo, m.nombre AS mecanico, r.fecha_reparacion, r.descripcion FROM reparaciones r JOIN mecanicos m ON r.id_mecanico = m.cedula WHERE r.estado = "Finalizado" AND r.id_vehiculo = ?',
     [id],
     (err, rows) => {
@@ -136,6 +136,25 @@ app.get("/api/reparaciones2/:id", (req, res) => {
         return;
       }
       res.json(rows);
+    }
+  );
+});
+
+app.get("/api/reparaciones3/:id", (req, res) => {
+  const { id } = req.params; // Cambia el nombre del parámetro
+  db.get(
+    'SELECT r.id_reparacion, r.id_vehiculo, m.nombre AS mecanico, r.fecha_reparacion, r.descripcion FROM reparaciones r JOIN mecanicos m ON r.id_mecanico = m.cedula WHERE r.id_reparacion = ?',
+    [id],
+    (err, row) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      if (!row) {
+        res.status(404).json({ error: "Reparación no encontrada" });
+        return;
+      }
+      res.json(row);
     }
   );
 });
