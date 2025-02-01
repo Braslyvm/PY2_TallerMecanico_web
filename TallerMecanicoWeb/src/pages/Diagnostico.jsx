@@ -8,7 +8,6 @@ import Swal from "sweetalert2";
 import translateText from '../components/translate'; // Importar la función de traducción
 import { useGlobalContext } from '../components/GlobalContext';
 
-
 const Diagnostico = () => {
   const [diagnosticos, setDiagnosticos] = useState([]);
   const [vehiculos, setVehiculos] = useState([]);
@@ -39,7 +38,7 @@ const Diagnostico = () => {
     vehicle: translate ? 'Vehicle' : 'Vehículo',
     selectVehicle: translate ? 'Select a vehicle' : 'Seleccione un vehículo',
     detailsDiagnostic: translate ? 'Diagnostic Details' : 'Detalles del diagnóstico',
-    selectPhoto: translate ? 'Drog or select a photo' : 'Arrastra o elecciona una foto',
+    selectPhoto: translate ? 'Drag or select a photo' : 'Arrastra o selecciona una foto',
     photo: translate ? 'Photo' : 'Foto'
   };
 
@@ -49,14 +48,15 @@ const Diagnostico = () => {
     getVehiculos();
   }, []);
 
-  const cargarDiagnosticos = async () => {
-    try {
-      const response =  await axios.get("/api/diagnostico");
-      setDiagnosticos(response.data);
-      console.log("Diagnósticos cargados:", response.data);
-    } catch (error) {
-      console.error("Error al cargar los diagnósticos:", error);
-    }
+  const cargarDiagnosticos = () => {
+    axios
+      .get("http://localhost:3001/api/diagnostico")
+      .then((response) => {
+        setDiagnosticos(response.data);
+        console.log("Diagnósticos:", response.data);
+        console.log(diagnosticos);
+      })
+      .catch((error) => console.error("Error al obtener diagnósticos:", error));
   };
 
   const getVehiculos = () => {
@@ -74,7 +74,7 @@ const Diagnostico = () => {
     if (file && validTypes.includes(file.type)) {
       setFoto(file); // Guardar el archivo en lugar de la URL
     } else {
-      alert('Por favor, selecciona un archivo de imagen válido.');
+      alert(translatedContent.alertInvalidImage);
     }
   };
 
@@ -99,26 +99,33 @@ const Diagnostico = () => {
       nuevoDiagnostico.append('foto', foto); // Agregar la foto al FormData
     }
 
-    try {
-      axios.post("http://localhost:3001/api/diagnostico", nuevoDiagnostico, {
+    axios
+      .post("http://localhost:3001/api/diagnostico", nuevoDiagnostico, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
+      })
+      .then(() => {
+        cargarDiagnosticos();
+        setVehiculo("");
+        setFoto(null);
+        setDescripcion("");
+        setDescripcionCliente("");
+        setIsModalOpen(false);
+        Swal.fire(
+          "¡Éxito!",
+          "Diagnóstico registrado correctamente.",
+          "success"
+        );
+      })
+      .catch((error) => {
+        console.error("Error al agregar el diagnóstico:", error);
+        Swal.fire("Error", "No se pudo agregar el diagnóstico.", "error");
       });
-      cargarDiagnosticos();
-      setVehiculo("");
-      setFoto(null);
-      setDescripcion("");
-      setDescripcionCliente("");
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error("Error al agregar el diagnóstico:", error);
-      Swal.fire("Error", "No se pudo agregar el diagnóstico.", "error");
-    }
   };
 
-  const handleViewClick = (id_diagnostico, id_vehiculo, fecha_diagnostico, diagnostico_tecnico, descripcion_cliente, foto) => {
-    setSelectedDiagnostico({ id_diagnostico, id_vehiculo, fecha_diagnostico, diagnostico_tecnico, descripcion_cliente, foto });
+  const handleViewClick = (diagnostico) => {
+    setSelectedDiagnostico(diagnostico);
     setVerOpen(true);
   };
 
@@ -138,11 +145,8 @@ const Diagnostico = () => {
   };
 
   const buscarPlacaVehiculo = (id) => {
-    for (let i = 0; i < vehiculos.length; i++) {
-      if (vehiculos[i].id_vehiculo === id) {
-        return vehiculos[i].placa;
-      }
-    }
+    const vehiculo = vehiculos.find((v) => v.id_vehiculo === id);
+    return vehiculo ? vehiculo.placa : "N/A";
   };
 
   const translateCellContent = (text) => {
@@ -169,7 +173,7 @@ const Diagnostico = () => {
               <th>{translatedContent.actions}</th>
             </tr>
           </thead>
-          <TableBody>
+          <tbody>
             {Array.isArray(diagnosticos) && diagnosticos.length > 0 ? (
               diagnosticos.map((diagnostico) => (
                 <tr key={diagnostico.id_diagnostico}>
@@ -178,12 +182,10 @@ const Diagnostico = () => {
                   <td>{diagnostico.fecha_diagnostico}</td>
                   <td>{translateCellContent(diagnostico.diagnostico_tecnico)}</td>
                   <td>{translateCellContent(diagnostico.descripcion_cliente)}</td>
-                  <td style={{ width: '15%' }}>
-                    <ActionsCell>
-                      <ViewButton onClick={() => handleViewClick(diagnostico.id_diagnostico, buscarPlacaVehiculo(diagnostico.id_vehiculo), diagnostico.fecha_diagnostico, diagnostico.diagnostico_tecnico, diagnostico.descripcion_cliente, diagnostico.foto)}>
-                        <FaEye />
-                      </ViewButton>
-                    </ActionsCell>
+                  <td>
+                    <ViewButton onClick={() => handleViewClick(diagnostico)}>
+                      <FaEye />
+                    </ViewButton>
                   </td>
                 </tr>
               ))
@@ -192,7 +194,7 @@ const Diagnostico = () => {
                 <td colSpan="6">{translatedContent.noDiagnostics}</td>
               </tr>
             )}
-          </TableBody>
+          </tbody>
         </Table>
       </TableContainer>
 
@@ -259,7 +261,7 @@ const Diagnostico = () => {
             <div>
               <img src={selectedDiagnostico.foto} alt="Foto del diagnóstico" style={{ maxWidth: '100px', borderRadius: '8px' }} />
               <p><strong>{translatedContent.id}:</strong> {selectedDiagnostico.id_diagnostico}</p>
-              <p><strong>{translatedContent.plate}:</strong> {selectedDiagnostico.id_vehiculo}</p>
+              <p><strong>{translatedContent.plate}:</strong> {buscarPlacaVehiculo(selectedDiagnostico.id_vehiculo)}</p>
               <p><strong>{translatedContent.technicalDescription}:</strong> {translateCellContent(selectedDiagnostico.diagnostico_tecnico)}</p>
               <p><strong>{translatedContent.clientDescription}:</strong> {translateCellContent(selectedDiagnostico.descripcion_cliente)}</p>
               <p><strong>{translatedContent.date}:</strong> {selectedDiagnostico.fecha_diagnostico}</p>
@@ -276,18 +278,12 @@ const Diagnostico = () => {
   );
 };
 
-
+// Estilos (puedes mantener los mismos estilos que ya tienes)
 const TableContainer = styled.div`
   max-height: 90%;
   overflow-y: auto; 
   overflow-x: hidden;
   z-index: 1;
-`;
-
-const FormContainer = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 20px;
 `;
 
 const ViewButton = styled.button`
@@ -323,17 +319,6 @@ const PhotoInputContainer = styled.div`
   }
 `;
 
-const PhotoviewContainer = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  cursor: pointer;
-  text-align: center;
-`;
-
 const PreviewImage = styled.img`
   max-width: 100px;
   max-height: 100px;
@@ -342,16 +327,9 @@ const PreviewImage = styled.img`
   margin-top: 10px;
 `;
 
-const FormFields = styled.div`
-  flex: 2;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-
 const Container = styled.div`
-  background-color:rgb(254, 255, 255); /* Fondo principal */
-  color: #27374d; /* Texto principal */
+  background-color: rgb(254, 255, 255);
+  color: #27374d;
   padding: 20px;
   font-family: Arial, sans-serif;
   height: 91vh;
@@ -364,13 +342,13 @@ const Header = styled.div`
   margin-bottom: 20px;
 
   h2 {
-    color: #27374d; /* Título */
+    color: #27374d;
   }
 `;
 
 const AddButton = styled.button`
-  background-color: #526d82; /* Botón primario */
-  color: #dde6ed; /* Texto del botón */
+  background-color: #526d82;
+  color: #dde6ed;
   padding: 10px 15px;
   border: none;
   border-radius: 5px;
@@ -378,14 +356,8 @@ const AddButton = styled.button`
   font-size: 16px;
 
   &:hover {
-    background-color: #9db2bf; /* Hover del botón */
+    background-color: #9db2bf;
   }
-`;
-
-const TableBody = styled.tbody`
-  max-height: 300px;
-  overflow-y: auto; 
-  overflow-x: hidden;
 `;
 
 const Table = styled.table`
@@ -394,17 +366,17 @@ const Table = styled.table`
   margin-top: 10px;
   border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  table-layout: fixed; /* Forzar el ancho de las columnas */
-  
+  table-layout: fixed;
+
   th, td {
     padding: 12px;
-    text-align: center; /* Centrar el texto */
+    text-align: center;
     border-bottom: 1px solid #dee2e6;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap; /* Evitar que el texto se divida */
+    white-space: nowrap;
   }
-  
+
   th {
     background-color: #526D82;
     position: sticky;
@@ -412,77 +384,9 @@ const Table = styled.table`
     z-index: 1;
     color: white;
   }
-  
+
   tr:hover {
     background-color: #f1f1f1;
-  }
-`;
-
-const ActionsCell = styled.td`
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-`;
-
-const DeleteButton = styled.button`
-  background-color: #d9534f; /* Botón eliminar */
-  color: #ffffff;
-  border: none;
-  border-radius: 5px;
-  padding: 5px 10px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #c9302c; /* Hover del botón eliminar */
-  }
-`;
-
-
-
-const ModalContent = styled.div`
-  background-color: #ffffff;
-  color: #27374d;
-  padding: 20px;
-  border-radius: 10px;
-  width: 90%; /* El contenedor ocupará el 90% del ancho de la ventana */
-  max-width: 1200px; /* Ancho máximo de 1200px */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 10;
-
-  h3 {
-    margin-bottom: 15px;
-  }
-`;
-
-
-const ActionButtons = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
-
-const SaveButton = styled.button`
-  background-color: #526d82;
-  color: #dde6ed;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #27374d;
-  }
-`;
-
-const CloseButton = styled.button`
-  background-color: #d9534f;
-  color: #ffffff;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #c9302c;
   }
 `;
 
