@@ -27,7 +27,7 @@ app.use(express.json());
 
 // Rutas para obtener todos los vehículos
 app.get("/api/vehiculos", (req, res) => {
-  console.log("algo")
+  console.log("algo");
   db.all(
     "SELECT v.placa, m.nombre AS marca, v.modelo, v.id_vehiculo FROM  vehiculos v JOIN marcas m ON v.id_marca = m.id_marca",
     [],
@@ -37,11 +37,10 @@ app.get("/api/vehiculos", (req, res) => {
         return;
       }
       res.json(rows);
-      console.log(rows)
+      console.log(rows);
     }
   );
 });
-
 
 // Agregar un vehículo
 app.post("/api/vehiculos", (req, res) => {
@@ -58,8 +57,6 @@ app.post("/api/vehiculos", (req, res) => {
     }
   );
 });
-
-
 
 // Agregar un cliente
 app.post("/api/cliente", (req, res) => {
@@ -96,18 +93,19 @@ app.get("/api/login/Cliente/:correo", (req, res) => {
   );
 });
 
-
-
-
 // Rutas para obtener todos los vehículos
 app.get("/api/vehiculos/completa", (req, res) => {
-  db.all("SELECT v.id_vehiculo, v.id_marca, v.modelo, v.anio, c.nombre || ' ' || c.apellido1 || ' ' || c.apellido2 AS nombre_completo, v.placa FROM vehiculos v JOIN clientes c ON v.cedula = c.cedula", [], (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
+  db.all(
+    "SELECT v.id_vehiculo, v.id_marca, v.modelo, v.anio, c.nombre || ' ' || c.apellido1 || ' ' || c.apellido2 AS nombre_completo, v.placa FROM vehiculos v JOIN clientes c ON v.cedula = c.cedula",
+    [],
+    (err, rows) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.json(rows);
     }
-    res.json(rows);
-  });
+  );
 });
 
 // Rutas para obtener todas las reparaciones
@@ -129,11 +127,19 @@ app.get("/api/reparaciones2/:id", (req, res) => {
 //facturas en facturar
 app.get("/api/Facturas", (req, res) => {
   db.all(
-    "SELECT r.id_reparacion, r.id_vehiculo, v.placa as placa, v.correo_cliente as cliente, m.nombre AS mecanico, r.fecha_reparacion, r.descripcion " +
-      "FROM reparaciones r " +
-      "JOIN mecanicos m ON r.id_mecanico = m.cedula " +
-      "JOIN vehiculos v ON r.id_vehiculo = v.id_vehiculo " +
-      "WHERE r.estado = 'Facturar'",
+    `SELECT 
+      r.id_reparacion, 
+      r.id_vehiculo, 
+      v.placa AS placa, 
+      (c.nombre || ' ' || c.apellido1) AS cliente, 
+      m.nombre AS mecanico, 
+      r.fecha_reparacion, 
+      r.descripcion 
+    FROM reparaciones r 
+    JOIN mecanicos m ON r.id_mecanico = m.cedula 
+    JOIN vehiculos v ON r.id_vehiculo = v.id_vehiculo 
+    JOIN clientes c ON c.cedula = v.cedula 
+    WHERE r.estado = 'Facturar'`,
     (err, rows) => {
       if (err) {
         res.status(500).json({ error: err.message });
@@ -520,8 +526,6 @@ app.get("/api/login/:usuario", (req, res) => {
     }
   );
 });
-
-
 
 app.post("/api/reparaciones/delete", (req, res) => {
   const { id } = req.body;

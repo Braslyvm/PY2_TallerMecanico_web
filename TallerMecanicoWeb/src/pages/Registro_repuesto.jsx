@@ -9,8 +9,10 @@ import {
 } from "react-bootstrap";
 import Swal from "sweetalert2";
 import { useDropzone } from "react-dropzone";
+import { useGlobalContext } from "../components/GlobalContext"; // Asegúrate de importar el contexto
 
 function GestionDeRepuestos() {
+  const { translate } = useGlobalContext(); // Obtener el estado de traducción
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpen2, setIsModalOpen2] = useState(false);
   const [isModalOpen3, setIsModalOpen3] = useState(false);
@@ -23,10 +25,56 @@ function GestionDeRepuestos() {
   const [marcas, setMarcas] = useState([]);
   const [piezas, setPiezas] = useState([]);
 
+  const translatedContent = {
+    title: translate ? "Spare Parts Management" : "Gestión de Repuestos",
+    addButton: translate ? "Add Spare Part" : "Agregar Repuesto",
+    noSpareParts: translate
+      ? "No spare parts registered"
+      : "No hay repuestos registrados",
+    alertSuccess: translate
+      ? "Spare part added successfully!"
+      : "¡Repuesto agregado exitosamente!",
+    alertDelete: translate
+      ? "Spare part deleted successfully!"
+      : "Repuesto eliminado correctamente!",
+    alertCompleteFields: translate
+      ? "Please complete all fields."
+      : "Por favor, completa todos los campos.",
+    alertErrorAdd: translate
+      ? "Error adding spare part:"
+      : "Error al agregar repuesto:",
+    alertErrorDelete: translate
+      ? "Error deleting spare part:"
+      : "Error al eliminar repuesto:",
+    detailsTitle: translate ? "Spare Part Details" : "Detalles del Repuesto",
+    price: translate ? "Price:" : "Precio:",
+    brand: translate ? "Brand:" : "Marca:",
+    description: translate ? "Description:" : "Descripción:",
+    save: translate ? "Save" : "Guardar",
+    close: translate ? "Close" : "Cerrar",
+    accept: translate ? "Accept" : "Aceptar",
+    actions: translate ? "Actions" : "Acciones",
+    confirmDelete: translate
+      ? "Are you sure you want to delete this spare part?"
+      : "¿Estás seguro de que deseas eliminar este repuesto?",
+    editSparePart: translate ? "Edit Spare Part" : "Editar Repuesto",
+    viewSparePart: translate ? "View Spare Part" : "Ver Repuesto",
+  };
+
   useEffect(() => {
     getMarcas();
     getPiezas();
   }, []);
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setIsModalOpen2(false);
+    setIsModalOpen3(false);
+    setPrecio("");
+    setDescripcion("");
+    setFoto(null);
+    setSelectedMarca("");
+  };
 
   const getMarcas = () => {
     axios
@@ -51,7 +99,7 @@ function GestionDeRepuestos() {
     if (file && validTypes.includes(file.type)) {
       setFoto(file); // Guardar el archivo en lugar de la URL
     } else {
-      alert("Por favor, selecciona un archivo de imagen válido.");
+      alert(translatedContent.alertCompleteFields);
     }
   };
 
@@ -64,51 +112,44 @@ function GestionDeRepuestos() {
     },
     onDrop,
   });
+
   const handleedit = (e) => {
     e.preventDefault();
-    // Validación de campos
     if (!precio || !selectedMarca || !descripcion) {
-      Swal.fire(
-        "Error",
-        "Por favor, completa todos los campos obligatorios.",
-        "error"
-      );
+      Swal.fire("Error", translatedContent.alertCompleteFields, "error");
       return;
     }
 
     const formData = new FormData();
 
     if (typeof selectedMarca === "object" && selectedMarca !== null) {
-      formData.append("selectedMarca", selectedMarca.id_marca); // Extrae el ID si es un objeto
+      formData.append("selectedMarca", selectedMarca.id_marca);
     } else {
-      formData.append("selectedMarca", selectedMarca); // Si ya es un ID, lo usa directamente
+      formData.append("selectedMarca", selectedMarca);
     }
 
     formData.append("precio", precio);
     formData.append("descripcion", descripcion);
 
-    // Solo agregar foto si es un nuevo archivo
     if (foto instanceof File) {
       formData.append("foto", foto);
     }
 
-    // Enviar la solicitud PUT con el ID del repuesto
     axios
-      .put(`http://localhost:3001/api/repuestos2/${id_repuesto}`, formData, {
+      .put(http://localhost:3001/api/repuestos2/${id_repuesto}, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((response) => {
-        Swal.fire("¡Éxito!", "Repuesto actualizado correctamente.", "success");
+        Swal.fire("¡Éxito!", translatedContent.alertSuccess, "success");
         setIsModalOpen(false);
-        getPiezas(); // Recargar la lista de repuestos
+        getPiezas();
       })
       .catch((error) => {
         console.error("Error al actualizar repuesto:", error.response || error);
         Swal.fire(
           "Error",
-          `No se pudo actualizar el repuesto. Detalles: ${
-            error.response?.data?.message || error.message
-          }`,
+          translatedContent.alertErrorAdd +
+            (error.response?.data?.message || error.message),
           "error"
         );
       });
@@ -117,9 +158,8 @@ function GestionDeRepuestos() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validación de campos
     if (!precio || !selectedMarca || !descripcion || !foto) {
-      Swal.fire("Error", "Por favor, completa todos los campos.", "error");
+      Swal.fire("Error", translatedContent.alertCompleteFields, "error");
       return;
     }
 
@@ -129,7 +169,6 @@ function GestionDeRepuestos() {
     formData.append("foto", foto);
     formData.append("descripcion", descripcion);
 
-    // Enviar la solicitud POST
     axios
       .post("http://localhost:3001/api/repuestos", formData, {
         headers: {
@@ -137,7 +176,7 @@ function GestionDeRepuestos() {
         },
       })
       .then((response) => {
-        Swal.fire("¡Éxito!", "Repuesto ingresado correctamente.", "success");
+        Swal.fire("¡Éxito!", translatedContent.alertSuccess, "success");
         setIsModalOpen(false);
         getPiezas();
       })
@@ -145,52 +184,42 @@ function GestionDeRepuestos() {
         console.error("Error al agregar repuesto:", error.response || error);
         Swal.fire(
           "Error",
-          `No se pudo registrar el repuesto. Detalles: ${
-            error.response?.data?.message || error.message
-          }`,
+          translatedContent.alertErrorAdd +
+            (error.response?.data?.message || error.message),
           "error"
         );
       });
   };
+
   const obtenerMarcaPorId = (id) => {
-    console.log(id + "id obeter");
-    fetch(`http://localhost:3001/api/marcas/${id}`)
+    fetch(http://localhost:3001/api/marcas/${id})
       .then((response) => {
         if (!response.ok) {
-          throw new Error(`Error: ${response.status} - ${response.statusText}`);
+          throw new Error(Error: ${response.status} - ${response.statusText});
         }
         return response.json();
       })
       .then((data) => {
-        console.log("aaaaaaa" + data);
         setSelectedMarca(data);
       })
       .catch((error) => {
         console.error("Error al obtener la marca:", error);
-        Swal.fire(
-          "Error",
-          "No se pudo obtener la marca. Intenta nuevamente.",
-          "error"
-        );
+        Swal.fire("Error", translatedContent.alertErrorAdd, "error");
       });
   };
+
   const handleEdit = (precio, foto, descripcion, id_marca, id_repuesto) => {
     setPrecio(precio);
     setFoto(foto);
     setDescripcion(descripcion);
     obtenerMarcaPorId(id_marca);
-
-    console.log(id_marca); //llega id
-
-    console.log(selectedMarca); //llega objeto
-    setIdRepuesto(id_repuesto); // Asegúrate de tener este estado en el componente
+    setIdRepuesto(id_repuesto);
     setIsModalOpen3(true);
     getPiezas();
   };
 
   const handleView = (precio, foto, descripcion, id_marca) => {
     obtenerMarcaPorId(id_marca);
-
     const fotoUrl = foto instanceof Blob ? URL.createObjectURL(foto) : foto;
     setSelected({ precio, foto: fotoUrl, descripcion });
     setIsModalOpen2(true);
@@ -198,28 +227,21 @@ function GestionDeRepuestos() {
   };
 
   const handleDelete = (precio, foto, descripcion, id_marca, id_repuesto) => {
-    // Confirmación antes de eliminar el repuesto
     Swal.fire({
-      title: "¿Estás seguro?",
-      text: `¿Quieres eliminar el repuesto: ${descripcion}?`,
+      title: translatedContent.confirmDelete,
+      text: descripcion,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Sí, eliminar",
+      confirmButtonText: translatedContent.accept,
     }).then((result) => {
       if (result.isConfirmed) {
-        // Si el usuario confirma, se procede a eliminar el repuesto
         axios
-          .delete(`http://localhost:3001/api/repuestos/delete/${id_repuesto}`)
-
+          .delete(http://localhost:3001/api/repuestos/delete/${id_repuesto})
           .then((response) => {
-            Swal.fire(
-              "¡Éxito!",
-              "Repuesto eliminado correctamente.",
-              "success"
-            );
-            getPiezas(); // Recargar las piezas después de eliminar una
+            Swal.fire("¡Éxito!", translatedContent.alertDelete, "success");
+            getPiezas();
           })
           .catch((error) => {
             console.error(
@@ -228,9 +250,8 @@ function GestionDeRepuestos() {
             );
             Swal.fire(
               "Error",
-              `No se pudo eliminar el repuesto. Detalles: ${
-                error.response?.data?.message || error.message
-              }`,
+              translatedContent.alertErrorDelete +
+                (error.response?.data?.message || error.message),
               "error"
             );
           });
@@ -241,24 +262,23 @@ function GestionDeRepuestos() {
   return (
     <FormContainer>
       <Header>
-        <h2>Gestión de Repuestos</h2>
+        <h2>{translatedContent.title}</h2>
         <BootstrapButton
           className="btn btn-secondary"
           onClick={() => setIsModalOpen(true)}
         >
           <FaToolbox style={{ marginRight: "8px" }} />
-          Registrar Repuesto
+          {translatedContent.addButton}
         </BootstrapButton>
       </Header>
 
-      {/* Modal de Registro */}
       {isModalOpen && (
         <ModalOverlay>
           <ModalContent>
-            <h3>Registrar Nuevo Repuesto</h3>
+            <h3>{translatedContent.addButton}</h3>
             <Form onSubmit={handleSubmit}>
               <InputField>
-                <label>Precio</label>
+                <label>{translatedContent.price}</label>
                 <input
                   type="number"
                   value={precio}
@@ -268,12 +288,12 @@ function GestionDeRepuestos() {
               </InputField>
 
               <InputField>
-                <label>Marca</label>
+                <label>{translatedContent.brand}</label>
                 <select
                   value={selectedMarca}
                   onChange={(e) => setSelectedMarca(e.target.value)}
                 >
-                  <option value="">Selecciona una marca</option>
+                  <option value="">{translatedContent.brand}</option>
                   {marcas.map((marca) => (
                     <option key={marca.id_marca} value={marca.id_marca}>
                       {marca.nombre}
@@ -283,14 +303,14 @@ function GestionDeRepuestos() {
               </InputField>
 
               <InputField>
-                <label>Descripción</label>
+                <label>{translatedContent.description}</label>
                 <textarea
                   value={descripcion}
                   onChange={(e) => setDescripcion(e.target.value)}
                   required
                 />
               </InputField>
-              {/* Cargar imagen con Dropzone */}
+
               <PhotoInputContainer {...getRootProps()}>
                 <input {...getInputProps()} />
                 {foto ? (
@@ -300,27 +320,30 @@ function GestionDeRepuestos() {
                   />
                 ) : (
                   <div className="upload-box">
-                    Arrastra o selecciona una foto
+                    {translatedContent.uploadPhoto}
                   </div>
                 )}
               </PhotoInputContainer>
               <ActionButtons>
-                <SubmitButton type="submit">Guardar</SubmitButton>
-                <CloseButton onClick={() => setIsModalOpen(false)}>
-                  Cerrar
+                <SubmitButton type="submit">
+                  {translatedContent.save}
+                </SubmitButton>
+                <CloseButton onClick={() => handleCloseModal()}>
+                  {translatedContent.close}
                 </CloseButton>
               </ActionButtons>
             </Form>
           </ModalContent>
         </ModalOverlay>
       )}
+
       {isModalOpen3 && (
         <ModalOverlay>
           <ModalContent>
-            <h3>Editar repuesto</h3>
+            <h3>{translatedContent.editSparePart}</h3>
             <Form onSubmit={handleedit}>
               <InputField>
-                <label>Precio</label>
+                <label>{translatedContent.price}</label>
                 <input
                   type="number"
                   value={precio}
@@ -330,12 +353,12 @@ function GestionDeRepuestos() {
               </InputField>
 
               <InputField>
-                <label>Marca</label>
+                <label>{translatedContent.brand}</label>
                 <select
                   value={selectedMarca.id_marca}
                   onChange={(e) => setSelectedMarca(e.target.value)}
                 >
-                  <option value="">Selecciona una marca</option>
+                  <option value="">{translatedContent.brand}</option>
                   {marcas.map((marca) => (
                     <option key={marca.id_marca} value={marca.id_marca}>
                       {marca.nombre}
@@ -345,7 +368,7 @@ function GestionDeRepuestos() {
               </InputField>
 
               <InputField>
-                <label>Descripción</label>
+                <label>{translatedContent.description}</label>
                 <textarea
                   value={descripcion}
                   onChange={(e) => setDescripcion(e.target.value)}
@@ -353,21 +376,22 @@ function GestionDeRepuestos() {
                 />
               </InputField>
 
-              {/* Cargar imagen con Dropzone */}
               <PhotoInputContainer {...getRootProps()}>
                 <input {...getInputProps()} />
                 {foto ? (
                   <PreviewImage src={foto} alt="Vista previa" />
                 ) : (
                   <div className="upload-box">
-                    Arrastra o selecciona una foto
+                    {translatedContent.uploadPhoto}
                   </div>
                 )}
               </PhotoInputContainer>
               <ActionButtons>
-                <SubmitButton type="submit">Guardar</SubmitButton>
-                <CloseButton onClick={() => setIsModalOpen3(false)}>
-                  Cerrar
+                <SubmitButton type="submit">
+                  {translatedContent.save}
+                </SubmitButton>
+                <CloseButton onClick={() => handleCloseModal()}>
+                  {translatedContent.close}
                 </CloseButton>
               </ActionButtons>
             </Form>
@@ -375,11 +399,10 @@ function GestionDeRepuestos() {
         </ModalOverlay>
       )}
 
-      {/* Modal de Visualización */}
       {isModalOpen2 && (
         <ModalOverlay>
           <ModalContent>
-            <h3>Detalles del repuesto</h3>
+            <h3>{translatedContent.viewSparePart}</h3>
             <FormContainer style={{ height: "400px" }}>
               <PhotoviewContainer>
                 <img
@@ -390,35 +413,36 @@ function GestionDeRepuestos() {
               </PhotoviewContainer>
               <FormFields>
                 <p>
-                  <strong>Nombre:</strong> {selected.descripcion}
+                  <strong>{translatedContent.description}</strong>{" "}
+                  {selected.descripcion}
                 </p>
                 <p>
-                  <strong>Precio:</strong> {selected.precio}
+                  <strong>{translatedContent.price}</strong> {selected.precio}
                 </p>
                 <p>
-                  <strong>Marca:</strong> {selectedMarca.nombre}
+                  <strong>{translatedContent.brand}</strong>{" "}
+                  {selectedMarca.nombre}
                 </p>
               </FormFields>
             </FormContainer>
             <ActionButtons
               style={{ display: "flex", justifyContent: "flex-end" }}
             >
-              <CloseButton onClick={() => setIsModalOpen2(false)}>
-                Cerrar
+              <CloseButton onClick={() => handleCloseModal()}>
+                {translatedContent.close}
               </CloseButton>
             </ActionButtons>
           </ModalContent>
         </ModalOverlay>
       )}
 
-      {/* Tabla de Repuestos */}
       <TableContainer>
         <Table>
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Precio</th>
-              <th>Acciones</th>
+              <th>{translatedContent.description}</th>
+              <th>{translatedContent.price}</th>
+              <th>{translatedContent.actions}</th>
             </tr>
           </thead>
         </Table>
@@ -718,5 +742,5 @@ const PreviewImage = styled.img`
   max-height: 100px;
   border-radius: 8px;
   object-fit: cover;
-  margin-top: 10px;
+  margin-top: 10px;
 `;
