@@ -96,7 +96,7 @@ app.get("/api/login/Cliente/:correo", (req, res) => {
 // Rutas para obtener todos los vehículos
 app.get("/api/vehiculos/completa", (req, res) => {
   db.all(
-    "SELECT v.id_vehiculo, v.id_marca, v.modelo, v.anio, c.nombre || ' ' || c.apellido1 || ' ' || c.apellido2 AS nombre_completo, v.placa FROM vehiculos v JOIN clientes c ON v.cedula = c.cedula",
+    "SELECT v.id_vehiculo, v.id_marca , m.nombre AS marca , v.modelo, v.anio, c.nombre || ' ' || c.apellido1 || ' ' || c.apellido2 AS nombre_completo, v.placa FROM vehiculos v JOIN clientes c ON v.cedula = c.cedula JOIN marcas m ON v.id_marca = m.id_marca",
     [],
     (err, rows) => {
       if (err) {
