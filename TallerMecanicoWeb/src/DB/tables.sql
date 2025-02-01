@@ -127,6 +127,7 @@ CREATE TABLE reparaciones (
     CHECK (estado IN ('Pendiente', 'En espera', 'Denegado', 'En curso', 'Facturar', 'Finalizado'))
 );
 
+
 -- Insertar reparaciones con estado 'En curso'
 INSERT INTO reparaciones (id_vehiculo, id_mecanico, fecha_reparacion, estado, descripcion)
 VALUES (1, 101, '2023-11-01', 'En curso', 'Reparación de motor en proceso');
