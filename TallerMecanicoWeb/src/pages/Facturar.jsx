@@ -48,7 +48,7 @@ function Facturar() {
   const getRepuestos = (id) => {
     console.log(id);
     axios
-      .get(http://localhost:3001/api/RepuestosR/${id})
+      .get("http://localhost:3001/api/RepuestosR/${id}")
       .then((response) => {
         setRepuestos(response.data);
         console.log("id de reparacion:", response.data);
