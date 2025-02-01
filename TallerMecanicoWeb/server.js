@@ -77,7 +77,7 @@ app.post("/api/cliente", (req, res) => {
 app.get("/api/login/Cliente/:correo", (req, res) => {
   const { correo } = req.params;
   db.get(
-    "SELECT contraseña FROM clientes WHERE correo = ?",
+    "SELECT cedula, contraseña FROM clientes WHERE correo = ?",
     [correo],
     (err, row) => {
       if (err) {
@@ -88,7 +88,7 @@ app.get("/api/login/Cliente/:correo", (req, res) => {
         res.status(404).json({ message: "Usuario no encontrado" });
         return;
       }
-      res.json({ contraseña: row.contraseña });
+      res.json(row);
     }
   );
 });
@@ -98,6 +98,22 @@ app.get("/api/vehiculos/completa", (req, res) => {
   db.all(
     "SELECT v.id_vehiculo, v.id_marca, v.modelo, v.anio, c.nombre || ' ' || c.apellido1 || ' ' || c.apellido2 AS nombre_completo, v.placa FROM vehiculos v JOIN clientes c ON v.cedula = c.cedula",
     [],
+    (err, rows) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.json(rows);
+    }
+  );
+});
+
+// Rutas para obtener todos los vehículos del cliente 
+app.get("/api/vehiculos/completa/Cliente/:cedula", (req, res) => {
+  const { cedula } = req.params;
+  db.all(
+    "SELECT v.id_vehiculo, m.nombre AS marca, v.modelo, v.anio, c.nombre || ' ' || c.apellido1 || ' ' || c.apellido2 AS nombre_completo, v.placa FROM vehiculos v JOIN clientes c ON v.cedula = c.cedula JOIN marcas m ON v.id_marca = m.id_marca WHERE v.cedula = ?",
+    [cedula],
     (err, rows) => {
       if (err) {
         res.status(500).json({ error: err.message });
