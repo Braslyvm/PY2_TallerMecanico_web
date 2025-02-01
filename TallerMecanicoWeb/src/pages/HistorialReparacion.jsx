@@ -202,7 +202,8 @@ function HistorialReparacion() {
                             <tr key={index}>
                             <td style={{ width: '20%' }}>{rep.id_reparacion}</td>
                             <td style={{ width: '20%' }}>{rep.mecanico}</td>
-                            <td style={{ width: '20%' }}>{rep.fecha_reparacion}</td>
+                            <td style={{ width: '20%' }}>{rep.fecha_reparacion}</td>id_reparacion,mecanico,fecha_reparacion
+                            
                             <td style={{ width: '20%' }}>
                                 <ActionsCell>
                                 <ViewButton style={{ marginLeft: '45%' }} onClick={() => OpenDetalles(rep.descripcion,rep.mecanico,rep.fecha_reparacion,rep.id_reparacion)}>

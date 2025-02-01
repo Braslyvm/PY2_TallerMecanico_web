@@ -163,9 +163,9 @@ VALUES
 (2, 101, '2025-01-25', 'Facturar', 'Cambio de filtro de aire y aceite');
 INSERT INTO repuestos_reparacion (id_reparacion, id_repuesto, cantidad_utilizada) 
 VALUES 
-(2, 1, 1), 
-(2, 4, 1),
-(1, 4, 1); 
+(4, 1, 1), 
+(4, 4, 1);
+
 
 CREATE TABLE diagnostico_vehiculo(
     id_diagnostico INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -183,4 +183,3 @@ CREATE TABLE diagnostico_vehiculo(
 
 
 
-SELECT * FROM repuestos
