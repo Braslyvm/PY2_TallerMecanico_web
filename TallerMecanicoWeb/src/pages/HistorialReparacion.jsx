@@ -511,7 +511,7 @@ const Table = styled.table`
   
   tr:hover {
     background-color: transparent; 
-  cursor: default;
+    cursor: default;
   }
 `;
 const ActionsCell = styled.div`
