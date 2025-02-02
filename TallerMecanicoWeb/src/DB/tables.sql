@@ -161,8 +161,6 @@ Create table Login(
     contraseña TEXT NOT NULL
 );
 
-
-
 INSERT INTO reparaciones (id_vehiculo, id_mecanico, fecha_reparacion, estado, descripcion) 
 VALUES 
 (1, 101, '2025-01-25', 'Finalizado', 'Cambio de filtro de aire y aceite'),

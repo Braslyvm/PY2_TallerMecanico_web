@@ -694,6 +694,52 @@ app.get("/api/reparaciones/estado/:estado", (req, res) => {
   );
 });
 
+
+// Ruta para obtener reparaciones en espera de un cliente específico
+app.get("/api/reparaciones/estado/:estado/cliente/:clienteId", (req, res) => {
+  const { estado, clienteId } = req.params;
+  
+  // Consulta SQL con JOIN para obtener el diagnóstico técnico
+  const query = `
+    SELECT r.*, d.diagnostico_tecnico
+    FROM reparaciones r
+    JOIN diagnostico_vehiculo d ON r.id_diagnostico = d.id_diagnostico
+    WHERE r.estado = ? AND r.id_vehiculo IN (
+      SELECT id_vehiculo FROM vehiculos WHERE cedula = ?
+    )
+  `;
+  
+  db.all(query, [estado, clienteId], (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.status(200).json(rows);
+  });
+});
+
+app.get("/api/reparaciones/cliente/:clienteId", (req, res) => {
+  const { clienteId } = req.params;
+
+  // Consulta SQL con JOIN para obtener el diagnóstico técnico
+  const query = `
+    SELECT r.*, d.diagnostico_tecnico
+    FROM reparaciones r
+    JOIN diagnostico_vehiculo d ON r.id_diagnostico = d.id_diagnostico
+    WHERE r.id_vehiculo IN (
+      SELECT id_vehiculo FROM vehiculos WHERE cedula = ?
+    )
+  `;
+
+  db.all(query, [clienteId], (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.status(200).json(rows);
+  });
+});
+
 // Actualizar el estado de una reparación por ID
 app.put("/api/reparaciones/id/estado", (req, res) => {
   const { id } = req.body;
@@ -793,7 +839,7 @@ app.put("/api/repuestos2/:id", upload.single("foto"), (req, res) => {
 // Nueva ruta para obtener vehículos con diagnóstico y sin reparación
 app.get("/api/diagnosticos-sin-reparacion", (req, res) => {
   const query = `
-    SELECT DISTINCT d.id_vehiculo, d.fecha_diagnostico, v.placa, d.id_diagnostico
+    SELECT DISTINCT d.id_vehiculo, d.fecha_diagnostico, v.id_marca, v.placa, d.id_diagnostico
     FROM diagnostico_vehiculo AS d
     JOIN vehiculos AS v ON v.id_vehiculo = d.id_vehiculo
     LEFT JOIN reparaciones AS r ON r.id_diagnostico = d.id_diagnostico
