@@ -26,7 +26,7 @@ function Facturar() {
       : "No se encontraron repuestos para esta reparación.",
     description: translate ? "Description" : "Descripción",
     quantityUsed: translate ? "Quantity Used" : "Cantidad Utilizada",
-    price: translate ? "Price" : "Precio",
+    price: translate ? "Unit price" : "Precio unitario",
     total: translate ? "Total" : "Total",
     paymentSuccessful: translate ? "Payment successful!" : "¡Pago realizado!",
     invoicePaid: translate
@@ -46,12 +46,10 @@ function Facturar() {
   }, []);
 
   const getRepuestos = (id) => {
-    console.log(id);
     axios
-      .get("http://localhost:3001/api/RepuestosR/${id}")
+      .get("http://localhost:3001/api/RepuestosR/"+String(id))
       .then((response) => {
         setRepuestos(response.data);
-        console.log("id de reparacion:", response.data);
       })
       .catch((error) => {
         console.log(error);

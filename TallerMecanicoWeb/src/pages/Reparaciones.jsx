@@ -474,7 +474,7 @@ function Reparaciones() {
                 <tr>
                   <th>ID</th>
                   <th>Descripción</th>
-                  <th>Precio</th>
+                  <th>Precio unitario</th>
                   <th>Cantidad</th>
                 </tr>
               </thead>

@@ -47,7 +47,7 @@ function GestionDeRepuestos() {
       ? "Error deleting spare part:"
       : "Error al eliminar repuesto:",
     detailsTitle: translate ? "Spare Part Details" : "Detalles del Repuesto",
-    price: translate ? "Price:" : "Precio:",
+    price: translate ? "Unit price:" : "Precio unitario:",
     brand: translate ? "Brand:" : "Marca:",
     description: translate ? "Description:" : "Descripción:",
     save: translate ? "Save" : "Guardar",
