@@ -28,7 +28,7 @@ app.use(express.json());
 // Rutas para obtener todos los vehículos
 app.get("/api/vehiculos", (req, res) => {
   db.all(
-    "SELECT v.placa, m.nombre AS marca, v.modelo, v.id_vehiculo FROM  vehiculos v JOIN marcas m ON v.id_marca = m.id_marca",
+    "SELECT v.placa, m.nombre AS marca, v.modelo, v.id_vehiculo,v.cedula FROM  vehiculos v JOIN marcas m ON v.id_marca = m.id_marca JOIN clientes c ON c.cedula = v.cedula;",
     [],
     (err, rows) => {
       if (err) {
@@ -42,18 +42,26 @@ app.get("/api/vehiculos", (req, res) => {
 
 // Agregar un vehículo
 app.post("/api/vehiculos", (req, res) => {
-  const { marca, modelo, anio, correo_cliente } = req.body;
-  db.run(
-    "INSERT INTO vehiculos (marca, modelo, anio, correo_cliente) VALUES (?, ?, ?, ?)",
-    [marca, modelo, anio, correo_cliente],
-    function (err) {
-      if (err) {
-        res.status(500).json({ error: err.message });
-        return;
-      }
-      res.status(201).json({ id_vehiculo: this.lastID });
+  const { id_marca, modelo, anio, cedula, placa } = req.body;
+  console.log("Datos recibidos:", { id_marca, modelo, anio, cedula, placa });
+  // Validar que todos los campos estén presentes
+  if (!id_marca || !modelo || !anio || !cedula || !placa) {
+    return res.status(400).json({ error: "Todos los campos son obligatorios" });
+  }
+
+  // Consulta SQL para insertar un vehículo
+  const query = `
+    INSERT INTO vehiculos (id_marca, modelo, anio, cedula, placa)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+
+  // Ejecutar la consulta
+  db.run(query, [id_marca, modelo, anio, cedula, placa], function (err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
     }
-  );
+    res.status(201).json({ id_vehiculo: this.lastID });
+  });
 });
 
 // Agregar un cliente
@@ -94,7 +102,7 @@ app.get("/api/login/Cliente/:correo", (req, res) => {
 // Rutas para obtener todos los vehículos
 app.get("/api/vehiculos/completa", (req, res) => {
   db.all(
-    "SELECT v.id_vehiculo, v.id_marca, v.modelo, v.anio, c.nombre || ' ' || c.apellido1 || ' ' || c.apellido2 AS nombre_completo, v.placa FROM vehiculos v JOIN clientes c ON v.cedula = c.cedula",
+    "SELECT v.id_vehiculo, v.id_marca , m.nombre AS marca , v.modelo, v.anio, c.nombre || ' ' || c.apellido1 || ' ' || c.apellido2 AS nombre_completo, v.placa FROM vehiculos v JOIN clientes c ON v.cedula = c.cedula JOIN marcas m ON v.id_marca = m.id_marca",
     [],
     (err, rows) => {
       if (err) {
@@ -106,7 +114,7 @@ app.get("/api/vehiculos/completa", (req, res) => {
   );
 });
 
-// Rutas para obtener todos los vehículos del cliente 
+// Rutas para obtener todos los vehículos del cliente
 app.get("/api/vehiculos/completa/Cliente/:cedula", (req, res) => {
   const { cedula } = req.params;
   db.all(
@@ -141,7 +149,7 @@ app.get("/api/reparaciones2/:id", (req, res) => {
 app.get("/api/reparaciones3/:id", (req, res) => {
   const { id } = req.params; // Cambia el nombre del parámetro
   db.get(
-    'SELECT r.id_reparacion, r.id_vehiculo, m.nombre AS mecanico, r.fecha_reparacion, r.descripcion FROM reparaciones r JOIN mecanicos m ON r.id_mecanico = m.cedula WHERE r.id_reparacion = ?',
+    "SELECT r.id_reparacion, r.id_vehiculo, m.nombre AS mecanico, r.fecha_reparacion, r.descripcion FROM reparaciones r JOIN mecanicos m ON r.id_mecanico = m.cedula WHERE r.id_reparacion = ?",
     [id],
     (err, row) => {
       if (err) {
@@ -173,6 +181,34 @@ app.get("/api/Facturas", (req, res) => {
     JOIN vehiculos v ON r.id_vehiculo = v.id_vehiculo 
     JOIN clientes c ON c.cedula = v.cedula 
     WHERE r.estado = 'Facturar'`,
+    (err, rows) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.json(rows); // Retorna todas las filas obtenidas
+    }
+  );
+});
+
+app.get("/api/Facturas2/:cedula", (req, res) => {
+  const cedula = req.params.cedula; // Obtén la cédula del parámetro de la URL
+
+  db.all(
+    `SELECT 
+      r.id_reparacion, 
+      r.id_vehiculo, 
+      v.placa AS placa, 
+      (c.nombre || ' ' || c.apellido1) AS cliente, 
+      m.nombre AS mecanico, 
+      r.fecha_reparacion, 
+      r.descripcion 
+    FROM reparaciones r 
+    JOIN mecanicos m ON r.id_mecanico = m.cedula 
+    JOIN vehiculos v ON r.id_vehiculo = v.id_vehiculo 
+    JOIN clientes c ON c.cedula = v.cedula 
+    WHERE r.estado = 'Facturar' AND c.cedula = ?`, // Filtra por la cédula del cliente
+    [cedula], // Pasa la cédula como parámetro
     (err, rows) => {
       if (err) {
         res.status(500).json({ error: err.message });

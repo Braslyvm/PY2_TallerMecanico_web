@@ -21,7 +21,7 @@ CREATE table clientes (
 
 INSERT INTO clientes (cedula, nombre, apellido1, apellido2, correo, contraseña) 
 VALUES 
-(1, 'Elder', 'Leon', 'Perez', 'cliente1@example.com', '1234'),
+(14, 'Elder', 'Leon', 'Perez', 'x', '1234'),
 (2, 'Jimena', 'Mendez', 'Apellido2', 'cliente2@example.com', '1234'),
 (3, 'Brasly', 'Villarebia', 'Morales', 'cliente3@example.com', '1');
 
@@ -187,4 +187,4 @@ CREATE TABLE diagnostico_vehiculo(
 
 
 
-
+SELECT * FROM vehiculos
