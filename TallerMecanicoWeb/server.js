@@ -29,7 +29,7 @@ app.use(express.json());
 app.get("/api/vehiculos", (req, res) => {
   console.log("algo");
   db.all(
-    "SELECT v.placa, m.nombre AS marca, v.modelo, v.id_vehiculo FROM  vehiculos v JOIN marcas m ON v.id_marca = m.id_marca",
+    "SELECT v.placa, m.nombre AS marca, v.modelo, v.id_vehiculo,v.cedula FROM  vehiculos v JOIN marcas m ON v.id_marca = m.id_marca JOIN clientes c ON c.cedula = v.cedula;",
     [],
     (err, rows) => {
       if (err) {
@@ -45,7 +45,7 @@ app.get("/api/vehiculos", (req, res) => {
 // Agregar un vehículo
 app.post("/api/vehiculos", (req, res) => {
   const { id_marca, modelo, anio, cedula, placa } = req.body;
-
+  console.log("Datos recibidos:", { id_marca, modelo, anio, cedula, placa });
   // Validar que todos los campos estén presentes
   if (!id_marca || !modelo || !anio || !cedula || !placa) {
     return res.status(400).json({ error: "Todos los campos son obligatorios" });
