@@ -4,9 +4,13 @@ import { FaEye } from "react-icons/fa";
 import Swal from 'sweetalert2';
 import axios from "axios";
 import { Modal, Button, Table as BootstrapTable } from 'react-bootstrap'; // Renombrar aquí
+import { useGlobalContext } from '../components/GlobalContext';
+import translateText from '../components/translate';
+
 
 
 function HistorialReparacion() {
+    const { translate } = useGlobalContext();
     const [autos, setautos] = useState(true);
     const [reparaciones, setreparaciones] = useState(false);
     const [detalles, setdetalles] = useState(false);
@@ -16,6 +20,126 @@ function HistorialReparacion() {
     const [Placa, setplaca] = useState("");
     const [selectedDetalles, setselectedDetalles] = useState(null);
     const [repuestos, setrepuestos] = useState([]);
+
+
+     // Estado para los textos traducidos
+     const [translatedContent, setTranslatedContent] = useState({
+      misVehiculos: 'Mis Vehículos',
+      agregarVehiculo: 'Agregar Vehículo',
+      noVehiculos: 'No hay vehículos registrados.',
+      reparacionesDe: 'Reparaciones de',
+      volver: 'Volver',
+      detallesReparacion: 'Detalles de Reparación',
+      repuestosUtilizados: 'Repuestos Utilizados',
+      noReparaciones: 'No hay reparaciones registradas.',
+      noRepuestos: 'No hay repuestos registrados.',
+      cerrar: 'Cerrar',
+      Placa: 'placa',
+      Marca: 'Marca',
+      Modelo: 'Modelo',
+      Año: 'Año',
+      IDReparación: 'ID Reparación',
+      Mecánico: 'Mecánico',
+      FechadeReparación: 'Fecha de Reparación',
+      Detalles: 'Detalles',
+      Repuesto: 'Repuesto',
+      Cantidad: 'Cantidad',
+      historialreparacion: 'Historia de reparaciones',
+      cliente: 'Cliente',
+      accion: 'Acciones'
+
+      
+  });
+  useEffect(() => {
+      const translateContent = async () => {
+          if (translate) {
+              const misVehiculos = await translateText('Mis Vehículos', 'es', 'en');
+              const agregarVehiculo = await translateText('Agregar Vehículo', 'es', 'en');
+              const noVehiculos = await translateText('No hay vehículos registrados.', 'es', 'en');
+              const reparacionesDe = await translateText('Reparaciones de', 'es', 'en');
+              const volver = await translateText('Volver', 'es', 'en');
+              const detallesReparacion = await translateText('Detalles de Reparación', 'es', 'en');
+              const repuestosUtilizados = await translateText('Repuestos Utilizados', 'es', 'en');
+              const noReparaciones = await translateText('No hay reparaciones registradas.', 'es', 'en');
+              const noRepuestos = await translateText('No hay repuestos registrados.', 'es', 'en');
+              const cerrar = await translateText('Cerrar', 'es', 'en');
+              const Placa = await translateText('placa', 'es', 'en');
+              const Marca = await translateText('Marca', 'es', 'en');
+              const Modelo = await translateText('Modelo', 'es', 'en');
+              const Año = await translateText('Año', 'es', 'en');
+              const IDReparación = await translateText('ID Reparación', 'es', 'en');
+              const Mecánico = await translateText('Mecánico', 'es', 'en');
+              const FechadeReparación = await translateText('Fecha de Reparación', 'es', 'en');
+              const Detalles = await translateText('Detalles', 'es', 'en');
+              const Repuesto = await translateText('Repuesto', 'es', 'en');
+              const Cantidad = await translateText('Cantidad', 'es', 'en');
+              const historialreparacion = await translateText('Historia de reparaciones', 'es', 'en');
+              const cliente = await translateText('Cliente', 'es', 'en');
+              const accion = await translateText('Acciones', 'es', 'en');
+              
+
+
+              setTranslatedContent({
+                  misVehiculos,
+                  agregarVehiculo,
+                  noVehiculos,
+                  reparacionesDe,
+                  volver,
+                  detallesReparacion,
+                  repuestosUtilizados,
+                  noReparaciones,
+                  noRepuestos,
+                  cerrar,
+                  Placa,
+                  Marca,
+                  Modelo,
+                  Año,
+                  IDReparación,
+                  Mecánico,
+                  FechadeReparación,
+                  Detalles,
+                  Repuesto,
+                  Cantidad,
+                  historialreparacion,
+                  cliente,
+                  accion
+                  
+              });
+          } else {
+              setTranslatedContent({
+                  misVehiculos: 'Mis Vehículos',
+                  agregarVehiculo: 'Agregar Vehículo',
+                  noVehiculos: 'No hay vehículos registrados.',
+                  reparacionesDe: 'Reparaciones de',
+                  volver: 'Volver',
+                  detallesReparacion: 'Detalles de Reparación',
+                  repuestosUtilizados: 'Repuestos Utilizados',
+                  noReparaciones: 'No hay reparaciones registradas.',
+                  noRepuestos: 'No hay repuestos registrados.',
+                  cerrar: 'Cerrar',
+                  Placa: 'placa',
+                  Marca: 'Marca',
+                  Modelo: 'Modelo',
+                  Año: 'Año',
+                  IDReparación: 'ID Reparación',
+                  Mecánico: 'Mecánico',
+                  FechadeReparación: 'Fecha de Reparación',
+                  Detalles: 'Detalles',
+                  Repuesto: 'Repuesto',
+                  Cantidad: 'Cantidad',
+                  historialreparacion: 'Historia de reparaciones',
+                  cliente: 'Cliente',
+                  accion: 'Acciones'
+              });
+
+          }
+      };
+
+      translateContent();
+  }, [translate]);
+
+
+
 
     // alertas 
     //Alertas de eliminacion de mecanicos
@@ -36,12 +160,11 @@ function HistorialReparacion() {
         axios
             .get(`http://localhost:3001/api/RepuestosR/${id}`)
             .then((response) => {
-                console.log("Datos xdd:", response.data);
                 const reparacionesData = Array.isArray(response.data) ? response.data : [response.data];
                 setrepuestos(reparacionesData);
             })
             .catch((error) => {
-                AlertAviso("Ocurrió un error al obtener las reparaciones.");
+                AlertAviso(translatedContent.noReparaciones);
             }); 
       }
 
@@ -52,11 +175,11 @@ function HistorialReparacion() {
           .then((response) => {
             setvehiculos(response.data); 
             if (response.data.length === 0) {
-              AlertAviso('No hay Vehiculos registrados');
+              AlertAviso(translatedContent.noVehiculos);
             }
           })
           .catch((error) => {
-            AlertAviso("No hay vehiculos");
+            AlertAviso(translatedContent.noVehiculos);
           });
       };
 
@@ -69,12 +192,11 @@ function HistorialReparacion() {
         axios
             .get(`http://localhost:3001/api/reparaciones2/${id}`)
             .then((response) => {
-                console.log("Datos obtenidos:", response.data); // Verifica la respuesta
                 const reparacionesData = Array.isArray(response.data) ? response.data : [response.data];
                 setReparacion(reparacionesData);
             })
             .catch((error) => {
-                AlertAviso("Ocurrió un error al obtener las reparaciones.");
+                AlertAviso(translatedContent.noReparaciones);
             });
     };
 
@@ -125,7 +247,7 @@ function HistorialReparacion() {
             {autos && (
                 <div>
                     <Header>
-                        <h2>Historia de reparaciones</h2>
+                        <h2>{translatedContent.historialreparacion}</h2>
                     </Header>
                     <TableContainer>
                         <Table>
@@ -138,11 +260,11 @@ function HistorialReparacion() {
                             </colgroup>
                             <thead>
                             <tr>
-                                <th>Placa</th>
-                                <th>Correo Cliente</th>
-                                <th>Marca</th>
-                                <th>Modelo</th>
-                                <th>Acciones</th>
+                                <th>{translatedContent.Placa}</th>
+                                <th>{translatedContent.cliente}</th>
+                                <th>{translatedContent.Marca}</th>
+                                <th>{translatedContent.Modelo}</th>
+                                <th>{translatedContent.accion}</th>
                             </tr>
                             </thead>
                         </Table>
@@ -173,9 +295,9 @@ function HistorialReparacion() {
             {reparaciones && (
                 <div>
                 <Header>
-                    <h2>Historia de reparaciones de :{Placa}</h2>
+                    <h2>{translatedContent.historialreparacion} :{Placa}</h2>
                     <AddButton onClick={OpenAutos}>
-                        Volver
+                        {translatedContent.volver}
                     </AddButton>
                 </Header>
                 <TableContainer>
@@ -188,10 +310,10 @@ function HistorialReparacion() {
                         </colgroup>
                         <thead>
                         <tr>
-                            <th>Reparacion</th>
-                            <th>Mecanico</th>
-                            <th>Fecha de reparacion</th>
-                            <th>Acciones</th>
+                            <th>{translatedContent.IDReparación}</th>
+                            <th>{translatedContent.Mecánico}</th>
+                            <th>{translatedContent.FechadeReparación}</th>
+                            <th>{translatedContent.accion}</th>
                         </tr>
                         </thead>
                     </Table>
@@ -203,7 +325,7 @@ function HistorialReparacion() {
                             <td style={{ width: '20%' }}>{rep.id_reparacion}</td>
                             <td style={{ width: '20%' }}>{rep.mecanico}</td>
                             <td style={{ width: '20%' }}>{rep.fecha_reparacion}</td>
-                            
+                          
                             <td style={{ width: '20%' }}>
                                 <ActionsCell>
                                 <ViewButton style={{ marginLeft: '45%' }} onClick={() => OpenDetalles(rep.descripcion,rep.mecanico,rep.fecha_reparacion,rep.id_reparacion)}>
@@ -222,23 +344,23 @@ function HistorialReparacion() {
             {detalles && (
                 <Modal show={true} onHide={CloseDetalles} centered size="lg"> {/* Cambia el tamaño del modal a "lg" */}
                 <Modal.Header closeButton>
-                    <Modal.Title>Detalles de la Reparación</Modal.Title>
+                    <Modal.Title>{translatedContent.detallesReparacion}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <div style={{ flex: 1, marginRight: '-200px' }}> {/* Reduce el margen derecho */}
-                            <p style={{ margin: '0 0 5px 0' }}><strong>Reparación:</strong> {selectedDetalles.id_reparacion}</p>
-                            <p style={{ margin: '0 0 5px 0' }}><strong>Placa:</strong> {selectedDetalles.Placa}</p>
-                            <p style={{ margin: '0 0 5px 0' }}><strong>Mecánico:</strong> {selectedDetalles.mecanico}</p>
-                            <p style={{ margin: '0 0 5px 0' }}><strong>Fecha de Reparación:</strong> {selectedDetalles.fecha_reparacion}</p>
-                            <p style={{ margin: '0 0 5px 0' }}><strong>Detalles:</strong> {selectedDetalles.detalles}</p>
+                            <p style={{ margin: '0 0 5px 0' }}><strong>{translatedContent.IDReparación}:</strong> {selectedDetalles.id_reparacion}</p>
+                            <p style={{ margin: '0 0 5px 0' }}><strong>{translatedContent.Placa}:</strong> {selectedDetalles.Placa}</p>
+                            <p style={{ margin: '0 0 5px 0' }}><strong>{translatedContent.Mecánico}:</strong> {selectedDetalles.mecanico}</p>
+                            <p style={{ margin: '0 0 5px 0' }}><strong>{translatedContent.FechadeReparación}:</strong> {selectedDetalles.fecha_reparacion}</p>
+                            <p style={{ margin: '0 0 5px 0' }}><strong>{translatedContent.Detalles}:</strong> {selectedDetalles.detalles}</p>
                         </div>
                         <div style={{ flex: 1 }}>
                             <Table bordered hover responsive style={{ width: '70%', margin: '0 auto' }}>
                                 <thead>
                                     <tr>
-                                        <th style={{ width: '50%', whiteSpace: 'nowrap', fontSize: '12px', padding: '5px' }}>Descripción</th>
-                                        <th style={{ width: '30%', whiteSpace: 'nowrap', fontSize: '12px', padding: '5px' }}>Cantidad Utilizada</th>
+                                        <th style={{ width: '50%', whiteSpace: 'nowrap', fontSize: '12px', padding: '5px' }}>{translatedContent.Repuesto}</th>
+                                        <th style={{ width: '30%', whiteSpace: 'nowrap', fontSize: '12px', padding: '5px' }}>{translatedContent.Cantidad}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -255,7 +377,7 @@ function HistorialReparacion() {
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={CloseDetalles}>
-                        Cerrar
+                        -
                     </Button>
                 </Modal.Footer>
             </Modal>
