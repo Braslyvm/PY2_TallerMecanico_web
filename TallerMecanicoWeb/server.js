@@ -27,7 +27,6 @@ app.use(express.json());
 
 // Rutas para obtener todos los vehículos
 app.get("/api/vehiculos", (req, res) => {
-  console.log("algo");
   db.all(
     "SELECT v.placa, m.nombre AS marca, v.modelo, v.id_vehiculo FROM  vehiculos v JOIN marcas m ON v.id_marca = m.id_marca",
     [],
@@ -37,7 +36,6 @@ app.get("/api/vehiculos", (req, res) => {
         return;
       }
       res.json(rows);
-      console.log(rows);
     }
   );
 });
@@ -187,7 +185,6 @@ app.get("/api/Facturas", (req, res) => {
 //repuestos
 app.get("/api/RepuestosR/:id", (req, res) => {
   const { id } = req.params;
-  console.log("ID recibido en el servidor:", id);
 
   db.all(
     "SELECT repuestos.descripcion AS descripcion, repuestos_reparacion.cantidad_utilizada, repuestos.precio, repuestos_reparacion.id_reparacion, (repuestos.precio * repuestos_reparacion.cantidad_utilizada) AS total " +
@@ -201,7 +198,6 @@ app.get("/api/RepuestosR/:id", (req, res) => {
         res.status(500).json({ error: err.message });
         return;
       }
-      console.log("Datos obtenidos:", rows);
       res.json(rows);
     }
   );
@@ -405,12 +401,9 @@ app.post("/api/marcas", (req, res) => {
 app.post("/api/repuestos", upload.single("foto"), (req, res) => {
   const { selectedMarca, precio, descripcion } = req.body;
   const foto = req.file ? req.file.path : null; // Ruta de la imagen guardada
-  console.log("Datos recibidos:", req.body); // Imprime los datos del formulario
-  console.log("Archivo recibido:", req.file); // Imprime la información del archivo (si existe)
 
   // Validar que todos los campos estén presentes
   if (!selectedMarca || !precio || !descripcion || !foto) {
-    console.log("Faltan datos"); // Agrega una advertencia si faltan datos
     return res.status(400).json({ error: "Faltan datos" });
   }
 
@@ -463,7 +456,7 @@ app.post("/api/mecanicos", upload.single("foto"), (req, res) => {
 });
 
 app.post("/api/reparaciones", (req, res) => {
-  const { id_vehiculo, id_mecanico, fecha_reparacion, descripcion, estado } =
+  const { id_vehiculo, id_diagnostico, id_mecanico, fecha_reparacion, descripcion, estado } =
     req.body;
   // Validar que los campos requeridos no sean nulos
   if (!id_vehiculo || !id_mecanico) {
@@ -473,8 +466,8 @@ app.post("/api/reparaciones", (req, res) => {
   }
 
   db.run(
-    "INSERT INTO reparaciones (id_vehiculo, id_mecanico, fecha_reparacion, descripcion, estado) VALUES (?, ?, ?, ?, ?)",
-    [id_vehiculo, id_mecanico, fecha_reparacion, descripcion, estado],
+    "INSERT INTO reparaciones (id_vehiculo,id_diagnostico, id_mecanico, fecha_reparacion, descripcion, estado) VALUES (?, ?,?, ?, ?, ?)",
+    [id_vehiculo,id_diagnostico, id_mecanico, fecha_reparacion, descripcion, estado],
     function (err) {
       if (err) {
         res.status(500).json({ error: err.message });
@@ -707,7 +700,6 @@ app.put("/api/reparaciones/id/estado", (req, res) => {
 });
 app.delete("/api/repuestos/delete/:id", (req, res) => {
   const { id } = req.params;
-  console.log("ID recibido para eliminar:", id); // Añadir un log para verificar el id
   db.run("DELETE FROM repuestos WHERE id_repuesto = ?", [id], function (err) {
     if (err) {
       res.status(500).json({ error: err.message });
@@ -726,9 +718,6 @@ app.put("/api/repuestos2/:id", upload.single("foto"), (req, res) => {
   const id_repuesto = req.params.id;
   const { selectedMarca, precio, descripcion } = req.body;
   const foto = req.file ? req.file.path : null; // Solo actualizar si se sube una nueva imagen
-
-  console.log("Datos recibidos:", req.body);
-  console.log("Archivo recibido:", req.file);
 
   // Validar que los campos requeridos estén presentes
   if (!selectedMarca || !precio || !descripcion) {
@@ -770,6 +759,39 @@ app.put("/api/repuestos2/:id", upload.single("foto"), (req, res) => {
     res.json({ message: "Repuesto actualizado correctamente" });
   });
 });
+
+// Nueva ruta para obtener vehículos con diagnóstico y sin reparación
+app.get("/api/diagnosticos-sin-reparacion", (req, res) => {
+  const query = `
+    SELECT DISTINCT d.id_vehiculo, d.fecha_diagnostico, v.placa, d.id_diagnostico
+    FROM diagnostico_vehiculo AS d
+    JOIN vehiculos AS v ON v.id_vehiculo = d.id_vehiculo
+    LEFT JOIN reparaciones AS r ON r.id_diagnostico = d.id_diagnostico
+    WHERE r.id_reparacion IS NULL;
+  `;
+
+  console.log("Ejecutando consulta:", query);
+
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      console.error("❌ Error ejecutando la consulta:", err.message);
+      res.status(500).json({ error: err.message });
+      return;
+    }
+
+    console.log("📌 Resultado crudo de la consulta:", rows);
+    
+    if (!rows || rows.length === 0) {
+      console.warn("⚠️ No se encontraron vehículos diagnosticados sin reparación.");
+      res.json([]); // Devuelve un array vacío en lugar de undefined
+      return;
+    }
+
+    console.log("✅ Respuesta enviada al cliente:", rows);
+    res.json(rows);
+  });
+});
+
 app.listen(3001, () => {
   console.log("Backend corriendo en http://localhost:3001");
 });

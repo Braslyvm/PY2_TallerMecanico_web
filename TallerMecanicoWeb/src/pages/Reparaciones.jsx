@@ -12,7 +12,7 @@ function Reparaciones() {
   const [vehiculos, setVehiculos] = useState([]);
   const [diagnosticos, setDiagnosticos] = useState([]);
   const [mecanicos, setMecanicos] = useState([]);
-  const [vehiculo, setVehiculo] = useState("");
+  const [vehiculo, setVehiculo] = useState(null);
   const [mecanico, setMecanico] = useState("");
   const [fechaReparacion, setFechaReparacion] = useState("");
   const [descripcion, setDescripcion] = useState("");
@@ -54,7 +54,6 @@ function Reparaciones() {
       .catch((error) =>
         console.error("Error al obtener reparaciones completas:", error)
       );
-    console.log(dataComplete);
   };
   const getReparaciones = () => {
     axios
@@ -67,9 +66,20 @@ function Reparaciones() {
 
   const getVehiculos = () => {
     axios
-      .get("http://localhost:3001/api/vehiculos/completa")
-      .then((response) => setVehiculos(response.data))
-      .catch((error) => console.error("Error al obtener vehículos:", error));
+      .get("http://localhost:3001/api/diagnosticos-sin-reparacion")
+      .then((response) => {
+        console.log("Respuesta de la API:", response.data); // Verifica la respuesta
+        if (Array.isArray(response.data)) {
+          setVehiculos(response.data);
+        } else {
+          console.error("La respuesta de la API no es un array:", response.data);
+          setVehiculos([]); // Establece un array vacío como valor predeterminado
+        }
+      })
+      .catch((error) => {
+        console.error("Error al obtener vehículos:", error);
+        setVehiculos([]); // Establece un array vacío en caso de error
+      });
   };
 
   const diagnosticosVehiculos = async () => {
@@ -195,29 +205,28 @@ function Reparaciones() {
     if (!vehiculo || !mecanico || !descripcion || !estado || !fechaReparacion) {
       AlertaCamposVacios();
     } else {
-      // Crear nueva reparación, con los nombres correctos para la base de datos
+      // Crear nueva reparación con los valores correctos
       const nuevaReparacion = {
-        id_vehiculo: vehiculo, // Cambié 'vehiculo' por 'id_vehiculo'
-        id_mecanico: mecanico, // Cambié 'mecanico' por 'id_mecanico'
+        id_vehiculo: vehiculo.id_vehiculo, // Ahora vehiculo contiene el objeto completo
+        id_diagnostico: vehiculo.id_diagnostico, 
+        id_mecanico: mecanico,
         fecha_reparacion: fechaReparacion,
         descripcion,
         estado,
       };
-
+      console.log("Esta es la nueva reparación: ", nuevaReparacion);
+  
       axios
         .post("http://localhost:3001/api/reparaciones", nuevaReparacion)
         .then(() => {
-          Swal.fire(
-            "¡Éxito!",
-            "Reparación registrada correctamente.",
-            "success"
-          );
+          Swal.fire("¡Éxito!", "Reparación registrada correctamente.", "success");
           getReparaciones();
           handleCloseModal();
         })
         .catch((error) => console.error("Error al agregar reparación:", error));
     }
   };
+  
 
   const handleViewClick = (reparacion) => {
     setSelectedReparacion(reparacion);
@@ -373,16 +382,11 @@ function Reparaciones() {
             <Form>
               <Form.Group controlId="formVehiculo">
                 <Form.Label>Vehículo</Form.Label>
-                <Form.Control
-                  as="select"
-                  value={vehiculo}
-                  onChange={(e) => setVehiculo(e.target.value)}
-                >
+                <Form.Control as="select" value={vehiculo} onChange={(e) => setVehiculo(JSON.parse(e.target.value))}> 
                   <option value="">Seleccione un vehículo</option>
-                  {diagnosticos.map((d) => (
-                    <option key={d.id_vehiculo} value={d.id_vehiculo}>
-                      Placa del vehículo: {buscarPlacaVehiculo(d.id_vehiculo)},
-                      Fecha de diagnóstico: {d.fecha_diagnostico}
+                  {Array.isArray(vehiculos) && vehiculos.map((v) => (
+                    <option key={v.id_vehiculo} value={JSON.stringify(v)}>
+                      Placa del vehículo: {v.placa}, Fecha de diagnóstico: {v.fecha_diagnostico}
                     </option>
                   ))}
                 </Form.Control>

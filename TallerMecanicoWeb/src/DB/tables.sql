@@ -117,6 +117,7 @@ VALUES
 
 CREATE TABLE reparaciones (
     id_reparacion INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_diagnostico INTEGER NOT NULL,
     id_vehiculo INTEGER NOT NULL,
     id_mecanico INTEGER NOT NULL,
     fecha_reparacion TEXT NOT NULL,
@@ -124,19 +125,23 @@ CREATE TABLE reparaciones (
     descripcion TEXT,
     FOREIGN KEY (id_vehiculo) REFERENCES vehiculos(id_vehiculo),
     FOREIGN KEY (id_mecanico) REFERENCES mecanicos(cedula),
+    FOREIGN KEY (id_diagnostico) REFERENCES diagnostico_vehiculo(id_diagnostico),
     CHECK (estado IN ('Pendiente', 'En espera', 'Denegado', 'En curso', 'Facturar', 'Finalizado'))
 );
 
 
 -- Insertar reparaciones con estado 'En curso'
-INSERT INTO reparaciones (id_vehiculo, id_mecanico, fecha_reparacion, estado, descripcion)
-VALUES (1, 101, '2023-11-01', 'En curso', 'Reparación de motor en proceso');
+INSERT INTO reparaciones (id_vehiculo,id_diagnostico, id_mecanico, fecha_reparacion, estado, descripcion)
+VALUES (1,1, 101, '2023-11-01', 'En espera', 'Reparación de motor en proceso');
 
-INSERT INTO reparaciones (id_vehiculo, id_mecanico, fecha_reparacion, estado, descripcion)
-VALUES (2, 102, '2023-11-02', 'En curso', 'Cambio de frenos en proceso');
+INSERT INTO reparaciones (id_vehiculo,id_diagnostico,  id_mecanico, fecha_reparacion, estado, descripcion)
+VALUES (2,2,  102, '2023-11-02', 'En espera', 'Cambio de frenos en proceso');
 
-INSERT INTO reparaciones (id_vehiculo, id_mecanico, fecha_reparacion, estado, descripcion)
-VALUES (3, 103, '2023-11-03', 'En curso', 'Revisión de sistema eléctrico en proceso');
+INSERT INTO reparaciones (id_vehiculo,id_diagnostico,  id_mecanico, fecha_reparacion, estado, descripcion)
+VALUES (3,3,  103, '2023-11-03', 'En espera', 'Revisión de sistema eléctrico en proceso');
+
+INSERT INTO reparaciones (id_vehiculo,id_diagnostico,  id_mecanico, fecha_reparacion, estado, descripcion)
+VALUES (4,3,  104, '2023-11-04', 'Finalizado', 'Cambio de aceite en proceso');
 
 -- Tabla que asocia los repuestos con cada reparacion
 
