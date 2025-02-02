@@ -34,6 +34,8 @@ function Mecanicos() {
     close: translate ? 'Close' : 'Cerrar',
     accept: translate ? 'Accept' : 'Aceptar',
     acciones: translate ? 'Actions' : 'Acciones',
+    foto : translate ? 'Drag or select a photo' : 'Arrastra o selecciona una foto',
+    volver :  translate ? 'back' : 'volver',
 
   };
 
@@ -228,7 +230,7 @@ function Mecanicos() {
                 {foto ? (
                   <PreviewImage src={URL.createObjectURL(foto)} alt="Vista previa" />
                 ) : (
-                  <div className="upload-box">Arrastra o selecciona una foto</div>
+                  <div className="upload-box">{translatedContent.foto}</div>
                 )}
               </PhotoInputContainer>
               <FormFields>
