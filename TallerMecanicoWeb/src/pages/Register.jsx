@@ -1,4 +1,4 @@
-import react, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -18,17 +18,16 @@ export default function Registro() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-
   const AlertAviso = (text1) => {
-        Swal.fire({
-          text: text1,  
-          imageUrl: 'https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-alert-512.png', 
-          imageWidth: 100,
-          imageHeight: 100,
-          imageAlt: 'aviso',
-          confirmButtonText: 'Aceptar'
-        });
-      };
+    Swal.fire({
+      text: text1,
+      imageUrl: 'https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-alert-512.png',
+      imageWidth: 100,
+      imageHeight: 100,
+      imageAlt: 'aviso',
+      confirmButtonText: 'Aceptar'
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,9 +37,10 @@ export default function Registro() {
     }
     const nuevoUsuario = { email, password };
     axios
-      .post("http://localhost:3001/api/login", nuevoUsuario) 
+      .post("http://localhost:3001/api/login", nuevoUsuario)
       .then((response) => {
-        navigate('/');
+       
+        navigate('/'); 
       })
       .catch((error) => {
         AlertAviso("Error, Usuario ya registrado.");
@@ -54,11 +54,9 @@ export default function Registro() {
       alignItems: 'center',
       justifyContent: 'center',
       height: '100vh',
+      width: '100vw',
       backgroundColor: '#ffffff',
       padding: '0 20px',
-      overflow: 'hidden',
-      marginTop: '-100px',
-      marginLeft: '-250px',
     }}>
       <CssBaseline />
       <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
@@ -66,8 +64,8 @@ export default function Registro() {
       </Avatar>
       <Typography component="h1" variant="h5">
         {"Registrarse"}
-      </Typography>
-      {error && <Typography color="error" variant="body2" sx={{ mt: 2 }}>{error}</Typography>} 
+      </Typography>
+      {error && <Typography color="error" variant="body2" sx={{ mt: 2 }}>{error}</Typography>}
       <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%', maxWidth: '400px' }}>
         <TextField
           variant="outlined"
@@ -106,7 +104,7 @@ export default function Registro() {
         </Button>
         <Grid container justifyContent="center">
           <Grid item>
-            <Link href="/Login" variant="body2">
+            <Link href="/" variant="body2">
               {"¿Ya tienes una cuenta? Inicia Sesión"}
             </Link>
           </Grid>
