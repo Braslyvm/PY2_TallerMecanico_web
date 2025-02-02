@@ -34,6 +34,7 @@ CREATE TABLE vehiculos (
     anio INTEGER NOT NULL,
     cedula INTEGER NOT NULL,
     placa TEXT,
+    foto BLOB,
     FOREIGN KEY (id_marca) REFERENCES marcas(id_marca),
     FOREIGN KEY (cedula) REFERENCES clientes(cedula)
 );

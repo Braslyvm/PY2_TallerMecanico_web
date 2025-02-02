@@ -28,7 +28,7 @@ app.use(express.json());
 // Rutas para obtener todos los vehículos
 app.get("/api/vehiculos", (req, res) => {
   db.all(
-    "SELECT v.placa, m.nombre AS marca, v.modelo, v.id_vehiculo,v.cedula FROM  vehiculos v JOIN marcas m ON v.id_marca = m.id_marca JOIN clientes c ON c.cedula = v.cedula;",
+    "SELECT v.placa, m.nombre AS marca, v.modelo, v.id_vehiculo,v.cedula,v.foto FROM  vehiculos v JOIN marcas m ON v.id_marca = m.id_marca JOIN clientes c ON c.cedula = v.cedula;",
     [],
     (err, rows) => {
       if (err) {
@@ -40,23 +40,20 @@ app.get("/api/vehiculos", (req, res) => {
   );
 });
 
-// Agregar un vehículo
-app.post("/api/vehiculos", (req, res) => {
+app.post("/api/vehiculos", upload.single("foto"), (req, res) => {
   const { id_marca, modelo, anio, cedula, placa } = req.body;
-  console.log("Datos recibidos:", { id_marca, modelo, anio, cedula, placa });
-  // Validar que todos los campos estén presentes
-  if (!id_marca || !modelo || !anio || !cedula || !placa) {
+  const foto = req.file ? req.file.path : null;
+
+  if (!id_marca || !modelo || !anio || !cedula || !placa || !foto) {
     return res.status(400).json({ error: "Todos los campos son obligatorios" });
   }
 
-  // Consulta SQL para insertar un vehículo
   const query = `
-    INSERT INTO vehiculos (id_marca, modelo, anio, cedula, placa)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO vehiculos (id_marca, modelo, anio, cedula, placa, foto)
+    VALUES (?, ?, ?, ?, ?, ?)
   `;
 
-  // Ejecutar la consulta
-  db.run(query, [id_marca, modelo, anio, cedula, placa], function (err) {
+  db.run(query, [id_marca, modelo, anio, cedula, placa, foto], function (err) {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -405,22 +402,6 @@ app.get("/api/reparaciones/:id", (req, res) => {
   );
 });
 
-// Agregar un vehículo
-app.post("/api/vehiculos", (req, res) => {
-  const { marca, modelo, anio, correo_cliente } = req.body;
-  db.run(
-    "INSERT INTO vehiculos (marca, modelo, anio, correo_cliente) VALUES (?, ?, ?, ?)",
-    [marca, modelo, anio, correo_cliente],
-    function (err) {
-      if (err) {
-        res.status(500).json({ error: err.message });
-        return;
-      }
-      res.status(201).json({ id_vehiculo: this.lastID });
-    }
-  );
-});
-
 // Agregar una marca
 app.post("/api/marcas", (req, res) => {
   const { nombre } = req.body;
@@ -492,8 +473,14 @@ app.post("/api/mecanicos", upload.single("foto"), (req, res) => {
 });
 
 app.post("/api/reparaciones", (req, res) => {
-  const { id_vehiculo, id_diagnostico, id_mecanico, fecha_reparacion, descripcion, estado } =
-    req.body;
+  const {
+    id_vehiculo,
+    id_diagnostico,
+    id_mecanico,
+    fecha_reparacion,
+    descripcion,
+    estado,
+  } = req.body;
   // Validar que los campos requeridos no sean nulos
   if (!id_vehiculo || !id_mecanico) {
     return res
@@ -503,7 +490,14 @@ app.post("/api/reparaciones", (req, res) => {
 
   db.run(
     "INSERT INTO reparaciones (id_vehiculo,id_diagnostico, id_mecanico, fecha_reparacion, descripcion, estado) VALUES (?, ?,?, ?, ?, ?)",
-    [id_vehiculo,id_diagnostico, id_mecanico, fecha_reparacion, descripcion, estado],
+    [
+      id_vehiculo,
+      id_diagnostico,
+      id_mecanico,
+      fecha_reparacion,
+      descripcion,
+      estado,
+    ],
     function (err) {
       if (err) {
         res.status(500).json({ error: err.message });
@@ -862,9 +856,11 @@ app.get("/api/diagnosticos-sin-reparacion", (req, res) => {
     }
 
     console.log("📌 Resultado crudo de la consulta:", rows);
-    
+
     if (!rows || rows.length === 0) {
-      console.warn("⚠️ No se encontraron vehículos diagnosticados sin reparación.");
+      console.warn(
+        "⚠️ No se encontraron vehículos diagnosticados sin reparación."
+      );
       res.json([]); // Devuelve un array vacío en lugar de undefined
       return;
     }
