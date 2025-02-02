@@ -42,7 +42,8 @@ const AppContainer = styled.div`
 // Contenedor para el contenido principal (rutas)
 const Content = styled.div`
   background-color: rgb(253, 251, 251);
-  padding: 20px;
+  padding: 0; // Elimina el padding temporalmente para ver si es el problema
   overflow-y: auto;
   flex: 1; // Permite que el contenido ocupe el espacio restante
+  display: flex; // Asegura que el contenido interno pueda expandirse
 `;

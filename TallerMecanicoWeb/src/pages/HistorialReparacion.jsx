@@ -10,7 +10,7 @@ import translateText from '../components/translate';
 
 
 function HistorialReparacion() {
-    const { translate } = useGlobalContext();
+    const { translate , dark} = useGlobalContext();
     const [autos, setautos] = useState(true);
     const [reparaciones, setreparaciones] = useState(false);
     const [detalles, setdetalles] = useState(false);
@@ -20,6 +20,9 @@ function HistorialReparacion() {
     const [Placa, setplaca] = useState("");
     const [selectedDetalles, setselectedDetalles] = useState(null);
     const [repuestos, setrepuestos] = useState([]);
+
+
+    console.log("Valor de dark:", dark);
 
 
      // Estado para los textos traducidos
@@ -242,148 +245,199 @@ function HistorialReparacion() {
         setrepuestos([]);
       };
 
-    return (    
-        <HomeContainer>
-            {autos && (
-                <div>
-                    <Header>
-                        <h2>{translatedContent.historialreparacion}</h2>
-                    </Header>
-                    <TableContainer>
-                        <Table>
-                            <colgroup>
-                            <col style={{ width: '20%' }} />
-                            <col style={{ width: '40%' }} /> 
-                            <col style={{ width: '20%' }} /> 
-                            <col style={{ width: '20%' }} /> 
-                            <col style={{ width: '20%' }} /> 
-                            </colgroup>
-                            <thead>
-                            <tr>
-                                <th>{translatedContent.Placa}</th>
-                                <th>{translatedContent.cliente}</th>
-                                <th>{translatedContent.Marca}</th>
-                                <th>{translatedContent.Modelo}</th>
-                                <th>{translatedContent.accion}</th>
-                            </tr>
-                            </thead>
-                        </Table>
-                    <TableBodyContainer>
-                        <Table>
-                            <tbody>
-                            {vehiculos.map((Autos, index) => (
-                                <tr key={index}>
-                                <td style={{ width: '20%' }}>{Autos.placa}</td>
-                                <td style={{ width: '40%' }}>{Autos.nombre_completo}</td>
-                                <td style={{ width: '20%' }}>{Autos.marca}</td>
-                                <td style={{ width: '20%' }}>{Autos.modelo}</td>
-                                <td style={{ width: '20%' }}>
-                                    <ActionsCell>
-                                    <ViewButton  style={{ marginLeft: '40%' }}  onClick={() => Intermedio(Autos.id_vehiculo, Autos.placa)}>
-                                        <FaEye />
-                                    </ViewButton>
-                                    </ActionsCell>
-                                </td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </Table>
-                    </TableBodyContainer>
-                </TableContainer>
-                </div>
-            )}
-            {reparaciones && (
-                <div>
-                <Header>
-                    <h2>{translatedContent.historialreparacion} :{Placa}</h2>
-                    <AddButton onClick={OpenAutos}>
-                        {translatedContent.volver}
-                    </AddButton>
-                </Header>
-                <TableContainer>
-                    <Table>
-                        <colgroup>
-                        <col style={{ width: '10%' }} />
-                        <col style={{ width: '10%' }} /> 
-                        <col style={{ width: '10%' }} /> 
-                        <col style={{ width: '10%' }} /> 
-                        </colgroup>
-                        <thead>
-                        <tr>
-                            <th>{translatedContent.IDReparación}</th>
-                            <th>{translatedContent.Mecánico}</th>
-                            <th>{translatedContent.FechadeReparación}</th>
-                            <th>{translatedContent.accion}</th>
-                        </tr>
-                        </thead>
-                    </Table>
+      return (    
+        <HomeContainer style={{ backgroundColor: dark ? '#333' : '#ffffff', color: dark ? '#ffffff' : '#000000' }} >
+          {autos && (
+            <div>
+              <Header>
+                <h2 style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.historialreparacion}</h2>
+              </Header>
+              <TableContainer>
+                <Table>
+                  <colgroup>
+                    <col style={{ width: '20%' }} />
+                    <col style={{ width: '40%' }} />
+                    <col style={{ width: '20%' }} />
+                    <col style={{ width: '20%' }} />
+                    <col style={{ width: '20%' }} />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.Placa}</th>
+                      <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.cliente}</th>
+                      <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.Marca}</th>
+                      <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.Modelo}</th>
+                      <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.accion}</th>
+                    </tr>
+                  </thead>
+                </Table>
                 <TableBodyContainer>
-                    <Table>
-                        <tbody>
-                        {Reparacion.map((rep, index) => (
-                            <tr key={index}>
-                            <td style={{ width: '20%' }}>{rep.id_reparacion}</td>
-                            <td style={{ width: '20%' }}>{rep.mecanico}</td>
-                            <td style={{ width: '20%' }}>{rep.fecha_reparacion}</td>
-                          
-                            <td style={{ width: '20%' }}>
-                                <ActionsCell>
-                                <ViewButton style={{ marginLeft: '45%' }} onClick={() => OpenDetalles(rep.descripcion,rep.mecanico,rep.fecha_reparacion,rep.id_reparacion)}>
-                                    <FaEye />
-                                </ViewButton>
-                                </ActionsCell>
-                            </td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </Table>
+                  <Table>
+                    <tbody>
+                      {vehiculos.map((Autos, index) => (
+                        <tr key={index}>
+                          <td style={{ width: '20%', color: dark ? '#ffffff' : '#000000' }}>{Autos.placa}</td>
+                          <td style={{ width: '40%', color: dark ? '#ffffff' : '#000000' }}>{Autos.nombre_completo}</td>
+                          <td style={{ width: '20%', color: dark ? '#ffffff' : '#000000' }}>{Autos.marca}</td>
+                          <td style={{ width: '20%', color: dark ? '#ffffff' : '#000000' }}>{Autos.modelo}</td>
+                          <td style={{ width: '20%' }}>
+                            <ActionsCell>
+                              <ViewButton 
+                                style={{ marginLeft: '40%' }} 
+                                onClick={() => Intermedio(Autos.id_vehiculo, Autos.placa)}
+                              >
+                                <FaEye />
+                              </ViewButton>
+                            </ActionsCell>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
                 </TableBodyContainer>
-            </TableContainer>
+              </TableContainer>
             </div>
-            )}
-            {detalles && (
-                <Modal show={true} onHide={CloseDetalles} centered size="lg"> {/* Cambia el tamaño del modal a "lg" */}
-                <Modal.Header closeButton>
-                    <Modal.Title>{translatedContent.detallesReparacion}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <div style={{ flex: 1, marginRight: '-200px' }}> {/* Reduce el margen derecho */}
-                            <p style={{ margin: '0 0 5px 0' }}><strong>{translatedContent.IDReparación}:</strong> {selectedDetalles.id_reparacion}</p>
-                            <p style={{ margin: '0 0 5px 0' }}><strong>{translatedContent.Placa}:</strong> {selectedDetalles.Placa}</p>
-                            <p style={{ margin: '0 0 5px 0' }}><strong>{translatedContent.Mecánico}:</strong> {selectedDetalles.mecanico}</p>
-                            <p style={{ margin: '0 0 5px 0' }}><strong>{translatedContent.FechadeReparación}:</strong> {selectedDetalles.fecha_reparacion}</p>
-                            <p style={{ margin: '0 0 5px 0' }}><strong>{translatedContent.Detalles}:</strong> {selectedDetalles.detalles}</p>
-                        </div>
-                        <div style={{ flex: 1 }}>
-                            <Table bordered hover responsive style={{ width: '70%', margin: '0 auto' }}>
-                                <thead>
-                                    <tr>
-                                        <th style={{ width: '50%', whiteSpace: 'nowrap', fontSize: '12px', padding: '5px' }}>{translatedContent.Repuesto}</th>
-                                        <th style={{ width: '30%', whiteSpace: 'nowrap', fontSize: '12px', padding: '5px' }}>{translatedContent.Cantidad}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {repuestos.map((rep, index) => (
-                                        <tr key={index}>
-                                            <td style={{ wordWrap: 'break-word', maxWidth: '150px', fontSize: '12px', padding: '5px' }}>{rep.descripcion}</td>
-                                            <td style={{ fontSize: '12px', padding: '5px' }}>{rep.cantidad_utilizada}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </Table>
-                        </div>
-                    </div>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={CloseDetalles}>
-                        -
-                    </Button>
-                </Modal.Footer>
+          )}
+          {reparaciones && (
+            <div>
+              <Header>
+                <h2 style={{ color: dark ? '#ffffff' : '#000000' }}>
+                  {translatedContent.historialreparacion} : {Placa}
+                </h2>
+                <AddButton onClick={OpenAutos}>
+                  {translatedContent.volver}
+                </AddButton>
+              </Header>
+              <TableContainer>
+                <Table>
+                  <colgroup>
+                    <col style={{ width: '10%' }} />
+                    <col style={{ width: '10%' }} />
+                    <col style={{ width: '10%' }} />
+                    <col style={{ width: '10%' }} />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th style={{ color: dark ? '#ffffff' : '#000000' }}>
+                        {translatedContent.IDReparación}
+                      </th>
+                      <th style={{ color: dark ? '#ffffff' : '#000000' }}>
+                        {translatedContent.Mecánico}
+                      </th>
+                      <th style={{ color: dark ? '#ffffff' : '#000000' }}>
+                        {translatedContent.FechadeReparación}
+                      </th>
+                      <th style={{ color: dark ? '#ffffff' : '#000000' }}>
+                        {translatedContent.accion}
+                      </th>
+                    </tr>
+                  </thead>
+                </Table>
+                <TableBodyContainer>
+                  <Table>
+                    <tbody>
+                      {Reparacion.length === 0 ? (
+                        <tr>
+                          <td colSpan="4" style={{ textAlign: 'center', color: dark ? '#ffffff' : '#000000' }}>
+                            {translatedContent.noReparaciones}
+                          </td>
+                        </tr>
+                      ) : (
+                        Reparacion.map((rep, index) => (
+                          <tr key={index}>
+                            <td style={{ width: '20%', color: dark ? '#ffffff' : '#000000' }}>
+                              {rep.id_reparacion}
+                            </td>
+                            <td style={{ width: '20%', color: dark ? '#ffffff' : '#000000' }}>
+                              {rep.mecanico}
+                            </td>
+                            <td style={{ width: '20%', color: dark ? '#ffffff' : '#000000' }}>
+                              {rep.fecha_reparacion}
+                            </td>
+                            <td style={{ width: '20%' }}>
+                              <ActionsCell>
+                                <ViewButton
+                                  style={{ marginLeft: '45%' }}
+                                  onClick={() =>
+                                    OpenDetalles(rep.descripcion, rep.mecanico, rep.fecha_reparacion, rep.id_reparacion)
+                                  }
+                                >
+                                  <FaEye />
+                                </ViewButton>
+                              </ActionsCell>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </Table>
+                </TableBodyContainer>
+              </TableContainer>
+            </div>
+          )}
+          {detalles && (
+            <Modal show={true} onHide={CloseDetalles} centered size="lg" >
+              <Modal.Header closeButton style={{ backgroundColor: dark ? '#333' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
+                <Modal.Title style={{ color: dark ? '#ffffff' : '#000000' }}>
+                  {translatedContent.detallesReparacion}
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body style={{ backgroundColor: dark ? '#333' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <div style={{ flex: 1, marginRight: '-200px' }}>
+                    <p style={{ margin: '0 0 5px 0', color: dark ? '#ffffff' : '#000000' }}>
+                      <strong>{translatedContent.IDReparación}:</strong> {selectedDetalles.id_reparacion}
+                    </p>
+                    <p style={{ margin: '0 0 5px 0', color: dark ? '#ffffff' : '#000000' }}>
+                      <strong>{translatedContent.Placa}:</strong> {selectedDetalles.Placa}
+                    </p>
+                    <p style={{ margin: '0 0 5px 0', color: dark ? '#ffffff' : '#000000' }}>
+                      <strong>{translatedContent.Mecánico}:</strong> {selectedDetalles.mecanico}
+                    </p>
+                    <p style={{ margin: '0 0 5px 0', color: dark ? '#ffffff' : '#000000' }}>
+                      <strong>{translatedContent.FechadeReparación}:</strong> {selectedDetalles.fecha_reparacion}
+                    </p>
+                    <p style={{ margin: '0 0 5px 0', color: dark ? '#ffffff' : '#000000' }}>
+                      <strong>{translatedContent.Detalles}:</strong> {selectedDetalles.detalles}
+                    </p>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <Table bordered hover responsive style={{ width: '70%', margin: '0 auto' }}>
+                      <thead>
+                        <tr>
+                          <th style={{ width: '50%', whiteSpace: 'nowrap', fontSize: '12px', padding: '5px', color: dark ? '#ffffff' : '#000000' }}>
+                            {translatedContent.Repuesto}
+                          </th>
+                          <th style={{ width: '30%', whiteSpace: 'nowrap', fontSize: '12px', padding: '5px', color: dark ? '#ffffff' : '#000000' }}>
+                            {translatedContent.Cantidad}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {repuestos.map((rep, index) => (
+                          <tr key={index}>
+                            <td style={{ wordWrap: 'break-word', maxWidth: '150px', fontSize: '12px', padding: '5px', color: dark ? '#ffffff' : '#000000' }}>
+                              {rep.descripcion}
+                            </td>
+                            <td style={{ fontSize: '12px', padding: '5px', color: dark ? '#ffffff' : '#000000' }}>
+                              {rep.cantidad_utilizada}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  </div>
+                </div>
+              </Modal.Body>
+              <Modal.Footer style={{ backgroundColor: dark ? '#333' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
+                <Button variant="secondary" onClick={CloseDetalles}>
+                  {translatedContent.cerrar} 
+                </Button>
+              </Modal.Footer>
             </Modal>
-            )}
+          )}
         </HomeContainer>
-    );
+      );      
 }
 
 export default HistorialReparacion;
@@ -394,15 +448,16 @@ const HomeContainer = styled.div`
   align-items: center; 
   overflow-y: auto;
   justify-content: center;
-  height: 90vh;
-  background-color: #f8f9fa;
+  height: 100%; // Cambia a 100% para que ocupe todo el espacio disponible
+  flex: 1; // Asegura que ocupe todo el espacio restante
 `;
 
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
+  width: 90%;
+  margin: 0 auto;
   max-width: 600px;
   margin-bottom: 20px;
 
@@ -432,9 +487,10 @@ const AddButton = styled.button`
 `;
 
 const Table = styled.table`
-  width: 100%;
+  width: 90%;
   border-collapse: collapse;
   margin-top: 10px;
+  margin: 0 auto;
   border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   table-layout: fixed; /* Forzar el ancho de las columnas */
@@ -454,7 +510,8 @@ const Table = styled.table`
   }
   
   tr:hover {
-    background-color: #f1f1f1;
+    background-color: transparent; 
+  cursor: default;
   }
 `;
 const ActionsCell = styled.div`
@@ -484,7 +541,7 @@ const TableContainer = styled.div`
 `;
 
 const TableBodyContainer = styled.div`
-  max-height: 300px;
+  max-height: 40%;
   overflow-y: auto; 
   overflow-x: hidden;
 `;
