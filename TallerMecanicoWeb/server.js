@@ -682,7 +682,10 @@ app.post("/api/diagnostico", upload.single("foto"), (req, res) => {
 app.get("/api/reparaciones/estado/:estado", (req, res) => {
   const { estado } = req.params;
   db.all(
-    "SELECT * FROM reparaciones WHERE estado = ?",
+    `SELECT r.* , v.placa
+    FROM reparaciones as r
+    JOIN vehiculos as v on v.id_vehiculo=r.id_vehiculo
+    WHERE estado = ?`
     [estado],
     (err, rows) => {
       if (err) {
@@ -723,9 +726,10 @@ app.get("/api/reparaciones/cliente/:clienteId", (req, res) => {
 
   // Consulta SQL con JOIN para obtener el diagnóstico técnico
   const query = `
-    SELECT r.*, d.diagnostico_tecnico
+    SELECT r.*, d.diagnostico_tecnico, v.placa
     FROM reparaciones r
     JOIN diagnostico_vehiculo d ON r.id_diagnostico = d.id_diagnostico
+    JOIN vehiculos as v on v.id_vehiculo=r.id_vehiculo
     WHERE r.id_vehiculo IN (
       SELECT id_vehiculo FROM vehiculos WHERE cedula = ?
     )
