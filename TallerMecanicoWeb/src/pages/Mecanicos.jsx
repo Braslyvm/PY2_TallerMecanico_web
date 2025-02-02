@@ -7,7 +7,7 @@ import axios from "axios";
 import { useGlobalContext } from '../components/GlobalContext';
 
 function Mecanicos() {
-  const { translate } = useGlobalContext(); // Obtener el estado de traducción
+  const { translate , dark} = useGlobalContext(); // Obtener el estado de traducción
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [verOpen, setVerOpen] = useState(false);
   const [nombre, setNombre] = useState("");
@@ -34,6 +34,8 @@ function Mecanicos() {
     close: translate ? 'Close' : 'Cerrar',
     accept: translate ? 'Accept' : 'Aceptar',
     acciones: translate ? 'Actions' : 'Acciones',
+    foto : translate ? 'Drag or select a photo' : 'Arrastra o selecciona una foto',
+    volver :  translate ? 'back' : 'volver',
 
   };
 
@@ -170,10 +172,10 @@ function Mecanicos() {
   }
 
   return (
-    <HomeContainer>
+    <HomeContainer style={{ backgroundColor: dark ? '#333' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
       <Header>
-        <h2>{translatedContent.title}</h2>
-        <AddButton onClick={handleAddClick}>
+      <h2 style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.title}</h2>
+        <AddButton style={{ color: dark ? '#ffffff' : '#000000' }} onClick={handleAddClick}>
           <FaPlus /> {translatedContent.addButton}
         </AddButton>
       </Header>
@@ -187,10 +189,10 @@ function Mecanicos() {
           </colgroup>
           <thead>
             <tr>
-              <th>{translatedContent.id}</th>
-              <th>{translatedContent.name}</th>
-              <th>{translatedContent.age}</th>
-              <th>{translatedContent.acciones}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.id}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.name}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.age}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.acciones}</th>
             </tr>
           </thead>
         </Table>
@@ -199,10 +201,10 @@ function Mecanicos() {
             <tbody>
               {data.map((persona, index) => (
                 <tr key={index}>
-                  <td style={{ width: '20%' }}>{persona.cedula}</td>
-                  <td style={{ width: '40%' }}>{persona.nombre}</td>
-                  <td style={{ width: '25%' }}>{persona.edad}</td>
-                  <td style={{ width: '15%' }}>
+                  <td style={{ width: '20%', color: dark ? '#ffffff' : '#000000' }}>{persona.cedula}</td>
+                  <td style={{ width: '40%' , color: dark ? '#ffffff' : '#000000'}}>{persona.nombre}</td>
+                  <td style={{ width: '25%', color: dark ? '#ffffff' : '#000000' }}>{persona.edad}</td>
+                  <td style={{ width: '15%', color: dark ? '#ffffff' : '#000000' }}>
                     <ActionsCell>
                       <ViewButton onClick={() => handleViewClick(persona.cedula, persona.nombre, persona.edad, persona.foto)}>
                         <FaEye />
@@ -220,7 +222,7 @@ function Mecanicos() {
       </TableContainer>
       {isModalOpen && (
         <ModalOverlay>
-          <ModalContent>
+          <ModalContent style={{ backgroundColor: dark ? '#444' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
             <h3>{translatedContent.addButton}</h3>
             <FormContainer>
               <PhotoInputContainer {...getRootProps()}>
@@ -228,32 +230,47 @@ function Mecanicos() {
                 {foto ? (
                   <PreviewImage src={URL.createObjectURL(foto)} alt="Vista previa" />
                 ) : (
-                  <div className="upload-box">Arrastra o selecciona una foto</div>
+                  <div className="upload-box">{translatedContent.foto}</div>
                 )}
               </PhotoInputContainer>
               <FormFields>
-                <label>
+                <label style={{ color: dark ? '#ffffff' : '#000000' }}>
                   {translatedContent.name}
                   <input
                     type="text"
                     value={nombre}
                     onChange={(e) => setNombre(e.target.value)}
+                    style={{
+                      backgroundColor: dark ? '#333' : '#ffffff',
+                      color: dark ? '#ffffff' : '#000000',
+                      borderColor: dark ? '#555' : '#ccc'
+                    }}
                   />
                 </label>
-                <label>
+                <label style={{ color: dark ? '#ffffff' : '#000000' }}>
                   {translatedContent.id}
                   <input
                     type="number"
                     value={cedula}
                     onChange={(e) => setCedula(e.target.value)}
+                    style={{
+                      backgroundColor: dark ? '#333' : '#ffffff',
+                      color: dark ? '#ffffff' : '#000000',
+                      borderColor: dark ? '#555' : '#ccc'
+                    }}
                   />
                 </label>
-                <label>
+                <label style={{ color: dark ? '#ffffff' : '#000000' }}>
                   {translatedContent.age}
                   <input
                     type="number"
                     value={edad}
                     onChange={(e) => setEdad(e.target.value)}
+                    style={{
+                      backgroundColor: dark ? '#333' : '#ffffff',
+                      color: dark ? '#ffffff' : '#000000',
+                      borderColor: dark ? '#555' : '#ccc'
+                    }}
                   />
                 </label>
               </FormFields>
@@ -266,17 +283,17 @@ function Mecanicos() {
         </ModalOverlay>
       )}
       {verOpen && selectedMecanico && (
-        <ModalOverlay>
-          <ModalContent style={{ width: '400px'}}>
+        <ModalOverlay style={{ color: dark ? '#ffffff' : '#000000' }}>
+          <ModalContent style={{backgroundColor: dark ? '#444' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
             <h3>{translatedContent.detailsTitle}</h3>
-            <FormContainer>
-              <PhotoviewContainer> 
+            <FormContainer  style={{ color: dark ? '#ffffff' : '#000000' }}>
+              <PhotoviewContainer  style={{ color: dark ? '#ffffff' : '#000000' }}> 
                 <img src={selectedMecanico.foto} alt="Foto del mecánico" style={{ maxWidth: '100px', borderRadius: '8px' }} />
               </PhotoviewContainer>
               <FormFields>
-                <p><strong>{translatedContent.name}</strong> {selectedMecanico.nombre}</p>
-                <p><strong>{translatedContent.id}</strong> {selectedMecanico.cedula}</p>
-                <p><strong>{translatedContent.age}</strong> {selectedMecanico.edad}</p>
+                <p><strong style={{ color: dark ? '#ffffff' : '#000000' }} >{translatedContent.name}</strong> {selectedMecanico.nombre}</p>
+                <p><strong style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.id}</strong> {selectedMecanico.cedula}</p>
+                <p><strong style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.age}</strong> {selectedMecanico.edad}</p>
               </FormFields>
             </FormContainer>
             <ActionButtons style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -287,6 +304,7 @@ function Mecanicos() {
       )}
     </HomeContainer>
   );
+  
 }
 
 export default Mecanicos;
@@ -298,15 +316,16 @@ const HomeContainer = styled.div`
   align-items: center; 
   overflow-y: auto;
   justify-content: center;
-  height: 90vh;
-  background-color: #f8f9fa;
+  height: 100%; // Cambia a 100% para que ocupe todo el espacio disponible
+  flex: 1; // Asegura que ocupe todo el espacio restante
 `;
 
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
+  width: 90%;
+  margin: 0 auto;
   max-width: 600px;
   margin-bottom: 20px;
 
@@ -336,9 +355,10 @@ const AddButton = styled.button`
 `;
 
 const Table = styled.table`
-  width: 100%;
+  width: 90%;
   border-collapse: collapse;
   margin-top: 10px;
+  margin: 0 auto;
   border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   table-layout: fixed; /* Forzar el ancho de las columnas */
@@ -358,7 +378,8 @@ const Table = styled.table`
   }
   
   tr:hover {
-    background-color: #f1f1f1;
+    background-color: transparent; 
+    cursor: default;
   }
 `;
 
