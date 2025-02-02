@@ -192,6 +192,34 @@ app.get("/api/Facturas", (req, res) => {
     }
   );
 });
+
+app.get("/api/Facturas2/:cedula", (req, res) => {
+  const cedula = req.params.cedula; // Obtén la cédula del parámetro de la URL
+
+  db.all(
+    `SELECT 
+      r.id_reparacion, 
+      r.id_vehiculo, 
+      v.placa AS placa, 
+      (c.nombre || ' ' || c.apellido1) AS cliente, 
+      m.nombre AS mecanico, 
+      r.fecha_reparacion, 
+      r.descripcion 
+    FROM reparaciones r 
+    JOIN mecanicos m ON r.id_mecanico = m.cedula 
+    JOIN vehiculos v ON r.id_vehiculo = v.id_vehiculo 
+    JOIN clientes c ON c.cedula = v.cedula 
+    WHERE r.estado = 'Facturar' AND c.cedula = ?`, // Filtra por la cédula del cliente
+    [cedula], // Pasa la cédula como parámetro
+    (err, rows) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.json(rows); // Retorna todas las filas obtenidas
+    }
+  );
+});
 //repuestos
 app.get("/api/RepuestosR/:id", (req, res) => {
   const { id } = req.params;
