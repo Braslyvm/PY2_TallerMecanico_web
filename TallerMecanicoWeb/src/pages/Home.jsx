@@ -72,10 +72,11 @@ const HomeContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-y: auto;
   justify-content: center;
-  height: 91vh;
+  height: 100vh; /* Cambiado a 100vh para ocupar toda la altura de la ventana */
+  width: 100vw; /* Asegúrate de que ocupe todo el ancho */
   background-color: #f8f9fa;
+  overflow: hidden; /* Cambiado a hidden para evitar el scroll */
 `;
 
 const InfoContainer = styled.div`
