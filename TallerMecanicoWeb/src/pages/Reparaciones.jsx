@@ -3,12 +3,12 @@ import styled from "styled-components";
 import { FaTrashAlt, FaEye, FaPlus, FaWrench, FaTable } from "react-icons/fa";
 import { Modal, Button, Form } from "react-bootstrap";
 import Swal from "sweetalert2";
-import {useGlobalContext} from "../components/GlobalContext"
+import { useGlobalContext } from "../components/GlobalContext";
 import axios from "axios";
 
 function Reparaciones() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const {translate,dark}=useGlobalContext();
+  const { translate, dark } = useGlobalContext();
   const [isRepuestosModalOpen, setIsRepuestosModalOpen] = useState(false);
   const [verOpen, setVerOpen] = useState(false);
   const [vehiculos, setVehiculos] = useState([]);
@@ -30,35 +30,50 @@ function Reparaciones() {
   const [dataComplete, setDataComplete] = useState([]);
   const [isViewAllModalOpen, setIsViewAllModalOpen] = useState(false); // Nuevo estado para el modal de visualización de todas las reparaciones
   const translatedContent = {
-    title: translate ? 'Repair Requests' : 'Solicitudes de Reparación',
-    addButton: translate ? 'New Repair' : 'Nueva Reparación',
-    noRepairs: translate ? 'No repairs registered' : 'No hay reparaciones registradas',
-    alertSuccess: translate ? 'Repair registered successfully!' : '¡Reparación registrada correctamente!',
-    alertDelete: translate ? 'Repair deleted successfully!' : 'Reparación eliminada correctamente.',
-    alertCompleteFields: translate ? 'Please complete all fields.' : 'Por favor, completa todos los campos.',
-    alertErrorAdd: translate ? 'Error adding repair:' : 'Error al agregar reparación:',
-    alertErrorDelete: translate ? 'Error deleting repair:' : 'Error al eliminar reparación:',
-    detailsTitle: translate ? 'Repair Details' : 'Detalles de la Reparación',
-    vehiculo: translate ? 'Vehicle' : 'Vehículo',
-    mecanico: translate? 'Mechanic': 'Mecánico',
-    id: translate ? 'ID' : 'Cédula',
-    age: translate ? 'Age:' : 'Edad',
-    save: translate ? 'Save' : 'Guardar',
-    close: translate ? 'Close' : 'Cerrar',
-    accept: translate ? 'Accept' : 'Aceptar',
-    acciones: translate ? 'Actions' : 'Acciones',
-    foto: translate ? 'Drag or select a photo' : 'Arrastra o selecciona una foto',
-    volver: translate ? 'Back' : 'Volver',
-    requestButton: translate ? 'Make Request' : 'Realizar solicitud',
-    manageRepuestos: translate ? 'Manage Parts' : 'Gestionar Repuestos',
-    repuestosSeleccionados: translate ? 'Selected Parts' : 'Repuestos seleccionados',
-    descripcion: translate ? 'Description' : 'Descripción',
-    estado: translate ? 'Status' : 'Estado',
-    fechaReparacion: translate ? 'Date' : 'Fecha',
-    cantidad: translate ? 'Quantity' : 'Cantidad',
-    precioUnitario: translate ? 'Unit Price' : 'Precio unitario',
+    title: translate ? "Repair Requests" : "Solicitudes de Reparación",
+    addButton: translate ? "New Repair" : "Nueva Reparación",
+    noRepairs: translate
+      ? "No repairs registered"
+      : "No hay reparaciones registradas",
+    alertSuccess: translate
+      ? "Repair registered successfully!"
+      : "¡Reparación registrada correctamente!",
+    alertDelete: translate
+      ? "Repair deleted successfully!"
+      : "Reparación eliminada correctamente.",
+    alertCompleteFields: translate
+      ? "Please complete all fields."
+      : "Por favor, completa todos los campos.",
+    alertErrorAdd: translate
+      ? "Error adding repair:"
+      : "Error al agregar reparación:",
+    alertErrorDelete: translate
+      ? "Error deleting repair:"
+      : "Error al eliminar reparación:",
+    detailsTitle: translate ? "Repair Details" : "Detalles de la Reparación",
+    vehiculo: translate ? "Vehicle" : "Vehículo",
+    mecanico: translate ? "Mechanic" : "Mecánico",
+    id: translate ? "ID" : "Cédula",
+    age: translate ? "Age:" : "Edad",
+    save: translate ? "Save" : "Guardar",
+    close: translate ? "Close" : "Cerrar",
+    accept: translate ? "Accept" : "Aceptar",
+    acciones: translate ? "Actions" : "Acciones",
+    foto: translate
+      ? "Drag or select a photo"
+      : "Arrastra o selecciona una foto",
+    volver: translate ? "Back" : "Volver",
+    requestButton: translate ? "Make Request" : "Realizar solicitud",
+    manageRepuestos: translate ? "Manage Parts" : "Gestionar Repuestos",
+    repuestosSeleccionados: translate
+      ? "Selected Parts"
+      : "Repuestos seleccionados",
+    descripcion: translate ? "Description" : "Descripción",
+    estado: translate ? "Status" : "Estado",
+    fechaReparacion: translate ? "Date" : "Fecha",
+    cantidad: translate ? "Quantity" : "Cantidad",
+    precioUnitario: translate ? "Unit Price" : "Precio unitario",
   };
-
 
   // Obtener datos iniciales
   useEffect(() => {
@@ -73,9 +88,9 @@ function Reparaciones() {
 
   const AlertaCamposVacios = () => {
     Swal.fire({
-      title: translate ? 'Error' : 'Error',
+      title: translate ? "Error" : "Error",
       text: translatedContent.alertCompleteFields,
-      icon: 'error',
+      icon: "error",
       confirmButtonText: translatedContent.close,
     });
   };
@@ -117,7 +132,7 @@ function Reparaciones() {
       });
   };
 
-  const getVehiculos=()=>{
+  const getVehiculos = () => {
     axios
       .get("http://localhost:3001/api/vehiculos/completa")
       .then((response) => {
@@ -135,7 +150,7 @@ function Reparaciones() {
         console.error("Error al obtener vehículos:", error);
         setVehiculos([]); // Establece un array vacío en caso de error
       });
-  }
+  };
 
   const diagnosticosVehiculos = async () => {
     const diagnosticosResponse = await axios.get(
@@ -263,7 +278,7 @@ function Reparaciones() {
         .then(() => {
           Swal.fire({
             title: translatedContent.alertSuccess,
-            icon: 'success',
+            icon: "success",
             confirmButtonText: translatedContent.close,
           });
           getReparaciones();
@@ -360,10 +375,20 @@ function Reparaciones() {
   };
 
   return (
-    <Container style={{ backgroundColor: dark ? '#333' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
+    <Container
+      style={{
+        backgroundColor: dark ? "#333" : "#ffffff",
+        color: dark ? "#ffffff" : "#000000",
+      }}
+    >
       <Header>
-        <h2 style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.title}</h2>
-        <AddButton style={{ color: dark ? '#ffffff' : '#000000' }} onClick={handleAddClick}>
+        <h2 style={{ color: dark ? "#ffffff" : "#000000" }}>
+          {translatedContent.title}
+        </h2>
+        <AddButton
+          style={{ color: dark ? "#ffffff" : "#000000" }}
+          onClick={handleAddClick}
+        >
           <FaPlus /> {translatedContent.addButton}
         </AddButton>
       </Header>
@@ -371,25 +396,51 @@ function Reparaciones() {
         <Table>
           <thead style={{ position: "sticky", top: 0, zIndex: 10 }}>
             <tr>
-              <th style={{ color: dark ? '#ffffff' : '#000000' }}>ID</th>
-              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.vehiculo}</th>
-              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.mecanico}</th>
-              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.fechaReparacion}</th>
-              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.descripcion}</th>
-              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.estado}</th>
-              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.acciones}</th>
-              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.requestButton}</th>
+              <th style={{ color: dark ? "#ffffff" : "#000000" }}>ID</th>
+              <th style={{ color: dark ? "#ffffff" : "#000000" }}>
+                {translatedContent.vehiculo}
+              </th>
+              <th style={{ color: dark ? "#ffffff" : "#000000" }}>
+                {translatedContent.mecanico}
+              </th>
+              <th style={{ color: dark ? "#ffffff" : "#000000" }}>
+                {translatedContent.fechaReparacion}
+              </th>
+              <th style={{ color: dark ? "#ffffff" : "#000000" }}>
+                {translatedContent.descripcion}
+              </th>
+              <th style={{ color: dark ? "#ffffff" : "#000000" }}>
+                {translatedContent.estado}
+              </th>
+              <th style={{ color: dark ? "#ffffff" : "#000000" }}>
+                {translatedContent.acciones}
+              </th>
+              <th style={{ color: dark ? "#ffffff" : "#000000" }}>
+                {translatedContent.requestButton}
+              </th>
             </tr>
           </thead>
           <TableBody>
             {data.map((reparacion, index) => (
               <tr key={reparacion.id_reparacion}>
-                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{reparacion.id_reparacion}</td>
-                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{buscarPlacaVehiculo(reparacion.id_vehiculo)}</td>
-                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{buscarNombreMecanico(reparacion.id_mecanico)}</td>
-                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{reparacion.fecha_reparacion}</td>
-                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{reparacion.descripcion}</td>
-                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{reparacion.estado}</td>
+                <td style={{ color: dark ? "#ffffff" : "#000000" }}>
+                  {reparacion.id_reparacion}
+                </td>
+                <td style={{ color: dark ? "#ffffff" : "#000000" }}>
+                  {buscarPlacaVehiculo(reparacion.id_vehiculo)}
+                </td>
+                <td style={{ color: dark ? "#ffffff" : "#000000" }}>
+                  {buscarNombreMecanico(reparacion.id_mecanico)}
+                </td>
+                <td style={{ color: dark ? "#ffffff" : "#000000" }}>
+                  {reparacion.fecha_reparacion}
+                </td>
+                <td style={{ color: dark ? "#ffffff" : "#000000" }}>
+                  {reparacion.descripcion}
+                </td>
+                <td style={{ color: dark ? "#ffffff" : "#000000" }}>
+                  {reparacion.estado}
+                </td>
                 <td>
                   <ActionsCell>
                     <DeleteButton
@@ -429,21 +480,20 @@ function Reparaciones() {
                 <Form.Label>Vehículo</Form.Label>
                 <Form.Control
                   as="select"
-                  value={vehiculo ? vehiculo.id_vehiculo : ""}
+                  value={vehiculo ? JSON.stringify(vehiculo) : ""}
                   onChange={(e) => {
-                    const selectedVehiculo = vehiculos.find(
-                      (v) => v.id_vehiculo === parseInt(e.target.value)
-                    );
+                    const selectedVehiculo = JSON.parse(e.target.value);
                     setVehiculo(selectedVehiculo || null);
                   }}
                 >
                   <option value="">Seleccione un vehículo</option>
-                  {vehiculosFiltrados.map((v) => (
-                    <option key={v.id_vehiculo} value={v.id_vehiculo}>
-                      Placa del vehículo: {v.placa}, Fecha de diagnóstico:{" "}
-                      {v.fecha_diagnostico}
-                    </option>
-                  ))}
+                  {Array.isArray(vehiculos) &&
+                    vehiculosFiltrados.map((v) => (
+                      <option key={v.id_vehiculo} value={JSON.stringify(v)}>
+                        Placa del vehículo: {v.placa}, Fecha de diagnóstico:{" "}
+                        {v.fecha_diagnostico}
+                      </option>
+                    ))}
                 </Form.Control>
               </Form.Group>
               <Form.Group controlId="formMecanico">
@@ -571,10 +621,12 @@ function Reparaciones() {
                 {selectedReparacion.descripcion}
               </p>
               <p>
-                <strong>{translatedContent.fechaReparacion}: </strong> {selectedReparacion.fecha_reparacion}
+                <strong>{translatedContent.fechaReparacion}: </strong>{" "}
+                {selectedReparacion.fecha_reparacion}
               </p>
               <p>
-                <strong>{translatedContent.estado}: </strong> {selectedReparacion.estado}
+                <strong>{translatedContent.estado}: </strong>{" "}
+                {selectedReparacion.estado}
               </p>
             </div>
           )}
