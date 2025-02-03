@@ -40,7 +40,7 @@ app.get("/api/vehiculos", (req, res) => {
   );
 });
 app.post("/api/vehiculos", upload.single("foto"), (req, res) => {
-  const { id_marca, modelo, anio, cedula, placa ,foto} = req.body;
+  const { id_marca, modelo, anio, cedula, placa, foto } = req.body;
 
   if (!id_marca || !modelo || !anio || !cedula || !placa || !foto) {
     return res.status(400).json({ error: "Todos los campos son obligatorios" });
