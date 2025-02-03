@@ -12,7 +12,7 @@ import { useDropzone } from "react-dropzone";
 import { useGlobalContext } from "../components/GlobalContext"; // Asegúrate de importar el contexto
 
 function GestionDeRepuestos() {
-  const { translate } = useGlobalContext(); // Obtener el estado de traducción
+  const { translate, dark } = useGlobalContext(); // Obtener el estado de traducción
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpen2, setIsModalOpen2] = useState(false);
   const [isModalOpen3, setIsModalOpen3] = useState(false);
@@ -24,6 +24,8 @@ function GestionDeRepuestos() {
   const [id_repuesto, setIdRepuesto] = useState("");
   const [marcas, setMarcas] = useState([]);
   const [piezas, setPiezas] = useState([]);
+  const lightGray = "#333"; // Define el mismo tono de gris para el modo claro
+  const darkGray = "#000000"; // Define el mismo fondo para el modo oscuro
 
   const translatedContent = {
     title: translate ? "Spare Parts Management" : "Gestión de Repuestos",
@@ -262,9 +264,16 @@ function GestionDeRepuestos() {
   };
 
   return (
-    <FormContainer>
+    <FormContainer
+      style={{
+        backgroundColor: dark ? "#333" : "#ffffff",
+        color: dark ? "#ffffff" : "#000000",
+      }}
+    >
       <Header>
-        <h2>{translatedContent.title}</h2>
+        <h2 style={{ color: dark ? "#ffffff" : "#000000" }}>
+          {translatedContent.title}
+        </h2>
         <BootstrapButton
           className="btn btn-secondary"
           onClick={() => setIsModalOpen(true)}
@@ -276,28 +285,60 @@ function GestionDeRepuestos() {
 
       {isModalOpen && (
         <ModalOverlay>
-          <ModalContent>
+          <ModalContent
+            style={{
+              backgroundColor: dark ? "#444" : "#ffffff",
+              color: dark ? "#ffffff" : "#000000",
+            }}
+          >
             <h3>{translatedContent.addButton}</h3>
             <Form onSubmit={handleSubmit}>
               <InputField>
-                <label>{translatedContent.price}</label>
+                <label> {translatedContent.price}</label>
                 <input
                   type="number"
                   value={precio}
                   onChange={(e) => setPrecio(e.target.value)}
                   required
+                  style={{
+                    color: dark ? "#ffffff" : "#000000", // Cambia el color del texto
+                    backgroundColor: dark ? "#333" : "#ffffff", // Cambia el fondo del input
+                    border: dark ? "1px solid #ffffff" : "1px solid #000000", // Ajusta el borde
+                  }}
                 />
               </InputField>
 
               <InputField>
-                <label>{translatedContent.brand}</label>
+                <label style={{ color: dark ? "#ffffff" : "#000000" }}>
+                  {translatedContent.brand}
+                </label>
                 <select
-                  value={selectedMarca}
+                  value={selectedMarca.id_marca}
                   onChange={(e) => setSelectedMarca(e.target.value)}
+                  style={{
+                    color: dark ? "#ffffff" : "#000000", // Cambia el color del texto
+                    backgroundColor: dark ? "#333" : "#ffffff", // Cambia el fondo del select
+                    border: dark ? "1px solid #ffffff" : "1px solid #000000", // Ajusta el borde
+                  }}
                 >
-                  <option value="">{translatedContent.brand}</option>
+                  <option
+                    value=""
+                    style={{
+                      color: dark ? "#ffffff" : "#000000",
+                      backgroundColor: dark ? "#333" : "#ffffff",
+                    }}
+                  >
+                    {translatedContent.brand}
+                  </option>
                   {marcas.map((marca) => (
-                    <option key={marca.id_marca} value={marca.id_marca}>
+                    <option
+                      key={marca.id_marca}
+                      value={marca.id_marca}
+                      style={{
+                        color: dark ? "#ffffff" : "#000000",
+                        backgroundColor: dark ? "#333" : "#ffffff",
+                      }}
+                    >
                       {marca.nombre}
                     </option>
                   ))}
@@ -310,9 +351,13 @@ function GestionDeRepuestos() {
                   value={descripcion}
                   onChange={(e) => setDescripcion(e.target.value)}
                   required
+                  style={{
+                    color: dark ? "#ffffff" : "#000000", // Cambia el color del texto
+                    backgroundColor: dark ? "#333" : "#ffffff", // Cambia el fondo del select
+                    border: dark ? "1px solid #ffffff" : "1px solid #000000", // Ajusta el borde
+                  }}
                 />
               </InputField>
-
               <PhotoInputContainer {...getRootProps()}>
                 <input {...getInputProps()} />
                 {foto ? (
@@ -341,28 +386,61 @@ function GestionDeRepuestos() {
 
       {isModalOpen3 && (
         <ModalOverlay>
-          <ModalContent>
-            <h3>{translatedContent.editSparePart}</h3>
+          <ModalContent
+            style={{
+              backgroundColor: dark ? "#444" : "#ffffff",
+            }}
+          >
+            <h3 style={{ color: dark ? "#ffffff" : "#000000" }}>
+              {translatedContent.editSparePart}
+            </h3>
             <Form onSubmit={handleedit}>
               <InputField>
-                <label>{translatedContent.price}</label>
+                <label> {translatedContent.price}</label>
                 <input
                   type="number"
                   value={precio}
                   onChange={(e) => setPrecio(e.target.value)}
                   required
+                  style={{
+                    color: dark ? "#ffffff" : "#000000", // Cambia el color del texto
+                    backgroundColor: dark ? "#333" : "#ffffff", // Cambia el fondo del input
+                    border: dark ? "1px solid #ffffff" : "1px solid #000000", // Ajusta el borde
+                  }}
                 />
               </InputField>
 
               <InputField>
-                <label>{translatedContent.brand}</label>
+                <label style={{ color: dark ? "#ffffff" : "#000000" }}>
+                  {translatedContent.brand}
+                </label>
                 <select
                   value={selectedMarca.id_marca}
                   onChange={(e) => setSelectedMarca(e.target.value)}
+                  style={{
+                    color: dark ? "#ffffff" : "#000000", // Cambia el color del texto
+                    backgroundColor: dark ? "#333" : "#ffffff", // Cambia el fondo del select
+                    border: dark ? "1px solid #ffffff" : "1px solid #000000", // Ajusta el borde
+                  }}
                 >
-                  <option value="">{translatedContent.brand}</option>
+                  <option
+                    value=""
+                    style={{
+                      color: dark ? "#ffffff" : "#000000",
+                      backgroundColor: dark ? "#333" : "#ffffff",
+                    }}
+                  >
+                    {translatedContent.brand}
+                  </option>
                   {marcas.map((marca) => (
-                    <option key={marca.id_marca} value={marca.id_marca}>
+                    <option
+                      key={marca.id_marca}
+                      value={marca.id_marca}
+                      style={{
+                        color: dark ? "#ffffff" : "#000000",
+                        backgroundColor: dark ? "#333" : "#ffffff",
+                      }}
+                    >
                       {marca.nombre}
                     </option>
                   ))}
@@ -375,6 +453,11 @@ function GestionDeRepuestos() {
                   value={descripcion}
                   onChange={(e) => setDescripcion(e.target.value)}
                   required
+                  style={{
+                    color: dark ? "#ffffff" : "#000000", // Cambia el color del texto
+                    backgroundColor: dark ? "#333" : "#ffffff", // Cambia el fondo del select
+                    border: dark ? "1px solid #ffffff" : "1px solid #000000", // Ajusta el borde
+                  }}
                 />
               </InputField>
 
@@ -403,8 +486,15 @@ function GestionDeRepuestos() {
 
       {isModalOpen2 && (
         <ModalOverlay>
-          <ModalContent>
-            <h3>{translatedContent.viewSparePart}</h3>
+          <ModalContent
+            style={{
+              backgroundColor: dark ? "#444" : "#ffffff",
+              color: dark ? "#ffffff" : "#000000",
+            }}
+          >
+            <h3 style={{ color: dark ? "#ffffff" : "#000000" }}>
+              {translatedContent.viewSparePart}
+            </h3>
             <FormContainer style={{ height: "400px" }}>
               <PhotoviewContainer>
                 <img
@@ -414,14 +504,14 @@ function GestionDeRepuestos() {
                 />
               </PhotoviewContainer>
               <FormFields>
-                <p>
+                <p style={{ color: dark ? "#ffffff" : "#000000" }}>
                   <strong>{translatedContent.description}</strong>{" "}
                   {selected.descripcion}
                 </p>
-                <p>
+                <p style={{ color: dark ? "#ffffff" : "#000000" }}>
                   <strong>{translatedContent.price}</strong> {selected.precio}
                 </p>
-                <p>
+                <p style={{ color: dark ? "#ffffff" : "#000000" }}>
                   <strong>{translatedContent.brand}</strong>{" "}
                   {selectedMarca.nombre}
                 </p>
@@ -442,9 +532,15 @@ function GestionDeRepuestos() {
         <Table>
           <thead>
             <tr>
-              <th>{translatedContent.description}</th>
-              <th>{translatedContent.price}</th>
-              <th>{translatedContent.actions}</th>
+              <th style={{ color: dark ? "#ffffff" : "#000000" }}>
+                {translatedContent.description}
+              </th>
+              <th style={{ color: dark ? "#ffffff" : "#000000" }}>
+                {translatedContent.price}
+              </th>
+              <th style={{ color: dark ? "#ffffff" : "#000000" }}>
+                {translatedContent.actions}
+              </th>
             </tr>
           </thead>
         </Table>
@@ -453,9 +549,28 @@ function GestionDeRepuestos() {
             <tbody>
               {piezas.map((pieza, index) => (
                 <tr key={index}>
-                  <td>{pieza.descripcion}</td>
-                  <td>₡{parseFloat(pieza.precio).toFixed(2)}</td>
-                  <td>
+                  <td
+                    style={{
+                      color: dark ? "#ffffff" : "#000000",
+                      backgroundColor: dark ? lightGray : "#ffffff",
+                    }}
+                  >
+                    {pieza.descripcion}
+                  </td>
+                  <td
+                    style={{
+                      color: dark ? "#ffffff" : "#000000",
+                      backgroundColor: dark ? lightGray : "#ffffff",
+                    }}
+                  >
+                    ₡{parseFloat(pieza.precio).toFixed(2)}
+                  </td>
+                  <td
+                    style={{
+                      color: dark ? "#ffffff" : "#000000",
+                      backgroundColor: dark ? lightGray : "#ffffff",
+                    }}
+                  >
                     <ActionsCellCustom>
                       <EditButton2
                         onClick={() =>
@@ -515,8 +630,7 @@ const FormContainer = styled.div`
   align-items: center;
   overflow-y: auto;
   justify-content: center;
-  height: 90vh;
-  background-color: #f8f9fa;
+  height: 100vh;
 `;
 const FormFields = styled.div`
   flex: 2;
