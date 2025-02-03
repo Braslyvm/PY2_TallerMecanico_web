@@ -39,7 +39,6 @@ app.get("/api/vehiculos", (req, res) => {
     }
   );
 });
-
 app.post("/api/vehiculos", upload.single("foto"), (req, res) => {
   const { id_marca, modelo, anio, cedula, placa } = req.body;
   const foto = req.file ? req.file.path : null;
@@ -694,11 +693,10 @@ app.get("/api/reparaciones/estado/:estado", (req, res) => {
   );
 });
 
-
 // Ruta para obtener reparaciones en espera de un cliente específico
 app.get("/api/reparaciones/estado/:estado/cliente/:clienteId", (req, res) => {
   const { estado, clienteId } = req.params;
-  
+
   // Consulta SQL con JOIN para obtener el diagnóstico técnico
   const query = `
     SELECT r.*, d.diagnostico_tecnico
@@ -708,7 +706,7 @@ app.get("/api/reparaciones/estado/:estado/cliente/:clienteId", (req, res) => {
       SELECT id_vehiculo FROM vehiculos WHERE cedula = ?
     )
   `;
-  
+
   db.all(query, [estado, clienteId], (err, rows) => {
     if (err) {
       res.status(500).json({ error: err.message });

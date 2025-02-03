@@ -34,10 +34,11 @@ CREATE TABLE vehiculos (
     anio INTEGER NOT NULL,
     cedula INTEGER NOT NULL,
     placa TEXT,
-    foto BLOB,
+    foto TEXT,
     FOREIGN KEY (id_marca) REFERENCES marcas(id_marca),
     FOREIGN KEY (cedula) REFERENCES clientes(cedula)
 );
+select *from vehiculos
 
 INSERT INTO vehiculos (id_marca, modelo, anio, cedula, placa) 
 VALUES 
