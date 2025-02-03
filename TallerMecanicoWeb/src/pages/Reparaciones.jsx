@@ -3,13 +3,16 @@ import styled from "styled-components";
 import { FaTrashAlt, FaEye, FaPlus, FaWrench, FaTable } from "react-icons/fa";
 import { Modal, Button, Form } from "react-bootstrap";
 import Swal from "sweetalert2";
+import {useGlobalContext} from "../components/GlobalContext"
 import axios from "axios";
 
 function Reparaciones() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const {translate,dark}=useGlobalContext();
   const [isRepuestosModalOpen, setIsRepuestosModalOpen] = useState(false);
   const [verOpen, setVerOpen] = useState(false);
   const [vehiculos, setVehiculos] = useState([]);
+  const [vehiculosFiltrados, setVehiculosFiltrados] = useState([]);
   const [diagnosticos, setDiagnosticos] = useState([]);
   const [mecanicos, setMecanicos] = useState([]);
   const [vehiculo, setVehiculo] = useState(null);
@@ -26,10 +29,41 @@ function Reparaciones() {
   const [data, setData] = useState([]);
   const [dataComplete, setDataComplete] = useState([]);
   const [isViewAllModalOpen, setIsViewAllModalOpen] = useState(false); // Nuevo estado para el modal de visualización de todas las reparaciones
+  const translatedContent = {
+    title: translate ? 'Repair Requests' : 'Solicitudes de Reparación',
+    addButton: translate ? 'New Repair' : 'Nueva Reparación',
+    noRepairs: translate ? 'No repairs registered' : 'No hay reparaciones registradas',
+    alertSuccess: translate ? 'Repair registered successfully!' : '¡Reparación registrada correctamente!',
+    alertDelete: translate ? 'Repair deleted successfully!' : 'Reparación eliminada correctamente.',
+    alertCompleteFields: translate ? 'Please complete all fields.' : 'Por favor, completa todos los campos.',
+    alertErrorAdd: translate ? 'Error adding repair:' : 'Error al agregar reparación:',
+    alertErrorDelete: translate ? 'Error deleting repair:' : 'Error al eliminar reparación:',
+    detailsTitle: translate ? 'Repair Details' : 'Detalles de la Reparación',
+    vehiculo: translate ? 'Vehicle' : 'Vehículo',
+    mecanico: translate? 'Mechanic': 'Mecánico',
+    id: translate ? 'ID' : 'Cédula',
+    age: translate ? 'Age:' : 'Edad',
+    save: translate ? 'Save' : 'Guardar',
+    close: translate ? 'Close' : 'Cerrar',
+    accept: translate ? 'Accept' : 'Aceptar',
+    acciones: translate ? 'Actions' : 'Acciones',
+    foto: translate ? 'Drag or select a photo' : 'Arrastra o selecciona una foto',
+    volver: translate ? 'Back' : 'Volver',
+    requestButton: translate ? 'Make Request' : 'Realizar solicitud',
+    manageRepuestos: translate ? 'Manage Parts' : 'Gestionar Repuestos',
+    repuestosSeleccionados: translate ? 'Selected Parts' : 'Repuestos seleccionados',
+    descripcion: translate ? 'Description' : 'Descripción',
+    estado: translate ? 'Status' : 'Estado',
+    fechaReparacion: translate ? 'Date' : 'Fecha',
+    cantidad: translate ? 'Quantity' : 'Cantidad',
+    precioUnitario: translate ? 'Unit Price' : 'Precio unitario',
+  };
+
 
   // Obtener datos iniciales
   useEffect(() => {
     getReparaciones();
+    getVehiculosFiltrados();
     getVehiculos();
     getMecanicos();
     getRepuestos();
@@ -38,12 +72,11 @@ function Reparaciones() {
   }, []);
 
   const AlertaCamposVacios = () => {
-    //Alertas
     Swal.fire({
-      title: "Error",
-      text: "Debe completar todos los campos",
-      icon: "Error",
-      confirmButtonText: "Aceptar",
+      title: translate ? 'Error' : 'Error',
+      text: translatedContent.alertCompleteFields,
+      icon: 'error',
+      confirmButtonText: translatedContent.close,
     });
   };
 
@@ -64,11 +97,30 @@ function Reparaciones() {
       );
   };
 
-  const getVehiculos = () => {
+  const getVehiculosFiltrados = () => {
     axios
       .get("http://localhost:3001/api/diagnosticos-sin-reparacion")
       .then((response) => {
-        console.log("Respuesta de la API:", response.data); // Verifica la respuesta
+        if (Array.isArray(response.data)) {
+          setVehiculosFiltrados(response.data);
+        } else {
+          console.error(
+            "La respuesta de la API no es un array:",
+            response.data
+          );
+          setVehiculosFiltrados([]); // Establece un array vacío como valor predeterminado
+        }
+      })
+      .catch((error) => {
+        console.error("Error al obtener vehículos:", error);
+        setVehiculosFiltrados([]); // Establece un array vacío en caso de error
+      });
+  };
+
+  const getVehiculos=()=>{
+    axios
+      .get("http://localhost:3001/api/vehiculos/completa")
+      .then((response) => {
         if (Array.isArray(response.data)) {
           setVehiculos(response.data);
         } else {
@@ -83,7 +135,7 @@ function Reparaciones() {
         console.error("Error al obtener vehículos:", error);
         setVehiculos([]); // Establece un array vacío en caso de error
       });
-  };
+  }
 
   const diagnosticosVehiculos = async () => {
     const diagnosticosResponse = await axios.get(
@@ -138,21 +190,8 @@ function Reparaciones() {
   const getRepuestosFiltrados = (reparacion) => {
     //Primero buscamos el vehículo de la reparación
     for (let i = 0; i < vehiculos.length; i++) {
-      console.log(
-        "Vehiculo ID",
-        vehiculos[i].id_vehiculo,
-        "Reparacion ID",
-        reparacion.id_vehiculo
-      );
       if (vehiculos[i].id_vehiculo === reparacion.id_vehiculo) {
-        console.log("Vehiculo encontrado");
         for (let j = 0; j < repuestos.length; j++) {
-          console.log(
-            "Marca Vehiculo",
-            vehiculos[i].id_marca,
-            "Marca Repuesto",
-            repuestos[j].id_marca
-          );
           if (Number(vehiculos[i].id_marca) === Number(repuestos[j].id_marca)) {
             repuestosFiltrados.push(repuestos[j]);
           }
@@ -222,11 +261,11 @@ function Reparaciones() {
       axios
         .post("http://localhost:3001/api/reparaciones", nuevaReparacion)
         .then(() => {
-          Swal.fire(
-            "¡Éxito!",
-            "Reparación registrada correctamente.",
-            "success"
-          );
+          Swal.fire({
+            title: translatedContent.alertSuccess,
+            icon: 'success',
+            confirmButtonText: translatedContent.close,
+          });
           getReparaciones();
           handleCloseModal();
         })
@@ -321,36 +360,36 @@ function Reparaciones() {
   };
 
   return (
-    <Container>
+    <Container style={{ backgroundColor: dark ? '#333' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
       <Header>
-        <h2>Solicitudes de Reparación</h2>
-        <AddButton onClick={handleAddClick}>
-          <FaPlus /> Nueva Reparación
+        <h2 style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.title}</h2>
+        <AddButton style={{ color: dark ? '#ffffff' : '#000000' }} onClick={handleAddClick}>
+          <FaPlus /> {translatedContent.addButton}
         </AddButton>
       </Header>
       <TableContainer>
         <Table>
           <thead style={{ position: "sticky", top: 0, zIndex: 10 }}>
             <tr>
-              <th>ID</th>
-              <th>Placa</th>
-              <th>Mecánico</th>
-              <th>Fecha</th>
-              <th>Descripción</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-              <th>Solicitud</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>ID</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.vehiculo}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.mecanico}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.fechaReparacion}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.descripcion}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.estado}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.acciones}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.requestButton}</th>
             </tr>
           </thead>
           <TableBody>
             {data.map((reparacion, index) => (
               <tr key={reparacion.id_reparacion}>
-                <td>{reparacion.id_reparacion}</td>
-                <td>{buscarPlacaVehiculo(reparacion.id_vehiculo)}</td>
-                <td>{buscarNombreMecanico(reparacion.id_mecanico)}</td>
-                <td>{reparacion.fecha_reparacion}</td>
-                <td>{reparacion.descripcion}</td>
-                <td>{reparacion.estado}</td>
+                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{reparacion.id_reparacion}</td>
+                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{buscarPlacaVehiculo(reparacion.id_vehiculo)}</td>
+                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{buscarNombreMecanico(reparacion.id_mecanico)}</td>
+                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{reparacion.fecha_reparacion}</td>
+                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{reparacion.descripcion}</td>
+                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{reparacion.estado}</td>
                 <td>
                   <ActionsCell>
                     <DeleteButton
@@ -372,7 +411,7 @@ function Reparaciones() {
                   <RequestButton
                     onClick={() => handleRequest(reparacion.id_reparacion)}
                   >
-                    Realizar solicitud
+                    {translatedContent.requestButton}
                   </RequestButton>
                 </td>
               </tr>
@@ -399,7 +438,7 @@ function Reparaciones() {
                   }}
                 >
                   <option value="">Seleccione un vehículo</option>
-                  {vehiculos.map((v) => (
+                  {vehiculosFiltrados.map((v) => (
                     <option key={v.id_vehiculo} value={v.id_vehiculo}>
                       Placa del vehículo: {v.placa}, Fecha de diagnóstico:{" "}
                       {v.fecha_diagnostico}
@@ -516,33 +555,33 @@ function Reparaciones() {
           {selectedReparacion && (
             <div>
               <p>
-                <strong>ID de reparacion:</strong>{" "}
+                <strong>{translatedContent.id}: </strong>{" "}
                 {selectedReparacion.id_reparacion}
               </p>
               <p>
-                <strong>Placa de vehículo:</strong>{" "}
+                <strong>{translatedContent.vehiculo}: </strong>{" "}
                 {buscarPlacaVehiculo(selectedReparacion.id_vehiculo)}
               </p>
               <p>
-                <strong>Mecánico asignado:</strong>{" "}
+                <strong>{translatedContent.mecanico}: </strong>{" "}
                 {buscarNombreMecanico(selectedReparacion.id_mecanico)}
               </p>
               <p>
-                <strong>Descripción del cliente:</strong>{" "}
+                <strong>{translatedContent.descripcion}: </strong>{" "}
                 {selectedReparacion.descripcion}
               </p>
               <p>
-                <strong>Fecha:</strong> {selectedReparacion.fecha_reparacion}
+                <strong>{translatedContent.fechaReparacion}: </strong> {selectedReparacion.fecha_reparacion}
               </p>
               <p>
-                <strong>Estado:</strong> {selectedReparacion.estado}
+                <strong>{translatedContent.estado}: </strong> {selectedReparacion.estado}
               </p>
             </div>
           )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleViewModal}>
-            Cerrar
+            {translatedContent.close}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -576,7 +615,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   font-family: Arial, sans-serif;
-  height: 90vh;
+  height: 100vh;
   padding: 20px;
 `;
 

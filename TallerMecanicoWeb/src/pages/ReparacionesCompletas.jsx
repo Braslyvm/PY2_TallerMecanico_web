@@ -3,8 +3,10 @@ import styled from "styled-components";
 import { FaEye, FaWrench } from "react-icons/fa";
 import { Modal, Button } from "react-bootstrap";
 import axios from "axios";
+import { useGlobalContext } from "../components/GlobalContext";
 
 function ReparacionesCompletas() {
+  const { translate, dark } = useGlobalContext(); // Obtener el estado de traducción y modo oscuro
   const [dataComplete, setDataComplete] = useState([]);
   const [verOpen, setVerOpen] = useState(false);
   const [selectedReparacion, setSelectedReparacion] = useState(null);
@@ -13,6 +15,26 @@ function ReparacionesCompletas() {
   const [repuestos, setRepuestos] = useState([]);
   const [selectedRepuestos, setSelectedRepuestos] = useState([]);
   const [isRepuestosModalOpen, setIsRepuestosModalOpen] = useState(false);
+
+  // Traducciones
+  const translatedContent = {
+    title: translate ? 'Completed Repairs' : 'Reparaciones Completas',
+    id: translate ? 'ID' : 'ID',
+    vehiculo: translate ? 'Vehicle' : 'Vehículo',
+    mecanico: translate ? 'Mechanic' : 'Mecánico',
+    fecha: translate ? 'Date' : 'Fecha',
+    estado: translate ? 'Status' : 'Estado',
+    descripcion: translate ? 'Description' : 'Descripción',
+    acciones: translate ? 'Actions' : 'Acciones',
+    detallesReparacion: translate ? 'Repair Details' : 'Detalles de la Reparación',
+    repuestosReparacion: translate ? 'Repair Parts' : 'Repuestos de la Reparación',
+    cerrar: translate ? 'Close' : 'Cerrar',
+    ver: translate ? 'View' : 'Ver',
+    gestionar: translate ? 'Manage' : 'Gestionar',
+    descripcionRepuesto: translate ? 'Part Description' : 'Descripción del Repuesto',
+    precioUnitario: translate ? 'Unit Price' : 'Precio Unitario',
+    cantidad: translate ? 'Quantity' : 'Cantidad',
+  };
 
   useEffect(() => {
     getReparacionesCompletas();
@@ -125,32 +147,32 @@ function ReparacionesCompletas() {
   };
 
   return (
-    <Container>
+    <Container style={{ backgroundColor: dark ? '#333' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
       <Header>
-        <h2>Reparaciones Completas</h2>
+        <h2 style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.title}</h2>
       </Header>
-      <TableContainer>
+      <TableContainer style={{ backgroundColor: dark ? '#333' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
         <Table>
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Vehículo</th>
-              <th>Mecánico</th>
-              <th>Fecha</th>
-              <th>Estado</th>
-              <th>Descripción</th>
-              <th>Acciones</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.id}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.vehiculo}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.mecanico}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.fecha}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.estado}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.descripcion}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.acciones}</th>
             </tr>
           </thead>
           <tbody style={{ overflowY: "auto" }}>
             {dataComplete.map((reparacion) => (
               <tr key={reparacion.id_reparacion}>
-                <td>{reparacion.id_reparacion}</td>
-                <td>{buscarPlacaVehiculo(reparacion.id_vehiculo)}</td>
-                <td>{buscarNombreMecanico(reparacion.id_mecanico)}</td>
-                <td>{reparacion.fecha_reparacion}</td>
-                <td>{reparacion.estado}</td>
-                <td>{reparacion.descripcion}</td>
+                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{reparacion.id_reparacion}</td>
+                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{buscarPlacaVehiculo(reparacion.id_vehiculo)}</td>
+                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{buscarNombreMecanico(reparacion.id_mecanico)}</td>
+                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{reparacion.fecha_reparacion}</td>
+                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{reparacion.estado}</td>
+                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{reparacion.descripcion}</td>
                 <td>
                   <ActionsCell>
                     <ViewButton onClick={() => handleViewClick(reparacion)}>
@@ -170,39 +192,39 @@ function ReparacionesCompletas() {
       </TableContainer>
 
       <Modal show={verOpen} onHide={handleCloseViewModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Detalles de la Reparación</Modal.Title>
+        <Modal.Header closeButton style={{ backgroundColor: dark ? '#444' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
+          <Modal.Title>{translatedContent.detallesReparacion}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body style={{ backgroundColor: dark ? '#444' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
           {selectedReparacion && (
             <div>
               <p>
-                <strong>ID de reparación:</strong>{" "}
+                <strong>{translatedContent.id}:</strong>{" "}
                 {selectedReparacion.id_reparacion}
               </p>
               <p>
-                <strong>Placa de vehículo:</strong>{" "}
+                <strong>{translatedContent.vehiculo}:</strong>{" "}
                 {buscarPlacaVehiculo(selectedReparacion.id_vehiculo)}
               </p>
               <p>
-                <strong>Mecánico asignado:</strong>{" "}
+                <strong>{translatedContent.mecanico}:</strong>{" "}
                 {buscarNombreMecanico(selectedReparacion.id_mecanico)}
               </p>
               <p>
-                <strong>Descripción:</strong> {selectedReparacion.descripcion}
+                <strong>{translatedContent.descripcion}:</strong> {selectedReparacion.descripcion}
               </p>
               <p>
-                <strong>Fecha:</strong> {selectedReparacion.fecha_reparacion}
+                <strong>{translatedContent.fecha}:</strong> {selectedReparacion.fecha_reparacion}
               </p>
               <p>
-                <strong>Estado:</strong> {selectedReparacion.estado}
+                <strong>{translatedContent.estado}:</strong> {selectedReparacion.estado}
               </p>
             </div>
           )}
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer style={{ backgroundColor: dark ? '#444' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
           <Button variant="secondary" onClick={handleCloseViewModal}>
-            Cerrar
+            {translatedContent.cerrar}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -212,34 +234,34 @@ function ReparacionesCompletas() {
         onHide={handleCloseRepuestosModal}
         size="lg"
       >
-        <Modal.Header closeButton>
-          <Modal.Title>Repuestos de la Reparación</Modal.Title>
+        <Modal.Header closeButton style={{ backgroundColor: dark ? '#444' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
+          <Modal.Title>{translatedContent.repuestosReparacion}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body style={{ backgroundColor: dark ? '#444' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
           <Table>
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Descripción</th>
-                <th>Precio unitario</th>
-                <th>Cantidad</th>
+                <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.id}</th>
+                <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.descripcionRepuesto}</th>
+                <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.precioUnitario}</th>
+                <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.cantidad}</th>
               </tr>
             </thead>
             <tbody>
               {selectedRepuestos.map((repuesto, index) => (
                 <tr key={index}>
-                  <td>{repuesto.id_repuesto}</td>
-                  <td>{repuesto.descripcion}</td>
-                  <td>{repuesto.precio}</td>
-                  <td>{repuesto.cantidad}</td>
+                  <td style={{ color: dark ? '#ffffff' : '#000000' }}>{repuesto.id_repuesto}</td>
+                  <td style={{ color: dark ? '#ffffff' : '#000000' }}>{repuesto.descripcion}</td>
+                  <td style={{ color: dark ? '#ffffff' : '#000000' }}>{repuesto.precio}</td>
+                  <td style={{ color: dark ? '#ffffff' : '#000000' }}>{repuesto.cantidad}</td>
                 </tr>
               ))}
             </tbody>
           </Table>
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer style={{ backgroundColor: dark ? '#444' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
           <Button variant="secondary" onClick={handleCloseRepuestosModal}>
-            Cerrar
+            {translatedContent.cerrar}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -257,7 +279,7 @@ const Container = styled.div`
   display: flex;
   justify-content: center; /* Centra el contenido horizontalmente */
   align-items: center; /* Centra el contenido verticalmente */
-  
+  height: 100vh;
 `;
 
 const Header = styled.div`

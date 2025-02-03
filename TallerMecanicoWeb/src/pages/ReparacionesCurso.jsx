@@ -4,13 +4,33 @@ import { FaEye, FaCheck } from "react-icons/fa";
 import { Modal, Button } from "react-bootstrap";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { useGlobalContext } from "../components/GlobalContext";
 
 function ReparacionesCurso() {
+  const { translate, dark } = useGlobalContext(); // Obtener el estado de traducción y modo oscuro
   const [data, setData] = useState([]);
   const [verOpen, setVerOpen] = useState(false);
   const [selectedReparacion, setSelectedReparacion] = useState(null);
   const [vehiculos, setVehiculos] = useState([]);
   const [mecanicos, setMecanicos] = useState([]);
+
+  // Traducciones
+  const translatedContent = {
+    title: translate ? 'Ongoing Repairs' : 'Reparaciones en curso',
+    id: translate ? 'ID' : 'ID',
+    vehiculo: translate ? 'Vehicle' : 'Vehículo',
+    mecanico: translate ? 'Mechanic' : 'Mecánico',
+    fecha: translate ? 'Date' : 'Fecha',
+    descripcion: translate ? 'Description' : 'Descripción',
+    estado: translate ? 'Status' : 'Estado',
+    acciones: translate ? 'Actions' : 'Acciones',
+    factura: translate ? 'Invoice' : 'Factura',
+    detallesReparacion: translate ? 'Repair Details' : 'Detalles de la Reparación',
+    cerrar: translate ? 'Close' : 'Cerrar',
+    finalizar: translate ? 'Finalize' : 'Finalizar',
+    exitoFinalizar: translate ? 'Repair finalized successfully!' : '¡Reparación finalizada correctamente!',
+    errorFinalizar: translate ? 'Error finalizing repair:' : 'Error al finalizar la reparación:',
+  };
 
   useEffect(() => {
     getReparacionesCurso();
@@ -70,42 +90,52 @@ function ReparacionesCurso() {
       .then((response) => {
         console.log(response.data);
         getReparacionesCurso(); // Actualizar la lista de reparaciones en curso
-        Swal.fire("¡Éxito!", "Reparación finalizada correctamente.", "success");
+        Swal.fire({
+          title: translatedContent.exitoFinalizar,
+          icon: 'success',
+          confirmButtonText: translatedContent.cerrar,
+        });
       })
-      .catch((error) =>
-        console.error("Error al finalizar la reparación:", error)
-      );
+      .catch((error) => {
+        console.error(translatedContent.errorFinalizar, error);
+        Swal.fire({
+          title: 'Error',
+          text: translatedContent.errorFinalizar + error,
+          icon: 'error',
+          confirmButtonText: translatedContent.cerrar,
+        });
+      });
   };
 
   return (
-    <Container>
+    <Container style={{ backgroundColor: dark ? '#333' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
       <Header>
-        <h2>Reparaciones en curso</h2>
+        <h2 style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.title}</h2>
       </Header>
       <TableContainer>
         <Table>
           <thead style={{ position: "sticky", top: 0, zIndex: 10 }}>
             <tr>
-              <th>ID</th>
-              <th>Vehículo</th>
-              <th>Mecánico</th>
-              <th>Fecha</th>
-              <th>Descripción</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-              <th>Factura</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.id}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.vehiculo}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.mecanico}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.fecha}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.descripcion}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.estado}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.acciones}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.factura}</th>
             </tr>
           </thead>
 
           <tbody>
             {data.map((reparacion) => (
               <tr key={reparacion.id_reparacion}>
-                <td>{reparacion.id_reparacion}</td>
-                <td>{buscarPlacaVehiculo(reparacion.id_vehiculo)}</td>
-                <td>{buscarNombreMecanico(reparacion.id_mecanico)}</td>
-                <td>{reparacion.fecha_reparacion}</td>
-                <td>{reparacion.descripcion}</td>
-                <td>{reparacion.estado}</td>
+                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{reparacion.id_reparacion}</td>
+                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{buscarPlacaVehiculo(reparacion.id_vehiculo)}</td>
+                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{buscarNombreMecanico(reparacion.id_mecanico)}</td>
+                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{reparacion.fecha_reparacion}</td>
+                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{reparacion.descripcion}</td>
+                <td style={{ color: dark ? '#ffffff' : '#000000' }}>{reparacion.estado}</td>
                 <td>
                   <ActionsCell>
                     <ViewButton onClick={() => handleViewClick(reparacion)}>
@@ -120,7 +150,7 @@ function ReparacionesCurso() {
                         handleFinalizarClick(reparacion.id_reparacion)
                       }
                     >
-                      <FaCheck /> Facturar
+                      <FaCheck /> {translatedContent.finalizar}
                     </FinalizarButton>
                   </ActionsCell>
                 </td>
@@ -131,39 +161,39 @@ function ReparacionesCurso() {
       </TableContainer>
 
       <Modal show={verOpen} onHide={handleCloseViewModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Detalles de la Reparación</Modal.Title>
+        <Modal.Header closeButton style={{ backgroundColor: dark ? '#444' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
+          <Modal.Title>{translatedContent.detallesReparacion}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body style={{ backgroundColor: dark ? '#444' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
           {selectedReparacion && (
             <div>
               <p>
-                <strong>ID de reparación:</strong>{" "}
+                <strong>{translatedContent.id}:</strong>{" "}
                 {selectedReparacion.id_reparacion}
               </p>
               <p>
-                <strong>Placa de vehículo:</strong>{" "}
+                <strong>{translatedContent.vehiculo}:</strong>{" "}
                 {buscarPlacaVehiculo(selectedReparacion.id_vehiculo)}
               </p>
               <p>
-                <strong>Mecánico asignado:</strong>{" "}
+                <strong>{translatedContent.mecanico}:</strong>{" "}
                 {buscarNombreMecanico(selectedReparacion.id_mecanico)}
               </p>
               <p>
-                <strong>Descripción:</strong> {selectedReparacion.descripcion}
+                <strong>{translatedContent.descripcion}:</strong> {selectedReparacion.descripcion}
               </p>
               <p>
-                <strong>Fecha:</strong> {selectedReparacion.fecha_reparacion}
+                <strong>{translatedContent.fecha}:</strong> {selectedReparacion.fecha_reparacion}
               </p>
               <p>
-                <strong>Estado:</strong> {selectedReparacion.estado}
+                <strong>{translatedContent.estado}:</strong> {selectedReparacion.estado}
               </p>
             </div>
           )}
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer style={{ backgroundColor: dark ? '#444' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
           <Button variant="secondary" onClick={handleCloseViewModal}>
-            Cerrar
+            {translatedContent.cerrar}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -175,7 +205,7 @@ const Container = styled.div`
   background-color: rgb(254, 255, 255); /* Fondo principal */
   color: #27374d; /* Texto principal */
   padding: 20px;
-  height: 95vh;
+  height: 100vh;
 `;
 
 const Header = styled.div`

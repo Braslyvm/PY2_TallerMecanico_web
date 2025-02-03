@@ -4,9 +4,11 @@ import { FaEye, FaPlus } from "react-icons/fa";
 import styled from "styled-components";
 import { useDropzone } from "react-dropzone";
 import { Modal, Button, Form } from "react-bootstrap";
+import {useGlobalContext} from "../components/GlobalContext"
 import Swal from "sweetalert2";
 
 const Diagnostico = () => {
+  const { translate, dark } = useGlobalContext(); // Obtener el estado de traducción y modo oscuro
   const [diagnosticos, setDiagnosticos] = useState([]);
   const [vehiculos, setVehiculos] = useState([]);
   const [verOpen, setVerOpen] = useState(false);
@@ -16,12 +18,40 @@ const Diagnostico = () => {
   const [descripcion, setDescripcion] = useState("");
   const [descripcionCliente, setDescripcionCliente] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const translatedContent = {
+    title: translate ? 'Vehicle Diagnostics Management' : 'Gestión de diagnósticos de vehículos',
+    addButton: translate ? 'Register Diagnosis' : 'Registrar diagnóstico',
+    noDiagnostics: translate ? 'No diagnostics available' : 'No hay diagnósticos disponibles',
+    alertSuccess: translate ? 'Diagnosis registered successfully!' : '¡Diagnóstico registrado correctamente!',
+    alertError: translate ? 'Error registering diagnosis:' : 'Error al registrar el diagnóstico:',
+    alertCompleteFields: translate ? 'Please complete all fields.' : 'Por favor, completa todos los campos.',
+    detailsTitle: translate ? 'Diagnosis Details' : 'Detalles del Diagnóstico',
+    idDiagnostico: translate ? 'Diagnosis ID' : 'ID de diagnóstico',
+    placaVehiculo: translate ? 'Vehicle Plate' : 'Placa de vehículo',
+    fechaDiagnostico: translate ? 'Diagnosis Date' : 'Fecha de diagnóstico',
+    diagnosticoTecnico: translate ? 'Technical Diagnosis' : 'Diagnóstico técnico',
+    descripcionCliente: translate ? 'Client Description' : 'Descripción del cliente',
+    acciones: translate ? 'Actions' : 'Acciones',
+    foto: translate ? 'Drag or select a photo' : 'Arrastra o selecciona una foto',
+    save: translate ? 'Save' : 'Guardar',
+    close: translate ? 'Close' : 'Cerrar',
+    cancel: translate ? 'Cancel' : 'Cancelar',
+  };  
 
   // Obtener diagnósticos y vehículos al cargar el componente
   useEffect(() => {
     cargarDiagnosticos();
     getVehiculos();
   }, []);
+
+  const AlertaCamposVacios = () => {
+    Swal.fire({
+      title: translate ? 'Error' : 'Error',
+      text: translatedContent.alertCompleteFields,
+      icon: 'error',
+      confirmButtonText: translatedContent.close,
+    });
+  };
 
   const cargarDiagnosticos = async () => {
     try {
@@ -64,7 +94,10 @@ const Diagnostico = () => {
 
   const agregarDiagnostico = async () => {
     const fechaActual = new Date().toISOString().split('T')[0];
-    
+    if(!vehiculo||!fechaActual||!descripcion||!descripcionCliente){
+      AlertaCamposVacios();
+      return;
+    }
     const nuevoDiagnostico = new FormData();
     nuevoDiagnostico.append('id_vehiculo', vehiculo);
     nuevoDiagnostico.append('fecha_diagnostico', fechaActual);
@@ -80,6 +113,12 @@ const Diagnostico = () => {
           'Content-Type': 'multipart/form-data'
         }
       });
+      Swal.fire({
+        title: translatedContent.alertSuccess,
+        icon: 'success',
+        confirmButtonText: translatedContent.close,
+      });
+      handleCloseModal();
       cargarDiagnosticos();
       setVehiculo("");
       setFoto(null);
@@ -124,34 +163,34 @@ const Diagnostico = () => {
   };
 
   return (
-    <Container>
+    <Container style={{ backgroundColor: dark ? '#333' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
       <Header>
-        <h2>Gestión de diagnósticos de vehículos</h2>
-        <AddButton onClick={handleAddClick}>
-          <FaPlus /> Registrar diagnóstico
+        <h2 style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.title}</h2>
+        <AddButton style={{ color: dark ? '#ffffff' : '#000000' }} onClick={handleAddClick}>
+          <FaPlus /> {translatedContent.addButton}
         </AddButton>
       </Header>
       <TableContainer>
         <Table>
           <thead>
             <tr>
-              <th>ID de diagnóstico</th>
-              <th>Placa de vehículo</th>
-              <th>Fecha de diagnóstico</th>
-              <th>Diagnostico técnico</th>
-              <th>Descripción del cliente</th>
-              <th>Acciones</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.idDiagnostico}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.placaVehiculo}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.fechaDiagnostico}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.diagnosticoTecnico}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.descripcionCliente}</th>
+              <th style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.acciones}</th>
             </tr>
           </thead>
           <TableBody>
             {Array.isArray(diagnosticos) && diagnosticos.length > 0 ? (
               diagnosticos.map((diagnostico) => (
                 <tr key={diagnostico.id_diagnostico}>
-                  <td>{diagnostico.id_diagnostico}</td>
-                  <td>{buscarPlacaVehiculo(diagnostico.id_vehiculo)}</td>
-                  <td>{diagnostico.fecha_diagnostico}</td>
-                  <td>{diagnostico.diagnostico_tecnico}</td>
-                  <td>{diagnostico.descripcion_cliente}</td>
+                  <td style={{ color: dark ? '#ffffff' : '#000000' }}>{diagnostico.id_diagnostico}</td>
+                  <td style={{ color: dark ? '#ffffff' : '#000000' }}>{buscarPlacaVehiculo(diagnostico.id_vehiculo)}</td>
+                  <td style={{ color: dark ? '#ffffff' : '#000000' }}>{diagnostico.fecha_diagnostico}</td>
+                  <td style={{ color: dark ? '#ffffff' : '#000000' }}>{diagnostico.diagnostico_tecnico}</td>
+                  <td style={{ color: dark ? '#ffffff' : '#000000' }}>{diagnostico.descripcion_cliente}</td>
                   <td style={{ width: '15%' }}>
                     <ActionsCell>
                       <ViewButton onClick={() => handleViewClick(diagnostico.id_diagnostico, buscarPlacaVehiculo(diagnostico.id_vehiculo), diagnostico.fecha_diagnostico, diagnostico.diagnostico_tecnico, diagnostico.descripcion_cliente, diagnostico.foto)}>
@@ -163,7 +202,7 @@ const Diagnostico = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="5">No hay diagnósticos disponibles.</td>
+                <td colSpan="5" style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.noDiagnostics}</td>
               </tr>
             )}
           </TableBody>
@@ -172,77 +211,90 @@ const Diagnostico = () => {
 
       {/* Modal para agregar diagnóstico */}
       <Modal show={isModalOpen} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Registrar diagnóstico</Modal.Title>
+        <Modal.Header closeButton style={{ backgroundColor: dark ? '#444' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
+          <Modal.Title>{translatedContent.addButton}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body style={{ backgroundColor: dark ? '#444' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
           <Form>
             <Form.Group controlId="formVehiculo">
-              <Form.Label>Vehículo</Form.Label>
+              <Form.Label style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.placaVehiculo}</Form.Label>
               <Form.Control
                 as="select"
                 value={vehiculo}
                 onChange={(e) => setVehiculo(e.target.value)}
+                style={{ backgroundColor: dark ? '#333' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}
               >
-                <option value="">Seleccione un vehículo</option>
+                <option value="">{translatedContent.selectVehicle}</option>
                 {vehiculos.map((v) => (
                   <option key={v.id_vehiculo} value={v.id_vehiculo}>
-                    Placa del vehículo: {v.placa}
+                    {v.placa}
                   </option>
                 ))}
               </Form.Control>
             </Form.Group>
             <Form.Group controlId="formDescripcion">
-              <Form.Label>Descripción Técnica</Form.Label>
-              <Form.Control as="textarea" rows={3} value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
+              <Form.Label style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.diagnosticoTecnico}</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={descripcion}
+                onChange={(e) => setDescripcion(e.target.value)}
+                style={{ backgroundColor: dark ? '#333' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}
+              />
             </Form.Group>
             <Form.Group controlId="formDescripcionCliente">
-              <Form.Label>Descripción del Cliente</Form.Label>
-              <Form.Control as="textarea" rows={3} value={descripcionCliente} onChange={(e) => setDescripcionCliente(e.target.value)} />
+              <Form.Label style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.descripcionCliente}</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={descripcionCliente}
+                onChange={(e) => setDescripcionCliente(e.target.value)}
+                style={{ backgroundColor: dark ? '#333' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}
+              />
             </Form.Group>
             <Form.Group controlId="formFoto">
-              <Form.Label>Foto</Form.Label>
-              <PhotoInputContainer {...getRootProps()}>
+              <Form.Label style={{ color: dark ? '#ffffff' : '#000000' }}>{translatedContent.foto}</Form.Label>
+              <PhotoInputContainer {...getRootProps()} style={{ borderColor: dark ? '#555' : '#526D82' }}>
                 <input {...getInputProps()} />
                 {foto ? (
                   <PreviewImage src={URL.createObjectURL(foto)} alt="Vista previa" />
                 ) : (
-                  <div className="upload-box">Arrastra o selecciona una foto</div>
+                  <div className="upload-box" style={{ color: dark ? '#ffffff' : '#526D82' }}>{translatedContent.foto}</div>
                 )}
               </PhotoInputContainer>
             </Form.Group>
           </Form>
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer style={{ backgroundColor: dark ? '#444' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
           <Button variant="secondary" onClick={handleCloseModal}>
-            Cancelar
+            {translatedContent.cancel}
           </Button>
           <Button variant="primary" onClick={agregarDiagnostico}>
-            Guardar
+            {translatedContent.save}
           </Button>
         </Modal.Footer>
       </Modal>
 
       {/* Modal para ver detalles del diagnóstico */}
       <Modal show={verOpen} onHide={handleViewModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Detalles del Diagnóstico</Modal.Title>
+        <Modal.Header closeButton style={{ backgroundColor: dark ? '#444' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
+          <Modal.Title>{translatedContent.detailsTitle}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body style={{ backgroundColor: dark ? '#444' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
           {selectedDiagnostico && (
             <div>
               <img src={selectedDiagnostico.foto} alt="Foto del diagnóstico" style={{ maxWidth: '100px', borderRadius: '8px' }} />
-              <p><strong>ID diagnóstico:</strong> {selectedDiagnostico.id_diagnostico}</p>
-              <p><strong>Placa de vehículo:</strong> {buscarPlacaVehiculo(selectedDiagnostico.id_vehiculo)}</p>
-              <p><strong>Diagnóstico técnico:</strong> {selectedDiagnostico.diagnostico_tecnico}</p>
-              <p><strong>Descripción del cliente:</strong> {selectedDiagnostico.descripcion_cliente}</p>
-              <p><strong>Fecha:</strong> {selectedDiagnostico.fecha_diagnostico}</p>
+              <p><strong>{translatedContent.idDiagnostico}:</strong> {selectedDiagnostico.id_diagnostico}</p>
+              <p><strong>{translatedContent.placaVehiculo}:</strong> {buscarPlacaVehiculo(selectedDiagnostico.id_vehiculo)}</p>
+              <p><strong>{translatedContent.diagnosticoTecnico}:</strong> {selectedDiagnostico.diagnostico_tecnico}</p>
+              <p><strong>{translatedContent.descripcionCliente}:</strong> {selectedDiagnostico.descripcion_cliente}</p>
+              <p><strong>{translatedContent.fechaDiagnostico}:</strong> {selectedDiagnostico.fecha_diagnostico}</p>
             </div>
           )}
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer style={{ backgroundColor: dark ? '#444' : '#ffffff', color: dark ? '#ffffff' : '#000000' }}>
           <Button variant="secondary" onClick={handleViewModal}>
-            Cerrar
+            {translatedContent.close}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -328,7 +380,7 @@ const Container = styled.div`
   color: #27374d; /* Texto principal */
   padding: 20px;
   font-family: Arial, sans-serif;
-  height: 91vh;
+  height: 100vh;
 `;
 
 const Header = styled.div`
