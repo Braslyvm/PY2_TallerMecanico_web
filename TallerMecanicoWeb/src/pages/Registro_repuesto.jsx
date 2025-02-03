@@ -294,24 +294,51 @@ function GestionDeRepuestos() {
             <h3>{translatedContent.addButton}</h3>
             <Form onSubmit={handleSubmit}>
               <InputField>
-                <label>{translatedContent.price}</label>
+                <label> {translatedContent.price}</label>
                 <input
                   type="number"
                   value={precio}
                   onChange={(e) => setPrecio(e.target.value)}
                   required
+                  style={{
+                    color: dark ? "#ffffff" : "#000000", // Cambia el color del texto
+                    backgroundColor: dark ? "#333" : "#ffffff", // Cambia el fondo del input
+                    border: dark ? "1px solid #ffffff" : "1px solid #000000", // Ajusta el borde
+                  }}
                 />
               </InputField>
 
               <InputField>
-                <label>{translatedContent.brand}</label>
+                <label style={{ color: dark ? "#ffffff" : "#000000" }}>
+                  {translatedContent.brand}
+                </label>
                 <select
-                  value={selectedMarca}
+                  value={selectedMarca.id_marca}
                   onChange={(e) => setSelectedMarca(e.target.value)}
+                  style={{
+                    color: dark ? "#ffffff" : "#000000", // Cambia el color del texto
+                    backgroundColor: dark ? "#333" : "#ffffff", // Cambia el fondo del select
+                    border: dark ? "1px solid #ffffff" : "1px solid #000000", // Ajusta el borde
+                  }}
                 >
-                  <option value="">{translatedContent.brand}</option>
+                  <option
+                    value=""
+                    style={{
+                      color: dark ? "#ffffff" : "#000000",
+                      backgroundColor: dark ? "#333" : "#ffffff",
+                    }}
+                  >
+                    {translatedContent.brand}
+                  </option>
                   {marcas.map((marca) => (
-                    <option key={marca.id_marca} value={marca.id_marca}>
+                    <option
+                      key={marca.id_marca}
+                      value={marca.id_marca}
+                      style={{
+                        color: dark ? "#ffffff" : "#000000",
+                        backgroundColor: dark ? "#333" : "#ffffff",
+                      }}
+                    >
                       {marca.nombre}
                     </option>
                   ))}
@@ -324,9 +351,13 @@ function GestionDeRepuestos() {
                   value={descripcion}
                   onChange={(e) => setDescripcion(e.target.value)}
                   required
+                  style={{
+                    color: dark ? "#ffffff" : "#000000", // Cambia el color del texto
+                    backgroundColor: dark ? "#333" : "#ffffff", // Cambia el fondo del select
+                    border: dark ? "1px solid #ffffff" : "1px solid #000000", // Ajusta el borde
+                  }}
                 />
               </InputField>
-
               <PhotoInputContainer {...getRootProps()}>
                 <input {...getInputProps()} />
                 {foto ? (
@@ -358,7 +389,6 @@ function GestionDeRepuestos() {
           <ModalContent
             style={{
               backgroundColor: dark ? "#444" : "#ffffff",
-              color: dark ? "#ffffff" : "#000000",
             }}
           >
             <h3 style={{ color: dark ? "#ffffff" : "#000000" }}>
@@ -366,24 +396,51 @@ function GestionDeRepuestos() {
             </h3>
             <Form onSubmit={handleedit}>
               <InputField>
-                <label>{translatedContent.price}</label>
+                <label> {translatedContent.price}</label>
                 <input
                   type="number"
                   value={precio}
                   onChange={(e) => setPrecio(e.target.value)}
                   required
+                  style={{
+                    color: dark ? "#ffffff" : "#000000", // Cambia el color del texto
+                    backgroundColor: dark ? "#333" : "#ffffff", // Cambia el fondo del input
+                    border: dark ? "1px solid #ffffff" : "1px solid #000000", // Ajusta el borde
+                  }}
                 />
               </InputField>
 
               <InputField>
-                <label>{translatedContent.brand}</label>
+                <label style={{ color: dark ? "#ffffff" : "#000000" }}>
+                  {translatedContent.brand}
+                </label>
                 <select
                   value={selectedMarca.id_marca}
                   onChange={(e) => setSelectedMarca(e.target.value)}
+                  style={{
+                    color: dark ? "#ffffff" : "#000000", // Cambia el color del texto
+                    backgroundColor: dark ? "#333" : "#ffffff", // Cambia el fondo del select
+                    border: dark ? "1px solid #ffffff" : "1px solid #000000", // Ajusta el borde
+                  }}
                 >
-                  <option value="">{translatedContent.brand}</option>
+                  <option
+                    value=""
+                    style={{
+                      color: dark ? "#ffffff" : "#000000",
+                      backgroundColor: dark ? "#333" : "#ffffff",
+                    }}
+                  >
+                    {translatedContent.brand}
+                  </option>
                   {marcas.map((marca) => (
-                    <option key={marca.id_marca} value={marca.id_marca}>
+                    <option
+                      key={marca.id_marca}
+                      value={marca.id_marca}
+                      style={{
+                        color: dark ? "#ffffff" : "#000000",
+                        backgroundColor: dark ? "#333" : "#ffffff",
+                      }}
+                    >
                       {marca.nombre}
                     </option>
                   ))}
@@ -396,6 +453,11 @@ function GestionDeRepuestos() {
                   value={descripcion}
                   onChange={(e) => setDescripcion(e.target.value)}
                   required
+                  style={{
+                    color: dark ? "#ffffff" : "#000000", // Cambia el color del texto
+                    backgroundColor: dark ? "#333" : "#ffffff", // Cambia el fondo del select
+                    border: dark ? "1px solid #ffffff" : "1px solid #000000", // Ajusta el borde
+                  }}
                 />
               </InputField>
 
@@ -442,14 +504,14 @@ function GestionDeRepuestos() {
                 />
               </PhotoviewContainer>
               <FormFields>
-                <p>
+                <p style={{ color: dark ? "#ffffff" : "#000000" }}>
                   <strong>{translatedContent.description}</strong>{" "}
                   {selected.descripcion}
                 </p>
-                <p>
+                <p style={{ color: dark ? "#ffffff" : "#000000" }}>
                   <strong>{translatedContent.price}</strong> {selected.precio}
                 </p>
-                <p>
+                <p style={{ color: dark ? "#ffffff" : "#000000" }}>
                   <strong>{translatedContent.brand}</strong>{" "}
                   {selectedMarca.nombre}
                 </p>
