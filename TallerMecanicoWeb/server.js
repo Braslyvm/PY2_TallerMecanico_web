@@ -39,10 +39,8 @@ app.get("/api/vehiculos", (req, res) => {
     }
   );
 });
-
 app.post("/api/vehiculos", upload.single("foto"), (req, res) => {
-  const { id_marca, modelo, anio, cedula, placa } = req.body;
-  const foto = req.file ? req.file.path : null;
+  const { id_marca, modelo, anio, cedula, placa, foto } = req.body;
 
   if (!id_marca || !modelo || !anio || !cedula || !placa || !foto) {
     return res.status(400).json({ error: "Todos los campos son obligatorios" });
@@ -115,13 +113,14 @@ app.get("/api/vehiculos/completa", (req, res) => {
 app.get("/api/vehiculos/completa/Cliente/:cedula", (req, res) => {
   const { cedula } = req.params;
   db.all(
-    "SELECT v.id_vehiculo, m.nombre AS marca, v.modelo, v.anio, c.nombre || ' ' || c.apellido1 || ' ' || c.apellido2 AS nombre_completo, v.placa FROM vehiculos v JOIN clientes c ON v.cedula = c.cedula JOIN marcas m ON v.id_marca = m.id_marca WHERE v.cedula = ?",
+    "SELECT v.foto, v.id_vehiculo, m.nombre AS marca, v.modelo, v.anio, c.nombre || ' ' || c.apellido1 || ' ' || c.apellido2 AS nombre_completo, v.placa FROM vehiculos v JOIN clientes c ON v.cedula = c.cedula JOIN marcas m ON v.id_marca = m.id_marca WHERE v.cedula = ?",
     [cedula],
     (err, rows) => {
       if (err) {
         res.status(500).json({ error: err.message });
         return;
       }
+      // Verifica que las fotos estén presentes en las filas
       res.json(rows);
     }
   );
@@ -682,10 +681,7 @@ app.post("/api/diagnostico", upload.single("foto"), (req, res) => {
 app.get("/api/reparaciones/estado/:estado", (req, res) => {
   const { estado } = req.params;
   db.all(
-    `SELECT r.* , v.placa
-    FROM reparaciones as r
-    JOIN vehiculos as v on v.id_vehiculo=r.id_vehiculo
-    WHERE estado = ?`
+    "SELECT * FROM reparaciones WHERE estado = ?",
     [estado],
     (err, rows) => {
       if (err) {
@@ -697,11 +693,10 @@ app.get("/api/reparaciones/estado/:estado", (req, res) => {
   );
 });
 
-
 // Ruta para obtener reparaciones en espera de un cliente específico
 app.get("/api/reparaciones/estado/:estado/cliente/:clienteId", (req, res) => {
   const { estado, clienteId } = req.params;
-  
+
   // Consulta SQL con JOIN para obtener el diagnóstico técnico
   const query = `
     SELECT r.*, d.diagnostico_tecnico
@@ -711,7 +706,7 @@ app.get("/api/reparaciones/estado/:estado/cliente/:clienteId", (req, res) => {
       SELECT id_vehiculo FROM vehiculos WHERE cedula = ?
     )
   `;
-  
+
   db.all(query, [estado, clienteId], (err, rows) => {
     if (err) {
       res.status(500).json({ error: err.message });
@@ -726,10 +721,9 @@ app.get("/api/reparaciones/cliente/:clienteId", (req, res) => {
 
   // Consulta SQL con JOIN para obtener el diagnóstico técnico
   const query = `
-    SELECT r.*, d.diagnostico_tecnico, v.placa
+    SELECT r.*, d.diagnostico_tecnico
     FROM reparaciones r
     JOIN diagnostico_vehiculo d ON r.id_diagnostico = d.id_diagnostico
-    JOIN vehiculos as v on v.id_vehiculo=r.id_vehiculo
     WHERE r.id_vehiculo IN (
       SELECT id_vehiculo FROM vehiculos WHERE cedula = ?
     )
