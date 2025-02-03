@@ -115,7 +115,7 @@ function GestionDeRepuestos() {
 
   const handleedit = (e) => {
     e.preventDefault();
-    if (!precio || !selectedMarca || !descripcion) {
+    if (!precio || !selectedMarca || !descripcion || !foto) {
       Swal.fire("Error", translatedContent.alertCompleteFields, "error");
       return;
     }
@@ -136,7 +136,7 @@ function GestionDeRepuestos() {
     }
 
     axios
-      .put("http://localhost:3001/api/repuestos2/${id_repuesto}, formData", {
+      .put(`http://localhost:3001/api/repuestos2/${id_repuesto}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((response) => {
@@ -192,16 +192,16 @@ function GestionDeRepuestos() {
   };
 
   const obtenerMarcaPorId = (id) => {
-    fetch("http://localhost:3001/api/marcas/${id}")
+    fetch(`http://localhost:3001/api/marcas/${id}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Error: ${response.status} - ${response.statusText}`);
-
         }
         return response.json();
       })
       .then((data) => {
         setSelectedMarca(data);
+        console.log(selectedMarca);
       })
       .catch((error) => {
         console.error("Error al obtener la marca:", error);
@@ -213,6 +213,7 @@ function GestionDeRepuestos() {
     setPrecio(precio);
     setFoto(foto);
     setDescripcion(descripcion);
+
     obtenerMarcaPorId(id_marca);
     setIdRepuesto(id_repuesto);
     setIsModalOpen3(true);
@@ -239,7 +240,7 @@ function GestionDeRepuestos() {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete("http://localhost:3001/api/repuestos/delete/${id_repuesto}")
+          .delete(`http://localhost:3001/api/repuestos/delete/${id_repuesto}`)
           .then((response) => {
             Swal.fire("¡Éxito!", translatedContent.alertDelete, "success");
             getPiezas();
@@ -743,5 +744,5 @@ const PreviewImage = styled.img`
   max-height: 100px;
   border-radius: 8px;
   object-fit: cover;
-  margin-top: 10px;
+  margin-top: 10px;
 `;
