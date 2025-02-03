@@ -7,17 +7,19 @@ import axios from "axios";
 import { useGlobalContext } from "../components/GlobalContext"; // Asegúrate de importar el contexto
 
 function Facturar() {
-  const { translate } = useGlobalContext(); // Obtener el estado de traducción
+  const { translate, dark } = useGlobalContext(); // Obtener el estado de traducción
   const [reparaciones, setReparaciones] = useState([]);
   const [repuestos, setRepuestos] = useState([]);
   const [isModalOpen2, setIsModalOpen2] = useState(false);
   const [factura, setFactura] = useState(null);
   const [borrar, setdelete] = useState(null);
+  const lightGray = "#333"; // Define el mismo tono de gris para el modo claro
+  const darkGray = "#000000"; // Define el mismo fondo para el modo oscuro
 
   const translatedContent = {
     title: translate ? "Billing" : "Facturación",
     plate: translate ? "Plate" : "Placa",
-    customerEmail: translate ? "Customer Email" : "Correo Cliente",
+    customerEmail: translate ? "Customer" : "Cliente",
     actions: translate ? "Actions" : "Acciones",
     detailedInvoice: translate ? "Detailed Invoice" : "Factura Detallada",
     usedParts: translate ? "Used Parts" : "Repuestos Utilizados",
@@ -47,7 +49,7 @@ function Facturar() {
 
   const getRepuestos = (id) => {
     axios
-      .get("http://localhost:3001/api/RepuestosR/"+String(id))
+      .get("http://localhost:3001/api/RepuestosR/" + String(id))
       .then((response) => {
         setRepuestos(response.data);
       })
@@ -107,9 +109,16 @@ function Facturar() {
   };
 
   return (
-    <FormContainer>
+    <FormContainer
+      style={{
+        backgroundColor: dark ? "#333" : "#ffffff",
+        color: dark ? "#ffffff" : "#000000",
+      }}
+    >
       <Header>
-        <h1>{translatedContent.title}</h1>
+        <h1 style={{ color: dark ? "#ffffff" : "#000000" }}>
+          {translatedContent.title}
+        </h1>
       </Header>
       <TableContainer>
         <Table>
@@ -130,9 +139,28 @@ function Facturar() {
           <tbody>
             {reparaciones.map((vehiculo, index) => (
               <tr key={index}>
-                <td>{vehiculo.placa}</td>
-                <td>{vehiculo.cliente}</td>
-                <td>
+                <td
+                  style={{
+                    color: dark ? "#ffffff" : "#000000",
+                    backgroundColor: dark ? lightGray : "#ffffff",
+                  }}
+                >
+                  {vehiculo.placa}
+                </td>
+                <td
+                  style={{
+                    color: dark ? "#ffffff" : "#000000",
+                    backgroundColor: dark ? lightGray : "#ffffff",
+                  }}
+                >
+                  {vehiculo.cliente}
+                </td>
+                <td
+                  style={{
+                    color: dark ? "#ffffff" : "#000000",
+                    backgroundColor: dark ? lightGray : "#ffffff",
+                  }}
+                >
                   <ActionsCellCustom>
                     <ViewButton2
                       onClick={() => handleView(vehiculo.id_reparacion)}
@@ -149,7 +177,13 @@ function Facturar() {
 
       {isModalOpen2 && (
         <ModalOverlay>
-          <ModalContent style={{ zIndex: 100 }}>
+          <ModalContent
+            style={{
+              backgroundColor: dark ? "#444" : "#ffffff",
+              color: dark ? "#ffffff" : "#000000",
+              zIndex: 100,
+            }}
+          >
             <h3>{translatedContent.detailedInvoice}</h3>
 
             <h4
@@ -170,23 +204,25 @@ function Facturar() {
                   maxHeight: "400px",
                   overflowY: "auto",
                   top: 0,
+                  backgroundColor: dark ? "#444" : "#ffffff",
+                  color: dark ? "#ffffff" : "#000000",
                 }}
               >
                 {repuestos.map((repuesto, index) => (
                   <RepuestoItem key={index}>
-                    <p>
+                    <p style={{ color: dark ? "#ffffff" : "#000000" }}>
                       <strong>{translatedContent.description}:</strong>{" "}
                       {repuesto.descripcion}
                     </p>
-                    <p>
+                    <p style={{ color: dark ? "#ffffff" : "#000000" }}>
                       <strong>{translatedContent.quantityUsed}:</strong>{" "}
                       {repuesto.cantidad_utilizada}
                     </p>
-                    <p>
+                    <p style={{ color: dark ? "#ffffff" : "#000000" }}>
                       <strong>{translatedContent.price}:</strong> $
                       {repuesto.precio}
                     </p>
-                    <p>
+                    <p style={{ color: dark ? "#ffffff" : "#000000" }}>
                       <strong>{translatedContent.total}:</strong> $
                       {repuesto.total}
                     </p>
@@ -363,4 +399,4 @@ const ActionButtons = styled.div`
   justify-content: flex-end;
 `;
 
-export default Facturar;
+export default Facturar;

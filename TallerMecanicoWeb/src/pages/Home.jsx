@@ -1,6 +1,6 @@
-import React from 'react';
-import styled from 'styled-components';
-import './Truck.css';
+import React from "react";
+import styled from "styled-components";
+import "./Truck.css";
 
 function Home() {
   return (
@@ -33,7 +33,11 @@ function Home() {
               <div className="truck-wheel">
                 <div className="truck-wheel__rim">
                   {[...Array(7)].map((_, i) => (
-                    <div key={i} style={{ '--index': i }} className="truck-wheel__spoke"></div>
+                    <div
+                      key={i}
+                      style={{ "--index": i }}
+                      className="truck-wheel__spoke"
+                    ></div>
                   ))}
                 </div>
               </div>
@@ -42,7 +46,11 @@ function Home() {
               <div className="truck-wheel">
                 <div className="truck-wheel__rim">
                   {[...Array(7)].map((_, i) => (
-                    <div key={i} style={{ '--index': i }} className="truck-wheel__spoke"></div>
+                    <div
+                      key={i}
+                      style={{ "--index": i }}
+                      className="truck-wheel__spoke"
+                    ></div>
                   ))}
                 </div>
               </div>
@@ -52,7 +60,11 @@ function Home() {
       </RoadContainer>
       <InfoContainer>
         <h3>Sobre Nosotros</h3>
-        <p>Ofrecemos acceso a talleres mecánicos para reparación de vehículos, seguimiento del proceso de reparación y gestión del historial de reparaciones.</p>
+        <p>
+          Ofrecemos acceso a talleres mecánicos para reparación de vehículos,
+          seguimiento del proceso de reparación y gestión del historial de
+          reparaciones.
+        </p>
         <h3>Servicios</h3>
         <ul>
           <li>Registro y autenticación de administradores y clientes</li>
@@ -151,7 +163,7 @@ const RoadContainer = styled.div`
   overflow: hidden;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 40%;
     left: 0;
