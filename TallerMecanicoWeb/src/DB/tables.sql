@@ -34,11 +34,11 @@ CREATE TABLE vehiculos (
     anio INTEGER NOT NULL,
     cedula INTEGER NOT NULL,
     placa TEXT,
-    foto TEXT,
+    foto BLOB,
     FOREIGN KEY (id_marca) REFERENCES marcas(id_marca),
     FOREIGN KEY (cedula) REFERENCES clientes(cedula)
 );
-select *from vehiculos
+
 
 INSERT INTO vehiculos (id_marca, modelo, anio, cedula, placa) 
 VALUES 
@@ -143,7 +143,7 @@ INSERT INTO reparaciones (id_vehiculo,id_diagnostico,  id_mecanico, fecha_repara
 VALUES (3,3,  103, '2023-11-03', 'En espera', 'Revisión de sistema eléctrico en proceso');
 
 INSERT INTO reparaciones (id_vehiculo,id_diagnostico,  id_mecanico, fecha_reparacion, estado, descripcion)
-VALUES (4,3,  104, '2023-11-04', 'Finalizado', 'Cambio de aceite en proceso');
+VALUES (5,3,  104, '2023-11-04', 'Finalizado', 'Cambio de aceite en proceso');
 
 -- Tabla que asocia los repuestos con cada reparacion
 
@@ -164,12 +164,13 @@ Create table Login(
 
 INSERT INTO reparaciones (id_vehiculo, id_mecanico, fecha_reparacion, estado, descripcion) 
 VALUES 
-(1, 101, '2025-01-25', 'Finalizado', 'Cambio de filtro de aire y aceite'),
+(5, 101, '2025-01-25', 'Finalizado', 'Cambio de filtro de aire y aceite');
 (2, 101, '2025-01-25', 'Facturar', 'Cambio de filtro de aire y aceite');
+
 INSERT INTO repuestos_reparacion (id_reparacion, id_repuesto, cantidad_utilizada) 
 VALUES 
-(4, 1, 1), 
-(4, 4, 1);
+(5, 1, 1), 
+(5, 4, 1);
 
 
 CREATE TABLE diagnostico_vehiculo(

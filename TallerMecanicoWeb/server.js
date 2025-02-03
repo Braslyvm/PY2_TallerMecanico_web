@@ -40,8 +40,7 @@ app.get("/api/vehiculos", (req, res) => {
   );
 });
 app.post("/api/vehiculos", upload.single("foto"), (req, res) => {
-  const { id_marca, modelo, anio, cedula, placa } = req.body;
-  const foto = req.file ? req.file.path : null;
+  const { id_marca, modelo, anio, cedula, placa ,foto} = req.body;
 
   if (!id_marca || !modelo || !anio || !cedula || !placa || !foto) {
     return res.status(400).json({ error: "Todos los campos son obligatorios" });
@@ -114,13 +113,14 @@ app.get("/api/vehiculos/completa", (req, res) => {
 app.get("/api/vehiculos/completa/Cliente/:cedula", (req, res) => {
   const { cedula } = req.params;
   db.all(
-    "SELECT v.id_vehiculo, m.nombre AS marca, v.modelo, v.anio, c.nombre || ' ' || c.apellido1 || ' ' || c.apellido2 AS nombre_completo, v.placa FROM vehiculos v JOIN clientes c ON v.cedula = c.cedula JOIN marcas m ON v.id_marca = m.id_marca WHERE v.cedula = ?",
+    "SELECT v.foto, v.id_vehiculo, m.nombre AS marca, v.modelo, v.anio, c.nombre || ' ' || c.apellido1 || ' ' || c.apellido2 AS nombre_completo, v.placa FROM vehiculos v JOIN clientes c ON v.cedula = c.cedula JOIN marcas m ON v.id_marca = m.id_marca WHERE v.cedula = ?",
     [cedula],
     (err, rows) => {
       if (err) {
         res.status(500).json({ error: err.message });
         return;
       }
+      // Verifica que las fotos estén presentes en las filas
       res.json(rows);
     }
   );
