@@ -143,21 +143,37 @@ VALUES
 
 INSERT INTO repuestos (id_marca, precio, foto, descripcion) 
 VALUES 
-(6, 150.75, NULL, 'Filtro de aire'),
+(1, 150.75, NULL, 'Filtro de aire'),
 (2, 200.50, NULL, 'Bujías'),
 (3, 300.00, NULL, 'Amortiguadores'),
 (4, 120.00, NULL, 'Aceite de motor'),
-(1, 50.25, NULL, 'Filtro de aceite'),
-(2, 80.00, NULL, 'Pastillas de freno'),
-(3, 400.00, NULL, 'Llantas'),
-(4, 150.00, NULL, 'Batería'),
-(1, 100.00, NULL, 'Lámparas'),
-(2, 75.00, NULL, 'Limpiaparabrisas'),
-(1, 120.00, NULL, 'Correa de distribución'),
-(3, 180.00, NULL, 'Frenos de disco'),
-(4, 250.00, NULL, 'Radiador'),
-(1, 220.00, NULL, 'Amortiguadores delanteros'),
-(2, 90.00, NULL, 'Aceite hidráulico');
+(5, 50.25, NULL, 'Filtro de aceite'),
+(6, 80.00, NULL, 'Pastillas de freno'),
+(7, 400.00, NULL, 'Llantas'),
+(8, 150.00, NULL, 'Batería'),
+(9, 100.00, NULL, 'Lámparas'),
+(10, 75.00, NULL, 'Limpiaparabrisas'),
+(11, 120.00, NULL, 'Correa de distribución'),
+(12, 180.00, NULL, 'Frenos de disco'),
+(13, 250.00, NULL, 'Radiador'),
+(14, 220.00, NULL, 'Amortiguadores delanteros'),
+(15, 90.00, NULL, 'Aceite hidráulico'),
+(1, 160.00, NULL, 'Sensor de oxígeno'),
+(2, 140.00, NULL, 'Bobina de encendido'),
+(3, 190.00, NULL, 'Bomba de agua'),
+(4, 260.00, NULL, 'Compresor de aire acondicionado'),
+(5, 180.00, NULL, 'Embrague'),
+(6, 90.00, NULL, 'Termostato'),
+(7, 210.00, NULL, 'Kit de distribución'),
+(8, 300.00, NULL, 'Alternador'),
+(9, 110.00, NULL, 'Espejo retrovisor'),
+(10, 135.00, NULL, 'Modulo de encendido'),
+(11, 175.00, NULL, 'Bomba de gasolina'),
+(12, 190.00, NULL, 'Turbocompresor'),
+(13, 280.00, NULL, 'Disco de embrague'),
+(14, 200.00, NULL, 'Sensor de temperatura'),
+(15, 230.00, NULL, 'Convertidor catalítico');
+
 
 INSERT INTO mecanicos (cedula, nombre, edad, foto) 
 VALUES 
@@ -235,8 +251,8 @@ VALUES
 
 INSERT INTO repuestos_reparacion (id_reparacion, id_repuesto, cantidad_utilizada) 
 VALUES 
-(1, 6, 2),  -- Pastillas de freno para la reparación 1
-(2, 12, 1), -- Frenos de disco para la reparación 2
+(1, 6, 2),  
+(2, 12, 1), 
 (3, 4, 1),  -- Aceite de motor para la reparación 3
 (4, 9, 2),  -- Lámparas para la reparación 4
 (5, 7, 4),  -- Llantas para la reparación 5

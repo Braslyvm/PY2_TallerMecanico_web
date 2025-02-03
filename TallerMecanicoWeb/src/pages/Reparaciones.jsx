@@ -49,7 +49,7 @@ function Reparaciones() {
 
   const getReparacionesCompletas = () => {
     axios
-      .get('http://localhost:3001/api/reparaciones')
+      .get("http://localhost:3001/api/reparaciones")
       .then((response) => setDataComplete(response.data))
       .catch((error) =>
         console.error("Error al obtener reparaciones completas:", error)
@@ -57,7 +57,7 @@ function Reparaciones() {
   };
   const getReparaciones = () => {
     axios
-      .get('http://localhost:3001/api/reparaciones/estado/Pendiente')
+      .get("http://localhost:3001/api/reparaciones/estado/Pendiente")
       .then((response) => setData(response.data))
       .catch((error) =>
         console.error("Error al obtener reparaciones pendientes:", error)
@@ -66,7 +66,7 @@ function Reparaciones() {
 
   const getVehiculos = () => {
     axios
-      .get('http://localhost:3001/api/diagnosticos-sin-reparacion')
+      .get("http://localhost:3001/api/diagnosticos-sin-reparacion")
       .then((response) => {
         console.log("Respuesta de la API:", response.data); // Verifica la respuesta
         if (Array.isArray(response.data)) {
@@ -87,7 +87,7 @@ function Reparaciones() {
 
   const diagnosticosVehiculos = async () => {
     const diagnosticosResponse = await axios.get(
-      'http://localhost:3001/api/diagnostico'
+      "http://localhost:3001/api/diagnostico"
     );
     setDiagnosticos(diagnosticosResponse.data);
 
@@ -99,14 +99,14 @@ function Reparaciones() {
 
   const getMecanicos = () => {
     axios
-      .get('http://localhost:3001/api/mecanicos')
+      .get("http://localhost:3001/api/mecanicos")
       .then((response) => setMecanicos(response.data))
       .catch((error) => console.error("Error al obtener mecánicos:", error));
   };
 
   const getRepuestos = () => {
     axios
-      .get('http://localhost:3001/api/repuestos')
+      .get("http://localhost:3001/api/repuestos")
       .then((response) => setRepuestos(response.data))
       .catch((error) => console.error("Error al obtener repuestos:", error));
   };
@@ -220,7 +220,7 @@ function Reparaciones() {
       console.log("Esta es la nueva reparación: ", nuevaReparacion);
 
       axios
-        .post('http://localhost:3001/api/reparaciones', nuevaReparacion)
+        .post("http://localhost:3001/api/reparaciones", nuevaReparacion)
         .then(() => {
           Swal.fire(
             "¡Éxito!",
@@ -290,7 +290,7 @@ function Reparaciones() {
     }
 
     axios
-      .post('http://localhost:3001/api/repuestos_reparacion', {
+      .post("http://localhost:3001/api/repuestos_reparacion", {
         id_reparacion: selectedReparacion,
         id_repuesto: selectedRepuesto,
         cantidad_utilizada: cantidad,
