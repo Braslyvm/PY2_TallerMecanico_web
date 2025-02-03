@@ -143,7 +143,7 @@ VALUES
 
 INSERT INTO repuestos (id_marca, precio, foto, descripcion) 
 VALUES 
-(1, 150.75, NULL, 'Filtro de aire'),
+(6, 150.75, NULL, 'Filtro de aire'),
 (2, 200.50, NULL, 'Bujías'),
 (3, 300.00, NULL, 'Amortiguadores'),
 (4, 120.00, NULL, 'Aceite de motor'),

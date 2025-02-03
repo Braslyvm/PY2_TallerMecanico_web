@@ -49,7 +49,7 @@ function Reparaciones() {
 
   const getReparacionesCompletas = () => {
     axios
-      .get("http://localhost:3001/api/reparaciones")
+      .get('http://localhost:3001/api/reparaciones')
       .then((response) => setDataComplete(response.data))
       .catch((error) =>
         console.error("Error al obtener reparaciones completas:", error)
@@ -57,7 +57,7 @@ function Reparaciones() {
   };
   const getReparaciones = () => {
     axios
-      .get("http://localhost:3001/api/reparaciones/estado/Pendiente")
+      .get('http://localhost:3001/api/reparaciones/estado/Pendiente')
       .then((response) => setData(response.data))
       .catch((error) =>
         console.error("Error al obtener reparaciones pendientes:", error)
@@ -66,13 +66,16 @@ function Reparaciones() {
 
   const getVehiculos = () => {
     axios
-      .get("http://localhost:3001/api/diagnosticos-sin-reparacion")
+      .get('http://localhost:3001/api/diagnosticos-sin-reparacion')
       .then((response) => {
         console.log("Respuesta de la API:", response.data); // Verifica la respuesta
         if (Array.isArray(response.data)) {
           setVehiculos(response.data);
         } else {
-          console.error("La respuesta de la API no es un array:", response.data);
+          console.error(
+            "La respuesta de la API no es un array:",
+            response.data
+          );
           setVehiculos([]); // Establece un array vacío como valor predeterminado
         }
       })
@@ -84,7 +87,7 @@ function Reparaciones() {
 
   const diagnosticosVehiculos = async () => {
     const diagnosticosResponse = await axios.get(
-      "http://localhost:3001/api/diagnostico"
+      'http://localhost:3001/api/diagnostico'
     );
     setDiagnosticos(diagnosticosResponse.data);
 
@@ -96,14 +99,14 @@ function Reparaciones() {
 
   const getMecanicos = () => {
     axios
-      .get("http://localhost:3001/api/mecanicos")
+      .get('http://localhost:3001/api/mecanicos')
       .then((response) => setMecanicos(response.data))
       .catch((error) => console.error("Error al obtener mecánicos:", error));
   };
 
   const getRepuestos = () => {
     axios
-      .get("http://localhost:3001/api/repuestos")
+      .get('http://localhost:3001/api/repuestos')
       .then((response) => setRepuestos(response.data))
       .catch((error) => console.error("Error al obtener repuestos:", error));
   };
@@ -208,25 +211,28 @@ function Reparaciones() {
       // Crear nueva reparación con los valores correctos
       const nuevaReparacion = {
         id_vehiculo: vehiculo.id_vehiculo, // Ahora vehiculo contiene el objeto completo
-        id_diagnostico: vehiculo.id_diagnostico, 
+        id_diagnostico: vehiculo.id_diagnostico,
         id_mecanico: mecanico,
         fecha_reparacion: fechaReparacion,
         descripcion,
         estado,
       };
       console.log("Esta es la nueva reparación: ", nuevaReparacion);
-  
+
       axios
-        .post("http://localhost:3001/api/reparaciones", nuevaReparacion)
+        .post('http://localhost:3001/api/reparaciones', nuevaReparacion)
         .then(() => {
-          Swal.fire("¡Éxito!", "Reparación registrada correctamente.", "success");
+          Swal.fire(
+            "¡Éxito!",
+            "Reparación registrada correctamente.",
+            "success"
+          );
           getReparaciones();
           handleCloseModal();
         })
         .catch((error) => console.error("Error al agregar reparación:", error));
     }
   };
-  
 
   const handleViewClick = (reparacion) => {
     setSelectedReparacion(reparacion);
@@ -284,7 +290,7 @@ function Reparaciones() {
     }
 
     axios
-      .post("http://localhost:3001/api/repuestos_reparacion", {
+      .post('http://localhost:3001/api/repuestos_reparacion', {
         id_reparacion: selectedReparacion,
         id_repuesto: selectedRepuesto,
         cantidad_utilizada: cantidad,
@@ -382,11 +388,21 @@ function Reparaciones() {
             <Form>
               <Form.Group controlId="formVehiculo">
                 <Form.Label>Vehículo</Form.Label>
-                <Form.Control as="select" value={vehiculo} onChange={(e) => setVehiculo(JSON.parse(e.target.value))}> 
+                <Form.Control
+                  as="select"
+                  value={vehiculo ? vehiculo.id_vehiculo : ""}
+                  onChange={(e) => {
+                    const selectedVehiculo = vehiculos.find(
+                      (v) => v.id_vehiculo === parseInt(e.target.value)
+                    );
+                    setVehiculo(selectedVehiculo || null);
+                  }}
+                >
                   <option value="">Seleccione un vehículo</option>
-                  {Array.isArray(vehiculos) && vehiculos.map((v) => (
-                    <option key={v.id_vehiculo} value={JSON.stringify(v)}>
-                      Placa del vehículo: {v.placa}, Fecha de diagnóstico: {v.fecha_diagnostico}
+                  {vehiculos.map((v) => (
+                    <option key={v.id_vehiculo} value={v.id_vehiculo}>
+                      Placa del vehículo: {v.placa}, Fecha de diagnóstico:{" "}
+                      {v.fecha_diagnostico}
                     </option>
                   ))}
                 </Form.Control>

@@ -537,11 +537,12 @@ const ViewButton = styled.button`
 
 const TableContainer = styled.div`
   width: 100%;
+  
 
 `;
 
 const TableBodyContainer = styled.div`
-  max-height: 40%;
+  max-height: 600px;
   overflow-y: auto; 
   overflow-x: hidden;
 `;
