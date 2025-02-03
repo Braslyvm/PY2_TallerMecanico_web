@@ -699,9 +699,10 @@ app.get("/api/reparaciones/estado/:estado/cliente/:clienteId", (req, res) => {
 
   // Consulta SQL con JOIN para obtener el diagnóstico técnico
   const query = `
-    SELECT r.*, d.diagnostico_tecnico
+    SELECT r.*, d.diagnostico_tecnico,v.placa
     FROM reparaciones r
     JOIN diagnostico_vehiculo d ON r.id_diagnostico = d.id_diagnostico
+    JOIN vehiculos v on r.id_vehiculo=v.id_vehiculo
     WHERE r.estado = ? AND r.id_vehiculo IN (
       SELECT id_vehiculo FROM vehiculos WHERE cedula = ?
     )
@@ -721,9 +722,10 @@ app.get("/api/reparaciones/cliente/:clienteId", (req, res) => {
 
   // Consulta SQL con JOIN para obtener el diagnóstico técnico
   const query = `
-    SELECT r.*, d.diagnostico_tecnico
+    SELECT r.*, d.diagnostico_tecnico, v.placa
     FROM reparaciones r
     JOIN diagnostico_vehiculo d ON r.id_diagnostico = d.id_diagnostico
+    JOIN vehiculos v on r.id_vehiculo=v.id_vehiculo
     WHERE r.id_vehiculo IN (
       SELECT id_vehiculo FROM vehiculos WHERE cedula = ?
     )
@@ -844,17 +846,12 @@ app.get("/api/diagnosticos-sin-reparacion", (req, res) => {
     WHERE r.id_reparacion IS NULL;
   `;
 
-  console.log("Ejecutando consulta:", query);
-
   db.all(query, [], (err, rows) => {
     if (err) {
       console.error("❌ Error ejecutando la consulta:", err.message);
       res.status(500).json({ error: err.message });
       return;
     }
-
-    console.log("📌 Resultado crudo de la consulta:", rows);
-
     if (!rows || rows.length === 0) {
       console.warn(
         "⚠️ No se encontraron vehículos diagnosticados sin reparación."
@@ -862,8 +859,6 @@ app.get("/api/diagnosticos-sin-reparacion", (req, res) => {
       res.json([]); // Devuelve un array vacío en lugar de undefined
       return;
     }
-
-    console.log("✅ Respuesta enviada al cliente:", rows);
     res.json(rows);
   });
 });
