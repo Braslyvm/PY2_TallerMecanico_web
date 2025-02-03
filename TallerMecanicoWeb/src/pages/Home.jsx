@@ -1,11 +1,36 @@
 import React from "react";
 import styled from "styled-components";
 import "./Truck.css";
+import { useGlobalContext } from "../components/GlobalContext"; // Asegúrate de importar el contexto
 
 function Home() {
+  const { translate, dark } = useGlobalContext(); // Obtener el estado de traducción
+
+  const translatedContent = {
+    welcome: translate ? "Welcome to our page" : "Bienvenido a nuestra página",
+    aboutUs: translate ? "About Us" : "Sobre Nosotros",
+    services: translate ? "Services" : "Servicios",
+    description: translate
+      ? "We offer access to mechanical workshops for vehicle repair, tracking the repair process, and managing repair history."
+      : "Ofrecemos acceso a talleres mecánicos para reparación de vehículos, seguimiento del proceso de reparación y gestión del historial de reparaciones.",
+    service1: translate
+      ? "Registration and authentication of administrators and clients"
+      : "Registro y autenticación de administradores y clientes",
+    service2: translate
+      ? "Diagnosis and assignment of repairs"
+      : "Diagnóstico y asignación de reparaciones",
+    service3: translate
+      ? "Purchase and assignment of spare parts"
+      : "Compra y asignación de repuestos",
+    service4: translate ? "Repair history" : "Historial de reparaciones",
+    service5: translate
+      ? "Billing and vehicle checkout"
+      : "Facturación y salida de vehículos",
+  };
+
   return (
-    <HomeContainer>
-      <Text>Bienvenido a nuestra página</Text>
+    <HomeContainer style={{backgroundColor: dark ? "#333" : "#ffffff" }}>
+      <Text style={{color: dark ? "#ffffff" : "#000000"}}>{translatedContent.welcome}</Text>
       <SkyContainer>
         <Sun />
         <Cloud className="cloud cloud1" />
@@ -59,19 +84,15 @@ function Home() {
         </TruckContainer>
       </RoadContainer>
       <InfoContainer>
-        <h3>Sobre Nosotros</h3>
-        <p>
-          Ofrecemos acceso a talleres mecánicos para reparación de vehículos,
-          seguimiento del proceso de reparación y gestión del historial de
-          reparaciones.
-        </p>
-        <h3>Servicios</h3>
+        <h3>{translatedContent.aboutUs}</h3>
+        <p>{translatedContent.description}</p>
+        <h3>{translatedContent.services}</h3>
         <ul>
-          <li>Registro y autenticación de administradores y clientes</li>
-          <li>Diagnóstico y asignación de reparaciones</li>
-          <li>Compra y asignación de repuestos</li>
-          <li>Historial de reparaciones</li>
-          <li>Facturación y salida de vehículos</li>
+          <li>{translatedContent.service1}</li>
+          <li>{translatedContent.service2}</li>
+          <li>{translatedContent.service3}</li>
+          <li>{translatedContent.service4}</li>
+          <li>{translatedContent.service5}</li>
         </ul>
       </InfoContainer>
     </HomeContainer>
