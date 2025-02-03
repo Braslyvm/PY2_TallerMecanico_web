@@ -12,7 +12,7 @@ import { useDropzone } from "react-dropzone";
 import { useGlobalContext } from "../components/GlobalContext"; // Asegúrate de importar el contexto
 
 function GestionDeRepuestos() {
-  const { translate } = useGlobalContext(); // Obtener el estado de traducción
+  const { translate, dark } = useGlobalContext(); // Obtener el estado de traducción
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpen2, setIsModalOpen2] = useState(false);
   const [isModalOpen3, setIsModalOpen3] = useState(false);
@@ -24,6 +24,8 @@ function GestionDeRepuestos() {
   const [id_repuesto, setIdRepuesto] = useState("");
   const [marcas, setMarcas] = useState([]);
   const [piezas, setPiezas] = useState([]);
+  const lightGray = "#333"; // Define el mismo tono de gris para el modo claro
+  const darkGray = "#000000"; // Define el mismo fondo para el modo oscuro
 
   const translatedContent = {
     title: translate ? "Spare Parts Management" : "Gestión de Repuestos",
@@ -262,9 +264,16 @@ function GestionDeRepuestos() {
   };
 
   return (
-    <FormContainer>
+    <FormContainer
+      style={{
+        backgroundColor: dark ? "#333" : "#ffffff",
+        color: dark ? "#ffffff" : "#000000",
+      }}
+    >
       <Header>
-        <h2>{translatedContent.title}</h2>
+        <h2 style={{ color: dark ? "#ffffff" : "#000000" }}>
+          {translatedContent.title}
+        </h2>
         <BootstrapButton
           className="btn btn-secondary"
           onClick={() => setIsModalOpen(true)}
@@ -276,7 +285,12 @@ function GestionDeRepuestos() {
 
       {isModalOpen && (
         <ModalOverlay>
-          <ModalContent>
+          <ModalContent
+            style={{
+              backgroundColor: dark ? "#444" : "#ffffff",
+              color: dark ? "#ffffff" : "#000000",
+            }}
+          >
             <h3>{translatedContent.addButton}</h3>
             <Form onSubmit={handleSubmit}>
               <InputField>
@@ -341,8 +355,15 @@ function GestionDeRepuestos() {
 
       {isModalOpen3 && (
         <ModalOverlay>
-          <ModalContent>
-            <h3>{translatedContent.editSparePart}</h3>
+          <ModalContent
+            style={{
+              backgroundColor: dark ? "#444" : "#ffffff",
+              color: dark ? "#ffffff" : "#000000",
+            }}
+          >
+            <h3 style={{ color: dark ? "#ffffff" : "#000000" }}>
+              {translatedContent.editSparePart}
+            </h3>
             <Form onSubmit={handleedit}>
               <InputField>
                 <label>{translatedContent.price}</label>
@@ -403,8 +424,15 @@ function GestionDeRepuestos() {
 
       {isModalOpen2 && (
         <ModalOverlay>
-          <ModalContent>
-            <h3>{translatedContent.viewSparePart}</h3>
+          <ModalContent
+            style={{
+              backgroundColor: dark ? "#444" : "#ffffff",
+              color: dark ? "#ffffff" : "#000000",
+            }}
+          >
+            <h3 style={{ color: dark ? "#ffffff" : "#000000" }}>
+              {translatedContent.viewSparePart}
+            </h3>
             <FormContainer style={{ height: "400px" }}>
               <PhotoviewContainer>
                 <img
@@ -442,9 +470,15 @@ function GestionDeRepuestos() {
         <Table>
           <thead>
             <tr>
-              <th>{translatedContent.description}</th>
-              <th>{translatedContent.price}</th>
-              <th>{translatedContent.actions}</th>
+              <th style={{ color: dark ? "#ffffff" : "#000000" }}>
+                {translatedContent.description}
+              </th>
+              <th style={{ color: dark ? "#ffffff" : "#000000" }}>
+                {translatedContent.price}
+              </th>
+              <th style={{ color: dark ? "#ffffff" : "#000000" }}>
+                {translatedContent.actions}
+              </th>
             </tr>
           </thead>
         </Table>
@@ -453,9 +487,28 @@ function GestionDeRepuestos() {
             <tbody>
               {piezas.map((pieza, index) => (
                 <tr key={index}>
-                  <td>{pieza.descripcion}</td>
-                  <td>₡{parseFloat(pieza.precio).toFixed(2)}</td>
-                  <td>
+                  <td
+                    style={{
+                      color: dark ? "#ffffff" : "#000000",
+                      backgroundColor: dark ? lightGray : "#ffffff",
+                    }}
+                  >
+                    {pieza.descripcion}
+                  </td>
+                  <td
+                    style={{
+                      color: dark ? "#ffffff" : "#000000",
+                      backgroundColor: dark ? lightGray : "#ffffff",
+                    }}
+                  >
+                    ₡{parseFloat(pieza.precio).toFixed(2)}
+                  </td>
+                  <td
+                    style={{
+                      color: dark ? "#ffffff" : "#000000",
+                      backgroundColor: dark ? lightGray : "#ffffff",
+                    }}
+                  >
                     <ActionsCellCustom>
                       <EditButton2
                         onClick={() =>
@@ -515,8 +568,7 @@ const FormContainer = styled.div`
   align-items: center;
   overflow-y: auto;
   justify-content: center;
-  height: 90vh;
-  background-color: #f8f9fa;
+  height: 100vh;
 `;
 const FormFields = styled.div`
   flex: 2;
