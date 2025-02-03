@@ -630,7 +630,8 @@ const FormContainer = styled.div`
   align-items: center;
   overflow-y: auto;
   justify-content: center;
-  height: 100vh;
+  height: 100%; // Cambia a 100% para que ocupe todo el espacio disponible
+  flex: 1; // Asegura que ocupe todo el espacio restante
 `;
 const FormFields = styled.div`
   flex: 2;
@@ -673,9 +674,10 @@ const TableBodyContainer = styled.div`
   overflow-x: hidden;
 `;
 const Table = styled(BootstrapTable)`
-  width: 100%;
+  width: 90%;
   border-collapse: collapse;
   margin-top: 10px;
+  margin: 0 auto;
   border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   table-layout: fixed; /* Forzar el ancho de las columnas */
